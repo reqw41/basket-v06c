@@ -1,0 +1,22 @@
+{
+  "note": "Extra inputs for tools/disasm_v06.py. code: JP vectors coverage never executed: 93A0 (9376..93A5 jump table), AB25 (LD C,0 / JP ABFF next to the music). 934D..9375 after the TIME string is data: its C3 bytes point inside instructions, no MSX labels. const_imm16: LD rr,nn values that are not addresses (A778: the MSX word 88CDh A75F writes into the blitter flag cell). data_words: little-endian pointers inside data (AE5D..AE75: redefine-keys table of the LD A,code operands AF0E..AF8D).",
+  "code": [
+    "93A0",
+    "AB25"
+  ],
+  "const_imm16": [
+    "A778"
+  ],
+  "data_words": [
+    "AE5D",
+    "AE5F",
+    "AE61",
+    "AE63",
+    "AE65",
+    "AE6D",
+    "AE6F",
+    "AE71",
+    "AE73",
+    "AE75"
+  ]
+}

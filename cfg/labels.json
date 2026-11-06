@@ -1,0 +1,638 @@
+{
+  "schema": 1,
+  "note": "Game and cross-module addresses used by src/v06. Generated include: src/v06/labels.inc (tools/gen_labels.py). sig = first bytes at addr in the current ROM (tools/test_labels.py).",
+  "labels": {
+    "BLIT_Y": {
+      "addr": "3300",
+      "kind": "sys_data",
+      "note": "MSX D098: blitter/sprite Y (relocated D-block)"
+    },
+    "BLIT_X": {
+      "addr": "3301",
+      "kind": "sys_data",
+      "note": "MSX D099: blitter/sprite X"
+    },
+    "BLIT_SRC": {
+      "addr": "3302",
+      "kind": "sys_data",
+      "note": "MSX D09A: sprite record / blitter source pointer"
+    },
+    "BLIT_W": {
+      "addr": "3308",
+      "kind": "sys_data",
+      "note": "MSX D0A0: blitter width"
+    },
+    "BLIT_H": {
+      "addr": "330A",
+      "kind": "sys_data",
+      "note": "MSX D0A2: blitter height"
+    },
+    "SYS_D0CA": {
+      "addr": "3332",
+      "kind": "sys_data",
+      "note": "MSX D0CA: replay ring state toggled by the marker"
+    },
+    "SYS_D0CB": {
+      "addr": "3333",
+      "kind": "sys_data",
+      "note": "MSX D0CB: replay side"
+    },
+    "TEXT_COLOUR": {
+      "addr": "3424",
+      "kind": "sys_data",
+      "note": "MSX D1BC: text colour byte (91h = light red)"
+    },
+    "BLIT_PASS_FLAG": {
+      "addr": "34DF",
+      "kind": "sys_data",
+      "note": "MSX D277: A75F writes JR here to skip the pattern pass"
+    },
+    "SYS_DELAY": {
+      "addr": "3A2C",
+      "kind": "sys_code",
+      "note": "MSX D7C4: frame delay",
+      "sig": "b7201b"
+    },
+    "GAME_FONT": {
+      "addr": "3B80",
+      "kind": "sys_data",
+      "note": "MSX D918: 8x8 font"
+    },
+    "TEXT_ROW": {
+      "addr": "4102",
+      "kind": "work_data",
+      "note": "text cursor row (MSX 4102)"
+    },
+    "TEXT_COL": {
+      "addr": "4103",
+      "kind": "work_data",
+      "note": "text cursor column (MSX 4103)"
+    },
+    "G_KEY_CODE": {
+      "addr": "410F",
+      "kind": "work_data",
+      "note": "game key code cell"
+    },
+    "G_KEY_ASCII": {
+      "addr": "4110",
+      "kind": "work_data",
+      "note": "game key ASCII cell"
+    },
+    "KEY_SNAP": {
+      "addr": "4104",
+      "kind": "work_data",
+      "note": "game ISR key snapshot: MSX rows 0..8 (4104..410C), stick+trigger 1/2 (410D, 410E)"
+    },
+    "KEY_TRIG_NO": {
+      "addr": "4121",
+      "kind": "work_data",
+      "note": "trigger number of the last ISR stick read (2 after the snapshot)"
+    },
+    "KEY_DIR_TAB": {
+      "addr": "3480",
+      "kind": "sys_data",
+      "note": "MSX D218: GTSTCK direction 0..8 -> key snapshot bits"
+    },
+    "GAME_ISR_HOOK": {
+      "addr": "4141",
+      "kind": "work_code",
+      "note": "MSX IM2 vector entry: JP game ISR",
+      "sig": "000000"
+    },
+    "GAME_ENTRY": {
+      "addr": "84D0",
+      "kind": "game_code",
+      "note": "game start",
+      "sig": "c3e884"
+    },
+    "GAME_STATE_QUEUE": {
+      "addr": "9385",
+      "kind": "game_code",
+      "note": "L_9385: JP 94B0 (queue a replay state)",
+      "sig": "c3b094"
+    },
+    "ONE_PLAYER": {
+      "addr": "93EA",
+      "kind": "game_data",
+      "note": "0 = 2 PLAYERS"
+    },
+    "GAME_POWER_BARS": {
+      "addr": "9F25",
+      "kind": "game_code",
+      "note": "L_9F25: draw both power bars",
+      "sig": "210110"
+    },
+    "GAME_PRINT_CLOCK": {
+      "addr": "9F9A",
+      "kind": "game_code",
+      "note": "L_9F9A: print the clock",
+      "sig": "3ae593"
+    },
+    "GAME_PRINT_FOULS": {
+      "addr": "9FC0",
+      "kind": "game_code",
+      "note": "L_9FC0: print 12345 foul digits",
+      "sig": "211201"
+    },
+    "GAME_PRINT_SCORES": {
+      "addr": "9FF2",
+      "kind": "game_code",
+      "note": "L_9FF2: print scores",
+      "sig": "211208"
+    },
+    "GAME_PRINT_NAMES": {
+      "addr": "A00E",
+      "kind": "game_code",
+      "note": "L_A00E: print team names",
+      "sig": "3ef132"
+    },
+    "GAME_PRINT_STRING": {
+      "addr": "AEFA",
+      "kind": "game_code",
+      "note": "L_AEFA: HL = cursor, DE = FF-terminated string",
+      "sig": "220241"
+    },
+    "REPLAY_HALF_SELECT": {
+      "addr": "A8F9",
+      "kind": "game_data",
+      "note": "old LD DE immediate kept as the replay half selector"
+    },
+    "BIOS_CLICK": {
+      "addr": "A52C",
+      "kind": "adapter_code",
+      "note": "CHGSND body (win_a524.asm)",
+      "sig": "fe019f"
+    },
+    "STAGE_ALIGNED_ROW": {
+      "addr": "6D9D",
+      "kind": "adapter_code",
+      "note": "aligned_sprite_row.asm",
+      "sig": "2a5a0f"
+    },
+    "B1_ROW": {
+      "addr": "B1DE",
+      "kind": "game_data",
+      "note": "sprite row / buffer row (MSX B1DE)"
+    },
+    "B1_HEIGHT": {
+      "addr": "B1DF",
+      "kind": "game_data",
+      "note": "sprite height"
+    },
+    "B1_COL": {
+      "addr": "B1E0",
+      "kind": "game_data",
+      "note": "sprite byte column"
+    },
+    "B1_WIDTH": {
+      "addr": "B1E1",
+      "kind": "game_data",
+      "note": "sprite width in bytes"
+    },
+    "B1_SKIP": {
+      "addr": "B1E2",
+      "kind": "game_data",
+      "note": "left-clip bytes"
+    },
+    "SPR_STRIP": {
+      "addr": "B1E4",
+      "kind": "game_data",
+      "note": "shifted plane strip scratch"
+    },
+    "DIRTY_OLD_COUNT": {
+      "addr": "B258",
+      "kind": "adapter_data",
+      "note": "previous-frame dirty count"
+    },
+    "DIRTY_OLD_LIST": {
+      "addr": "B259",
+      "kind": "adapter_data",
+      "note": "27 x (col,row,w,h)"
+    },
+    "CSPR_META": {
+      "addr": "B2C5",
+      "kind": "adapter_data",
+      "note": "27 x (record pointer, x, y)"
+    },
+    "BG_FETCH": {
+      "addr": "B338",
+      "kind": "adapter_code",
+      "note": "cpc_stamp.asm: match background fetch gate",
+      "sig": "c30018"
+    },
+    "CPC_STAMP_ON": {
+      "addr": "B33B",
+      "kind": "adapter_code",
+      "note": "cpc_stamp.asm",
+      "sig": "f53a39"
+    },
+    "CPC_STAMP_OFF": {
+      "addr": "B357",
+      "kind": "adapter_code",
+      "note": "cpc_stamp.asm",
+      "sig": "210018"
+    },
+    "STAMP_ROW_FIX": {
+      "addr": "B3F6",
+      "kind": "adapter_code",
+      "note": "cpc_stamp.asm: stand cells after a tile row",
+      "sig": "3a39b3"
+    },
+    "TIME_TEXT": {
+      "addr": "B48C",
+      "kind": "adapter_data",
+      "note": "hud_icon.asm: 'TIME',FF"
+    },
+    "FRAME_BEGIN": {
+      "addr": "0355",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "c35803"
+    },
+    "COURT_TILE_ROW_POINTER": {
+      "addr": "6B8E",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "7de6e0"
+    },
+    "NOISE_WAIT": {
+      "addr": "1465",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "fb3a7c"
+    },
+    "RESTORE_BACKGROUND_PAIR": {
+      "addr": "1710",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "cd0e6f"
+    },
+    "PAIR_BUFFER_OK": {
+      "addr": "1721",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "3a1c0f"
+    },
+    "COURT_TILE_PAIR": {
+      "addr": "1800",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "c5d5e5"
+    },
+    "COURT_TILE_CACHE": {
+      "addr": "1851",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "c5d532"
+    },
+    "TEXT_GLYPH_PAIR": {
+      "addr": "189D",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "774f3a"
+    },
+    "PLAYER_COMPOSE_CLIPPED": {
+      "addr": "6DD8",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "e52af6"
+    },
+    "PLAYER_BACKGROUND_ROW": {
+      "addr": "6F0E",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "3aef0f"
+    },
+    "JOY_MERGE": {
+      "addr": "6CD0",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "3aed0f"
+    },
+    "COURT_HIGH_BYTE": {
+      "addr": "7B0F",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "c5e53a"
+    },
+    "MENU_BUFFER_ROW": {
+      "addr": "7B32",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "af1213"
+    },
+    "TILE_BAND_FILL": {
+      "addr": "8496",
+      "kind": "adapter_code",
+      "note": "win_840e: COMPOSE_BOX tile band copier (SP)",
+      "sig": "210000"
+    },
+    "TBF_WIDTH": {
+      "addr": "84A2",
+      "kind": "adapter_code",
+      "note": "win_840e: ld b,n column pairs, patched per box",
+      "sig": "0600c3"
+    },
+    "TBF_ENTRY": {
+      "addr": "84A4",
+      "kind": "adapter_code",
+      "note": "win_840e: jp tbf_first/tbf_second, patched per box",
+      "sig": "c3a784"
+    },
+    "TBF_END": {
+      "addr": "84CA",
+      "kind": "adapter_code",
+      "note": "win_840e: cp n end offset, patched per call",
+      "sig": "fe00c2"
+    },
+    "tbf_first": {
+      "addr": "84A7",
+      "kind": "adapter_code",
+      "note": "win_840e: even-width entry",
+      "sig": "e17d81"
+    },
+    "tbf_second": {
+      "addr": "84B2",
+      "kind": "adapter_code",
+      "note": "win_840e: odd-width entry",
+      "sig": "e17d81"
+    },
+    "DIRTY_COURT_HIGH_BYTE": {
+      "addr": "7B3C",
+      "kind": "adapter_code",
+      "note": "win_7ae8.asm: restore-coordinate high byte, keeps player bytes",
+      "sig": "cdc36b"
+    },
+    "MIR_REV": {
+      "addr": "6700",
+      "kind": "adapter_data",
+      "note": "256-byte bit-reverse table for mirrored sprite rows (page aligned; build_v06_rom after the sprite records)"
+    },
+    "CLEAR_OFFCOURT": {
+      "addr": "0415",
+      "kind": "adapter_code",
+      "note": "softvdp: clear the off-court rows (CPC_STAMP_OFF tail)",
+      "sig": "16e00e"
+    },
+    "PROTECT_SELF_OP": {
+      "addr": "6BDD",
+      "kind": "adapter_code",
+      "note": "color_sprite: CP n whose operand is PROTECT_SELF (menu_color_bg writes +1)",
+      "sig": "fe00ca"
+    },
+    "COLOR_FRAME_BEGIN": {
+      "addr": "6800",
+      "kind": "adapter_code",
+      "note": "color_sprite: match frame entry (glue NATIVE table)",
+      "sig": "c35803"
+    },
+    "COLOR_FRAME_END": {
+      "addr": "6806",
+      "kind": "adapter_code",
+      "note": "color_sprite: publish one logical frame (FRAME_END)",
+      "sig": "f5c5d5"
+    },
+    "COLOR_MENU_BEGIN": {
+      "addr": "6803",
+      "kind": "adapter_code",
+      "note": "color_sprite: menu frame entry",
+      "sig": "c3f303"
+    },
+    "COLOR_SPRITE": {
+      "addr": "6816",
+      "kind": "adapter_code",
+      "note": "color_sprite: staged two-plane CPC sprite (NATIVE_SPRITE)",
+      "sig": "f5c5d5"
+    },
+    "COLOR_MATCH_PREP": {
+      "addr": "0358",
+      "kind": "adapter_code",
+      "note": "softvdp: match-frame preparation",
+      "sig": "f5c5d5"
+    },
+    "COLOR_MENU_PREP": {
+      "addr": "03F3",
+      "kind": "adapter_code",
+      "note": "softvdp: menu-frame preparation",
+      "sig": "f5c5d5"
+    },
+    "FRAME_RESET": {
+      "addr": "0345",
+      "kind": "adapter_code",
+      "note": "softvdp: frame reset",
+      "sig": "cd3284"
+    },
+    "ADAPTER_HI": {
+      "addr": "6800",
+      "kind": "adapter_data",
+      "note": "org of the color_sprite unit (freed sprite space after MIR_REV)"
+    },
+    "DIRTY_ADD": {
+      "addr": "03BE",
+      "kind": "adapter_code",
+      "note": "cross-unit entry (glue <-> color_sprite)",
+      "sig": "f5c5d5"
+    },
+    "REPLAY_STATE_BEGIN": {
+      "addr": "1448",
+      "kind": "adapter_code",
+      "note": "menu_color_bg: replay state start (A887/A89E)",
+      "sig": "c35503"
+    },
+    "REPLAY_SCENE": {
+      "addr": "144B",
+      "kind": "adapter_code",
+      "note": "menu_color_bg: replay scene stage (A88A/A8A1)",
+      "sig": "c38593"
+    },
+    "REPLAY_TILE_ROW": {
+      "addr": "144E",
+      "kind": "adapter_code",
+      "note": "menu_color_bg: replay court row fill",
+      "sig": "4f0608"
+    },
+    "REPLAY_X2_TABLE": {
+      "addr": "14D0",
+      "kind": "adapter_data",
+      "note": "menu_color_bg: 16-aligned 4->8 bit doubling table"
+    },
+    "SND_NOISE_SCAN": {
+      "addr": "147B",
+      "kind": "adapter_code",
+      "note": "menu_color_bg: AY noise scan per IRQ",
+      "sig": "3a470f"
+    },
+    "HUD_ICON": {
+      "addr": "B455",
+      "kind": "adapter_code",
+      "note": "hud_icon: possession icon (8AC2 jp; fixed org)",
+      "sig": "7bfe50"
+    },
+    "HUD_TEXT_REFRESH": {
+      "addr": "18CA",
+      "kind": "adapter_code",
+      "note": "menu_player_helpers: reprint HUD text after HUD_DECOR",
+      "sig": "f5c5d5"
+    },
+    "PLAYER_BACKGROUND_HIGH": {
+      "addr": "18EB",
+      "kind": "adapter_code",
+      "note": "menu_player_helpers: high background byte (menu/match)",
+      "sig": "3aef0f"
+    },
+    "COLOR_CLEAR_ROW_COMPLEX": {
+      "addr": "3F81",
+      "kind": "adapter_code",
+      "note": "win_3f81: slow high-plane restore row (unit org 3F81)",
+      "sig": "3adeb1"
+    },
+    "MENU_BG_RELOAD": {
+      "addr": "8412",
+      "kind": "adapter_code",
+      "note": "win_840e: packed full-menu renderer (unit org)",
+      "sig": "c5d5e5"
+    },
+    "HUD_DECOR": {
+      "addr": "8432",
+      "kind": "adapter_code",
+      "note": "win_840e: packed two-plane HUD renderer",
+      "sig": "c5d5e5"
+    },
+    "COURT_COLORIZE": {
+      "addr": "7AE8",
+      "kind": "adapter_code",
+      "note": "win_7ae8: CPC-style court high plane (unit org)",
+      "sig": "210025"
+    },
+    "MEM_COPY": {
+      "addr": "6F1B",
+      "kind": "adapter_code",
+      "note": "clipped_player_object: i8080 ldir (BC bytes HL->DE, none when 0)",
+      "sig": "79e603"
+    },
+    "MENU_LZ_BODY": {
+      "addr": "1320",
+      "kind": "adapter_code",
+      "note": "menu_lz: dual-plane LZ expander (unit org 1320)",
+      "sig": "7ac620"
+    },
+    "WIPE_DIR": {
+      "addr": "3314",
+      "kind": "sys_data",
+      "note": "MSX D0AC: post-score wipe direction (A0BF LD IX,3314; bit 7 = from the left)"
+    },
+    "DP_ISR_COPY": {
+      "addr": "7332",
+      "kind": "adapter_code",
+      "note": "damage_publish.asm: frame IRQ copies the ready batch of damage boxes (glue IRQ_HANDLER)",
+      "sig": "3aea0f"
+    },
+    "MENU_CHROME_DONE": {
+      "addr": "14E0",
+      "kind": "adapter_code",
+      "note": "fixed cross-module entry",
+      "sig": "3e0132"
+    },
+    "PLAYER_BYTE_PROTECTED": {
+      "addr": "6BC3",
+      "kind": "adapter_code",
+      "note": "color_sprite.asm: restore protection (DIRTY_COURT_HIGH_BYTE)",
+      "sig": "3a800f"
+    },
+    "RING_PUSH": {
+      "addr": "7508",
+      "kind": "adapter_code",
+      "note": "ring.asm: replay ring in a circle",
+      "sig": "2ad493"
+    },
+    "RING_RESET": {
+      "addr": "7531",
+      "kind": "adapter_code",
+      "note": "ring.asm: replay ring in a circle",
+      "sig": "af3204"
+    },
+    "RING_REPLAY": {
+      "addr": "753C",
+      "kind": "adapter_code",
+      "note": "ring.asm: replay ring in a circle",
+      "sig": "3e0e32"
+    },
+    "RING_PULL": {
+      "addr": "754D",
+      "kind": "adapter_code",
+      "note": "ring.asm: replay ring in a circle",
+      "sig": "2ad493"
+    },
+    "RING_PTR": {
+      "addr": "93D4",
+      "kind": "game_data",
+      "note": "replay ring write/read pointer"
+    },
+    "RING_STATE": {
+      "addr": "93EB",
+      "kind": "game_data",
+      "note": "game state recorded in the replay ring (79 bytes)"
+    },
+    "RING_END_FLAG": {
+      "addr": "93D3",
+      "kind": "game_data",
+      "note": "1 = replay playback reached the end"
+    },
+    "STAGE_SLOTS": {
+      "addr": "723A",
+      "kind": "adapter_code",
+      "note": "damage_publish.asm: stage the recorded objects a damage box touches (replay: all)",
+      "sig": "32670f"
+    },
+    "tbf_sp": {
+      "addr": "84C1",
+      "kind": "adapter_code",
+      "note": "win_840e: ld hl,nn real SP, patched per box",
+      "sig": "210000"
+    },
+    "MUSIC_CHANNELS": {
+      "addr": "AC09",
+      "kind": "game_data",
+      "note": "music channels: 3 x 8 bytes (MSX AC09; snd.asm MUSIC_TICK)",
+      "sig": ""
+    },
+    "PAD_P1": {
+      "addr": "AC4D",
+      "kind": "game_data",
+      "note": "player 1 control byte (AF05; joy_p NATIVE_PADS)"
+    },
+    "PAD_P2": {
+      "addr": "AC4E",
+      "kind": "game_data",
+      "note": "player 2 control byte (AF05; joy_p NATIVE_PADS)"
+    },
+    "NATIVE_PADS": {
+      "addr": "6CED",
+      "kind": "adapter_code",
+      "note": "joy_p: control reader (AF0B jumps here)",
+      "sig": "0e003a"
+    },
+    "SCORE_TYPE": {
+      "addr": "9400",
+      "kind": "game_data",
+      "note": "score event: low nibble 4 = a basket was scored (A502)"
+    },
+    "STAMP_PAIR": {
+      "addr": "B364",
+      "kind": "adapter_code",
+      "note": "cpc_stamp.asm: stamped background pair fetch",
+      "sig": "7de61f"
+    },
+    "CROWD_TICK": {
+      "addr": "74DA",
+      "kind": "adapter_code",
+      "note": "damage_publish: jumping fans after a basket (A502 calls it)",
+      "sig": "210018"
+    },
+    "SCORE_FANS": {
+      "addr": "9451",
+      "kind": "game_data",
+      "note": "basket celebration countdown, once per game frame (A502 bit 0: fans stand on even steps)"
+    }
+  }
+}

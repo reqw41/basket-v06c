@@ -1,0 +1,2236 @@
+{
+  "schema": 1,
+  "source_rom_sha256": "06837258dd7fd07c297e8d42ed7667d02d53ed84f05b71dcc057b0a50cd9433c",
+  "ranges": [
+    {
+      "id": "d252_pointers",
+      "old_lo": "D098",
+      "old_hi": "D09C",
+      "new_lo": "3300",
+      "size": 4
+    },
+    {
+      "id": "system_hud",
+      "old_lo": "D09C",
+      "old_hi": "DD18",
+      "new_lo": "3304",
+      "size": 3196
+    }
+  ],
+  "operand_count": 312,
+  "operands": [
+    {
+      "pc": "029E",
+      "opcode": "CD",
+      "old_target": "D8EB",
+      "new_target": "3B53",
+      "kind": "call"
+    },
+    {
+      "pc": "84ED",
+      "opcode": "32",
+      "old_target": "D4CA",
+      "new_target": "3732",
+      "kind": "data_address"
+    },
+    {
+      "pc": "84F0",
+      "opcode": "CD",
+      "old_target": "D358",
+      "new_target": "35C0",
+      "kind": "call"
+    },
+    {
+      "pc": "84F5",
+      "opcode": "32",
+      "old_target": "D4CA",
+      "new_target": "3732",
+      "kind": "data_address"
+    },
+    {
+      "pc": "84FB",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "850B",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "851B",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "85B5",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "85BE",
+      "opcode": "32",
+      "old_target": "D0AC",
+      "new_target": "3314",
+      "kind": "data_address"
+    },
+    {
+      "pc": "85F4",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8606",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "867F",
+      "opcode": "CD",
+      "old_target": "D7C7",
+      "new_target": "3A2F",
+      "kind": "call"
+    },
+    {
+      "pc": "8687",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "868D",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "8693",
+      "opcode": "C3",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "jump"
+    },
+    {
+      "pc": "86AF",
+      "opcode": "CD",
+      "old_target": "D606",
+      "new_target": "386E",
+      "kind": "call"
+    },
+    {
+      "pc": "86EE",
+      "opcode": "CD",
+      "old_target": "D622",
+      "new_target": "388A",
+      "kind": "call"
+    },
+    {
+      "pc": "8704",
+      "opcode": "CD",
+      "old_target": "D622",
+      "new_target": "388A",
+      "kind": "call"
+    },
+    {
+      "pc": "8AC3",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8AC6",
+      "opcode": "ED53",
+      "operand_offset": 2,
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "ed_data_address"
+    },
+    {
+      "pc": "8ACD",
+      "opcode": "22",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8AD2",
+      "opcode": "22",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8AD7",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8ADA",
+      "opcode": "C3",
+      "old_target": "D252",
+      "new_target": "34BA",
+      "kind": "jump"
+    },
+    {
+      "pc": "8AE4",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8B00",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8B3A",
+      "opcode": "CD",
+      "old_target": "D724",
+      "new_target": "398C",
+      "kind": "call"
+    },
+    {
+      "pc": "8B40",
+      "opcode": "CD",
+      "old_target": "D73B",
+      "new_target": "39A3",
+      "kind": "call"
+    },
+    {
+      "pc": "8B4C",
+      "opcode": "CD",
+      "old_target": "D724",
+      "new_target": "398C",
+      "kind": "call"
+    },
+    {
+      "pc": "8B52",
+      "opcode": "CD",
+      "old_target": "D73B",
+      "new_target": "39A3",
+      "kind": "call"
+    },
+    {
+      "pc": "8B63",
+      "opcode": "CD",
+      "old_target": "D724",
+      "new_target": "398C",
+      "kind": "call"
+    },
+    {
+      "pc": "8B69",
+      "opcode": "CD",
+      "old_target": "D73B",
+      "new_target": "39A3",
+      "kind": "call"
+    },
+    {
+      "pc": "8B7A",
+      "opcode": "CD",
+      "old_target": "D724",
+      "new_target": "398C",
+      "kind": "call"
+    },
+    {
+      "pc": "8B80",
+      "opcode": "CD",
+      "old_target": "D73B",
+      "new_target": "39A3",
+      "kind": "call"
+    },
+    {
+      "pc": "8C0A",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8C10",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8C54",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8C5A",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8CDA",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "8CE8",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "92AC",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "92AF",
+      "opcode": "CD",
+      "old_target": "D4CA",
+      "new_target": "3732",
+      "kind": "call"
+    },
+    {
+      "pc": "92C7",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "94B0",
+      "opcode": "21",
+      "old_target": "D9B6",
+      "new_target": "3C1E",
+      "kind": "data_address"
+    },
+    {
+      "pc": "94E5",
+      "opcode": "DD21",
+      "operand_offset": 2,
+      "old_target": "D9B6",
+      "new_target": "3C1E",
+      "kind": "index_address"
+    },
+    {
+      "pc": "9527",
+      "opcode": "21",
+      "old_target": "D9B6",
+      "new_target": "3C1E",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9649",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "967F",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "96B0",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "96B6",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9743",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9781",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "979C",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "97FF",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "984E",
+      "opcode": "2A",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9859",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "985F",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9866",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9880",
+      "opcode": "21",
+      "old_target": "D099",
+      "new_target": "3301",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9AD7",
+      "opcode": "CD",
+      "old_target": "D724",
+      "new_target": "398C",
+      "kind": "call"
+    },
+    {
+      "pc": "9ADF",
+      "opcode": "CD",
+      "old_target": "D73B",
+      "new_target": "39A3",
+      "kind": "call"
+    },
+    {
+      "pc": "9C05",
+      "opcode": "CD",
+      "old_target": "D606",
+      "new_target": "386E",
+      "kind": "call"
+    },
+    {
+      "pc": "9C09",
+      "opcode": "CD",
+      "old_target": "D606",
+      "new_target": "386E",
+      "kind": "call"
+    },
+    {
+      "pc": "9E7E",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9F63",
+      "opcode": "22",
+      "old_target": "D49E",
+      "new_target": "3706",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9F6A",
+      "opcode": "22",
+      "old_target": "D49E",
+      "new_target": "3706",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9F6E",
+      "opcode": "CD",
+      "old_target": "D4AD",
+      "new_target": "3715",
+      "kind": "call"
+    },
+    {
+      "pc": "9FA7",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9FE3",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "9FFA",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A010",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A067",
+      "opcode": "CD",
+      "old_target": "D8EB",
+      "new_target": "3B53",
+      "kind": "call"
+    },
+    {
+      "pc": "A0BF",
+      "opcode": "DD21",
+      "operand_offset": 2,
+      "old_target": "D0AC",
+      "new_target": "3314",
+      "kind": "index_address"
+    },
+    {
+      "pc": "A1E7",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A225",
+      "opcode": "CD",
+      "old_target": "D564",
+      "new_target": "37CC",
+      "kind": "call"
+    },
+    {
+      "pc": "A228",
+      "opcode": "CD",
+      "old_target": "D5A9",
+      "new_target": "3811",
+      "kind": "call"
+    },
+    {
+      "pc": "A23B",
+      "opcode": "C3",
+      "old_target": "D7C4",
+      "new_target": "3A2C",
+      "kind": "jump"
+    },
+    {
+      "pc": "A247",
+      "opcode": "CD",
+      "old_target": "D555",
+      "new_target": "37BD",
+      "kind": "call"
+    },
+    {
+      "pc": "A262",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A272",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A2A2",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A2BE",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A2EE",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A30A",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A32F",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A34E",
+      "opcode": "CD",
+      "old_target": "D724",
+      "new_target": "398C",
+      "kind": "call"
+    },
+    {
+      "pc": "A353",
+      "opcode": "CD",
+      "old_target": "D73B",
+      "new_target": "39A3",
+      "kind": "call"
+    },
+    {
+      "pc": "A4FF",
+      "opcode": "C3",
+      "old_target": "D7C4",
+      "new_target": "3A2C",
+      "kind": "jump"
+    },
+    {
+      "pc": "A53C",
+      "opcode": "32",
+      "old_target": "D1CB",
+      "new_target": "3433",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A541",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A54C",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A552",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A558",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A55E",
+      "opcode": "22",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A563",
+      "opcode": "22",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A566",
+      "opcode": "CD",
+      "old_target": "D252",
+      "new_target": "34BA",
+      "kind": "call"
+    },
+    {
+      "pc": "A576",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A57C",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A582",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A588",
+      "opcode": "22",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A58D",
+      "opcode": "22",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A590",
+      "opcode": "CD",
+      "old_target": "D252",
+      "new_target": "34BA",
+      "kind": "call"
+    },
+    {
+      "pc": "A5AB",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A5B1",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A5B7",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A5BD",
+      "opcode": "22",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A5C2",
+      "opcode": "22",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A5C5",
+      "opcode": "CD",
+      "old_target": "D252",
+      "new_target": "34BA",
+      "kind": "call"
+    },
+    {
+      "pc": "A5E0",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A5E6",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A5EC",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A5F2",
+      "opcode": "22",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A5F7",
+      "opcode": "22",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A5FA",
+      "opcode": "C3",
+      "old_target": "D252",
+      "new_target": "34BA",
+      "kind": "jump"
+    },
+    {
+      "pc": "A5FF",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A602",
+      "opcode": "CD",
+      "old_target": "D4CA",
+      "new_target": "3732",
+      "kind": "call"
+    },
+    {
+      "pc": "A61B",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A621",
+      "opcode": "22",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A626",
+      "opcode": "22",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A62B",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A62E",
+      "opcode": "CD",
+      "old_target": "D247",
+      "new_target": "34AF",
+      "kind": "call"
+    },
+    {
+      "pc": "A6DB",
+      "opcode": "CD",
+      "old_target": "D7C4",
+      "new_target": "3A2C",
+      "kind": "call"
+    },
+    {
+      "pc": "A6E4",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A6EA",
+      "opcode": "22",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A6EF",
+      "opcode": "22",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A6F4",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A6F7",
+      "opcode": "CD",
+      "old_target": "D247",
+      "new_target": "34AF",
+      "kind": "call"
+    },
+    {
+      "pc": "A70C",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A70F",
+      "opcode": "CD",
+      "old_target": "D680",
+      "new_target": "38E8",
+      "kind": "call"
+    },
+    {
+      "pc": "A72A",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A72D",
+      "opcode": "CD",
+      "old_target": "D680",
+      "new_target": "38E8",
+      "kind": "call"
+    },
+    {
+      "pc": "A75F",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A762",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A768",
+      "opcode": "22",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A76C",
+      "opcode": "22",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A772",
+      "opcode": "22",
+      "old_target": "D277",
+      "new_target": "34DF",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A775",
+      "opcode": "CD",
+      "old_target": "D252",
+      "new_target": "34BA",
+      "kind": "call"
+    },
+    {
+      "pc": "A77B",
+      "opcode": "22",
+      "old_target": "D277",
+      "new_target": "34DF",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A82C",
+      "opcode": "CD",
+      "old_target": "D501",
+      "new_target": "3769",
+      "kind": "call"
+    },
+    {
+      "pc": "A86B",
+      "opcode": "32",
+      "old_target": "D0CA",
+      "new_target": "3332",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A875",
+      "opcode": "32",
+      "old_target": "D0CB",
+      "new_target": "3333",
+      "kind": "data_address"
+    },
+    {
+      "pc": "A890",
+      "opcode": "CD",
+      "old_target": "D4F0",
+      "new_target": "3758",
+      "kind": "call"
+    },
+    {
+      "pc": "AA85",
+      "opcode": "2A",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AAE6",
+      "opcode": "22",
+      "old_target": "D49B",
+      "new_target": "3703",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AB01",
+      "opcode": "2A",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AC53",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AC59",
+      "opcode": "22",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AC5E",
+      "opcode": "22",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AC63",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AC66",
+      "opcode": "CD",
+      "old_target": "D241",
+      "new_target": "34A9",
+      "kind": "call"
+    },
+    {
+      "pc": "AC6B",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AC8C",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "ACAC",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "ACB7",
+      "opcode": "CD",
+      "old_target": "D7C7",
+      "new_target": "3A2F",
+      "kind": "call"
+    },
+    {
+      "pc": "AD15",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AD1B",
+      "opcode": "22",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AD20",
+      "opcode": "22",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AD23",
+      "opcode": "CD",
+      "old_target": "D241",
+      "new_target": "34A9",
+      "kind": "call"
+    },
+    {
+      "pc": "AD35",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AD45",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AD6D",
+      "opcode": "CD",
+      "old_target": "D7C7",
+      "new_target": "3A2F",
+      "kind": "call"
+    },
+    {
+      "pc": "AD7B",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AD81",
+      "opcode": "22",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AD86",
+      "opcode": "22",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AD89",
+      "opcode": "C3",
+      "old_target": "D241",
+      "new_target": "34A9",
+      "kind": "jump"
+    },
+    {
+      "pc": "ADF5",
+      "opcode": "CD",
+      "old_target": "D564",
+      "new_target": "37CC",
+      "kind": "call"
+    },
+    {
+      "pc": "ADF8",
+      "opcode": "CD",
+      "old_target": "D5A9",
+      "new_target": "3811",
+      "kind": "call"
+    },
+    {
+      "pc": "AE01",
+      "opcode": "CD",
+      "old_target": "D564",
+      "new_target": "37CC",
+      "kind": "call"
+    },
+    {
+      "pc": "AE04",
+      "opcode": "CD",
+      "old_target": "D5A9",
+      "new_target": "3811",
+      "kind": "call"
+    },
+    {
+      "pc": "AEF0",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AF05",
+      "opcode": "CD",
+      "old_target": "D564",
+      "new_target": "37CC",
+      "kind": "call"
+    },
+    {
+      "pc": "AF08",
+      "opcode": "CD",
+      "old_target": "D5A9",
+      "new_target": "3811",
+      "kind": "call"
+    },
+    {
+      "pc": "AF0F",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "AF18",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "AF2B",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "AF34",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "AF47",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "AF56",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "AF5F",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "AF72",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "AF7B",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "AF8E",
+      "opcode": "CD",
+      "old_target": "D5DE",
+      "new_target": "3846",
+      "kind": "call"
+    },
+    {
+      "pc": "AFCE",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AFD2",
+      "opcode": "32",
+      "old_target": "D0A1",
+      "new_target": "3309",
+      "kind": "data_address"
+    },
+    {
+      "pc": "AFD5",
+      "opcode": "32",
+      "old_target": "D0A3",
+      "new_target": "330B",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B009",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B00C",
+      "opcode": "ED53",
+      "operand_offset": 2,
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "ed_data_address"
+    },
+    {
+      "pc": "B011",
+      "opcode": "32",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B015",
+      "opcode": "32",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B018",
+      "opcode": "C3",
+      "old_target": "D252",
+      "new_target": "34BA",
+      "kind": "jump"
+    },
+    {
+      "pc": "B01C",
+      "opcode": "2A",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B023",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B02A",
+      "opcode": "DD21",
+      "operand_offset": 2,
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "index_address"
+    },
+    {
+      "pc": "B034",
+      "opcode": "3A",
+      "old_target": "D099",
+      "new_target": "3301",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B040",
+      "opcode": "3A",
+      "old_target": "D099",
+      "new_target": "3301",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B11A",
+      "opcode": "3A",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B133",
+      "opcode": "ED5B",
+      "operand_offset": 2,
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "ed_data_address"
+    },
+    {
+      "pc": "B138",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B194",
+      "opcode": "2A",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B1A2",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B1D3",
+      "opcode": "2A",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "B1D8",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D241",
+      "opcode": "3A",
+      "old_target": "D1B4",
+      "new_target": "341C",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D255",
+      "opcode": "22",
+      "old_target": "D2A7",
+      "new_target": "350F",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D258",
+      "opcode": "3A",
+      "old_target": "D099",
+      "new_target": "3301",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D25F",
+      "opcode": "3A",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D26B",
+      "opcode": "ED5B",
+      "operand_offset": 2,
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "ed_data_address"
+    },
+    {
+      "pc": "D273",
+      "opcode": "32",
+      "old_target": "D2B7",
+      "new_target": "351F",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D277",
+      "opcode": "CD",
+      "old_target": "D288",
+      "new_target": "34F0",
+      "kind": "call"
+    },
+    {
+      "pc": "D27A",
+      "opcode": "3A",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D280",
+      "opcode": "22",
+      "old_target": "D2A7",
+      "new_target": "350F",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D288",
+      "opcode": "3A",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D29C",
+      "opcode": "2A",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D29F",
+      "opcode": "3A",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2B3",
+      "opcode": "2A",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2BA",
+      "opcode": "22",
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2C3",
+      "opcode": "21",
+      "old_target": "D308",
+      "new_target": "3570",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2CB",
+      "opcode": "22",
+      "old_target": "D2F5",
+      "new_target": "355D",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2CE",
+      "opcode": "3A",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2D1",
+      "opcode": "32",
+      "old_target": "D2F3",
+      "new_target": "355B",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2D5",
+      "opcode": "3A",
+      "old_target": "D1B5",
+      "new_target": "341D",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2D9",
+      "opcode": "32",
+      "old_target": "D2F8",
+      "new_target": "3560",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2DC",
+      "opcode": "32",
+      "old_target": "D32D",
+      "new_target": "3595",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2DF",
+      "opcode": "3A",
+      "old_target": "D099",
+      "new_target": "3301",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2E3",
+      "opcode": "3A",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2E6",
+      "opcode": "CD",
+      "old_target": "D77E",
+      "new_target": "39E6",
+      "kind": "call"
+    },
+    {
+      "pc": "D2E9",
+      "opcode": "ED5B",
+      "operand_offset": 2,
+      "old_target": "D09A",
+      "new_target": "3302",
+      "kind": "ed_data_address"
+    },
+    {
+      "pc": "D2ED",
+      "opcode": "3A",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D2F4",
+      "opcode": "CD",
+      "old_target": "D300",
+      "new_target": "3568",
+      "kind": "call"
+    },
+    {
+      "pc": "D30E",
+      "opcode": "2A",
+      "old_target": "D1BA",
+      "new_target": "3422",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D311",
+      "opcode": "3A",
+      "old_target": "D0A0",
+      "new_target": "3308",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D31C",
+      "opcode": "3A",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D31F",
+      "opcode": "32",
+      "old_target": "D328",
+      "new_target": "3590",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D323",
+      "opcode": "3A",
+      "old_target": "D0A2",
+      "new_target": "330A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D35C",
+      "opcode": "ED73",
+      "operand_offset": 2,
+      "old_target": "D227",
+      "new_target": "348F",
+      "kind": "ed_data_address"
+    },
+    {
+      "pc": "D366",
+      "opcode": "CD",
+      "old_target": "D3CC",
+      "new_target": "3634",
+      "kind": "call"
+    },
+    {
+      "pc": "D369",
+      "opcode": "32",
+      "old_target": "D221",
+      "new_target": "3489",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D36E",
+      "opcode": "32",
+      "old_target": "D225",
+      "new_target": "348D",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D371",
+      "opcode": "CD",
+      "old_target": "D3FA",
+      "new_target": "3662",
+      "kind": "call"
+    },
+    {
+      "pc": "D376",
+      "opcode": "3A",
+      "old_target": "D226",
+      "new_target": "348E",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D379",
+      "opcode": "32",
+      "old_target": "D222",
+      "new_target": "348A",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D382",
+      "opcode": "CD",
+      "old_target": "D53C",
+      "new_target": "37A4",
+      "kind": "call"
+    },
+    {
+      "pc": "D385",
+      "opcode": "CD",
+      "old_target": "D508",
+      "new_target": "3770",
+      "kind": "call"
+    },
+    {
+      "pc": "D38D",
+      "opcode": "21",
+      "old_target": "D8DF",
+      "new_target": "3B47",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D3A3",
+      "opcode": "21",
+      "old_target": "D48B",
+      "new_target": "36F3",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D3B0",
+      "opcode": "C3",
+      "old_target": "D4CA",
+      "new_target": "3732",
+      "kind": "jump"
+    },
+    {
+      "pc": "D3B8",
+      "opcode": "21",
+      "old_target": "D230",
+      "new_target": "3498",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D3C8",
+      "opcode": "CD",
+      "old_target": "D7C4",
+      "new_target": "3A2C",
+      "kind": "call"
+    },
+    {
+      "pc": "D479",
+      "opcode": "3A",
+      "old_target": "D221",
+      "new_target": "3489",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D483",
+      "opcode": "ED7B",
+      "operand_offset": 2,
+      "old_target": "D227",
+      "new_target": "348F",
+      "kind": "ed_data_address"
+    },
+    {
+      "pc": "D490",
+      "opcode": "F2",
+      "old_target": "D4AA",
+      "new_target": "3712",
+      "kind": "jump"
+    },
+    {
+      "pc": "D49A",
+      "opcode": "CD",
+      "old_target": "D4AC",
+      "new_target": "3714",
+      "kind": "call"
+    },
+    {
+      "pc": "D49D",
+      "opcode": "CD",
+      "old_target": "D4AD",
+      "new_target": "3715",
+      "kind": "call"
+    },
+    {
+      "pc": "D4A0",
+      "opcode": "CD",
+      "old_target": "D4C4",
+      "new_target": "372C",
+      "kind": "call"
+    },
+    {
+      "pc": "D4C4",
+      "opcode": "CD",
+      "old_target": "D56A",
+      "new_target": "37D2",
+      "kind": "call"
+    },
+    {
+      "pc": "D4C7",
+      "opcode": "C3",
+      "old_target": "D5A9",
+      "new_target": "3811",
+      "kind": "jump"
+    },
+    {
+      "pc": "D4CA",
+      "opcode": "CD",
+      "old_target": "D501",
+      "new_target": "3769",
+      "kind": "call"
+    },
+    {
+      "pc": "D4D7",
+      "opcode": "CD",
+      "old_target": "D517",
+      "new_target": "377F",
+      "kind": "call"
+    },
+    {
+      "pc": "D4E0",
+      "opcode": "3A",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D4E3",
+      "opcode": "CD",
+      "old_target": "D517",
+      "new_target": "377F",
+      "kind": "call"
+    },
+    {
+      "pc": "D4ED",
+      "opcode": "CD",
+      "old_target": "D529",
+      "new_target": "3791",
+      "kind": "call"
+    },
+    {
+      "pc": "D4F0",
+      "opcode": "21",
+      "old_target": "D1C5",
+      "new_target": "342D",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D501",
+      "opcode": "21",
+      "old_target": "D1C5",
+      "new_target": "342D",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D508",
+      "opcode": "21",
+      "old_target": "D1CB",
+      "new_target": "3433",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D50E",
+      "opcode": "CD",
+      "old_target": "D4F8",
+      "new_target": "3760",
+      "kind": "call"
+    },
+    {
+      "pc": "D513",
+      "opcode": "F2",
+      "old_target": "D50D",
+      "new_target": "3775",
+      "kind": "jump"
+    },
+    {
+      "pc": "D55A",
+      "opcode": "3A",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D560",
+      "opcode": "32",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D565",
+      "opcode": "CD",
+      "old_target": "D56A",
+      "new_target": "37D2",
+      "kind": "call"
+    },
+    {
+      "pc": "D580",
+      "opcode": "CD",
+      "old_target": "D589",
+      "new_target": "37F1",
+      "kind": "call"
+    },
+    {
+      "pc": "D58E",
+      "opcode": "21",
+      "old_target": "D218",
+      "new_target": "3480",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D5C8",
+      "opcode": "2A",
+      "old_target": "D1CE",
+      "new_target": "3436",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D5CF",
+      "opcode": "CA",
+      "old_target": "D46F",
+      "new_target": "36D7",
+      "kind": "jump"
+    },
+    {
+      "pc": "D5F2",
+      "opcode": "32",
+      "old_target": "D5F6",
+      "new_target": "385E",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D61B",
+      "opcode": "ED5B",
+      "operand_offset": 2,
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "ed_data_address"
+    },
+    {
+      "pc": "D62B",
+      "opcode": "CD",
+      "old_target": "D73B",
+      "new_target": "39A3",
+      "kind": "call"
+    },
+    {
+      "pc": "D62F",
+      "opcode": "CD",
+      "old_target": "D606",
+      "new_target": "386E",
+      "kind": "call"
+    },
+    {
+      "pc": "D633",
+      "opcode": "CD",
+      "old_target": "D73B",
+      "new_target": "39A3",
+      "kind": "call"
+    },
+    {
+      "pc": "D638",
+      "opcode": "22",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D683",
+      "opcode": "3A",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D686",
+      "opcode": "11",
+      "old_target": "D6BC",
+      "new_target": "3924",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D6A2",
+      "opcode": "CD",
+      "old_target": "D7C7",
+      "new_target": "3A2F",
+      "kind": "call"
+    },
+    {
+      "pc": "D6D7",
+      "opcode": "32",
+      "old_target": "D098",
+      "new_target": "3300",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D6FA",
+      "opcode": "CD",
+      "old_target": "D724",
+      "new_target": "398C",
+      "kind": "call"
+    },
+    {
+      "pc": "D721",
+      "opcode": "C3",
+      "old_target": "D699",
+      "new_target": "3901",
+      "kind": "jump"
+    },
+    {
+      "pc": "D78A",
+      "opcode": "3A",
+      "old_target": "D1B5",
+      "new_target": "341D",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D7A0",
+      "opcode": "3A",
+      "old_target": "D1B5",
+      "new_target": "341D",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D7B1",
+      "opcode": "ED5B",
+      "operand_offset": 2,
+      "old_target": "D1B8",
+      "new_target": "3420",
+      "kind": "ed_data_address"
+    },
+    {
+      "pc": "D7BD",
+      "opcode": "ED5B",
+      "operand_offset": 2,
+      "old_target": "D1B6",
+      "new_target": "341E",
+      "kind": "ed_data_address"
+    },
+    {
+      "pc": "D7CA",
+      "opcode": "CD",
+      "old_target": "D7EE",
+      "new_target": "3A56",
+      "kind": "call"
+    },
+    {
+      "pc": "D7D4",
+      "opcode": "CD",
+      "old_target": "D7EE",
+      "new_target": "3A56",
+      "kind": "call"
+    },
+    {
+      "pc": "D7F0",
+      "opcode": "CD",
+      "old_target": "D7E2",
+      "new_target": "3A4A",
+      "kind": "call"
+    },
+    {
+      "pc": "D7F3",
+      "opcode": "CD",
+      "old_target": "D564",
+      "new_target": "37CC",
+      "kind": "call"
+    },
+    {
+      "pc": "D7F6",
+      "opcode": "C3",
+      "old_target": "D5A9",
+      "new_target": "3811",
+      "kind": "jump"
+    },
+    {
+      "pc": "D8D7",
+      "opcode": "2A",
+      "old_target": "D1BA",
+      "new_target": "3422",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D8DA",
+      "opcode": "3A",
+      "old_target": "D1BC",
+      "new_target": "3424",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D8F1",
+      "opcode": "CA",
+      "old_target": "D964",
+      "new_target": "3BCC",
+      "kind": "jump"
+    },
+    {
+      "pc": "D8F6",
+      "opcode": "CA",
+      "old_target": "D979",
+      "new_target": "3BE1",
+      "kind": "jump"
+    },
+    {
+      "pc": "D8FB",
+      "opcode": "CA",
+      "old_target": "D996",
+      "new_target": "3BFE",
+      "kind": "jump"
+    },
+    {
+      "pc": "D900",
+      "opcode": "CA",
+      "old_target": "D9AC",
+      "new_target": "3C14",
+      "kind": "jump"
+    },
+    {
+      "pc": "D909",
+      "opcode": "ED5B",
+      "operand_offset": 2,
+      "old_target": "D1CC",
+      "new_target": "3434",
+      "kind": "ed_data_address"
+    },
+    {
+      "pc": "D90E",
+      "opcode": "3A",
+      "old_target": "D1B4",
+      "new_target": "341C",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D917",
+      "opcode": "C3",
+      "old_target": "D95A",
+      "new_target": "3BC2",
+      "kind": "jump"
+    },
+    {
+      "pc": "D940",
+      "opcode": "CD",
+      "old_target": "D77E",
+      "new_target": "39E6",
+      "kind": "call"
+    },
+    {
+      "pc": "D943",
+      "opcode": "3A",
+      "old_target": "D1B5",
+      "new_target": "341D",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D957",
+      "opcode": "CD",
+      "old_target": "D8D7",
+      "new_target": "3B3F",
+      "kind": "call"
+    },
+    {
+      "pc": "D95E",
+      "opcode": "21",
+      "old_target": "D1B5",
+      "new_target": "341D",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D97F",
+      "opcode": "3A",
+      "old_target": "D1B5",
+      "new_target": "341D",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D99C",
+      "opcode": "3A",
+      "old_target": "D1B3",
+      "new_target": "341B",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D9A4",
+      "opcode": "21",
+      "old_target": "D1B5",
+      "new_target": "341D",
+      "kind": "data_address"
+    },
+    {
+      "pc": "D9AC",
+      "opcode": "CD",
+      "old_target": "D979",
+      "new_target": "3BE1",
+      "kind": "call"
+    },
+    {
+      "pc": "D9B1",
+      "opcode": "CD",
+      "old_target": "D8EB",
+      "new_target": "3B53",
+      "kind": "call"
+    }
+  ],
+  "evidence": "CFG-decoded absolute operands from build/v06/window_entities.json; each opcode and old target is checked during build",
+  "data_words": [
+    {
+      "address": "D1CC",
+      "old_target": "D918",
+      "new_target": "3B80",
+      "basis": "loaded by ED5B at D909"
+    },
+    {
+      "address": "D1CE",
+      "old_target": "D1D0",
+      "new_target": "3438",
+      "basis": "loaded by LD HL,(nn) at D5C8"
+    }
+  ]
+}

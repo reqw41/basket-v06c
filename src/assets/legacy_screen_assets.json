@@ -1,0 +1,31 @@
+{
+  "hud_decor_v06.rle": {
+    "size": 129,
+    "unpacked": 2304,
+    "sha256": "3b5a995d9d2bfc0156621f37a5ffdda8a40d2c6c46f53358878f2e432dae9180",
+    "source": "white HUD decoration plane reconstructed from matching MSX frames"
+  },
+  "splash_planes_v06.z": {
+    "size": 1837,
+    "unpacked": 16384,
+    "sha256": "25c705b3b6bf996530293ac63080ff1aa948944734254695695753342b39fece",
+    "source": "CPC loading screen from MAME capture; Vector pens black/white/salmon"
+  },
+  "court_bg_v06.bin": {
+    "size": 3584,
+    "unpacked": 3584,
+    "sha256": "95025d6bda36133ec009e8560273e84e44ade8328fd567f3182b69b213278263",
+    "source": "MSX match pattern geometry with static colors reconstructed from eight matching frames; CPC four-pen remap"
+  },
+  "hud_color_hi_v06.rle": {
+    "size": 775,
+    "unpacked": 2304,
+    "sha256": "c70cca0fbf5c23b1a7a01be1035a489af08ec8575681742d04dba5d795973c62",
+    "source": "blue HUD decoration plane reconstructed from matching MSX frames"
+  },
+  "text_menu": {
+    "generator": "tools/gen_text_screens.py",
+    "menu_packed_slot": "1000.. (dw hi_addr + dual LZ)",
+    "note": "CPC filled blue panel + black label well; FERNANDO MARTIN BASKET MASTER title"
+  }
+}

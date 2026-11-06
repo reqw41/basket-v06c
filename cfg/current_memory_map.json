@@ -1,0 +1,997 @@
+{
+  "schema": 1,
+  "address_space": {
+    "lo": "0000",
+    "hi": "10000",
+    "size": 65536
+  },
+  "rom_sha256": "8136ba782cede4a18ed6159040f0f1a8bd20bea88927d2db497c41ad70a20bb8",
+  "policy": {
+    "opaque_retained": "Occupied bytes whose finer semantics are not proven. They are never free or relocatable by default.",
+    "reclaimable_padding": "Uniform image padding with no typed static memory/control reference, CFG byte, SMC target, or matching-ROM trace access.",
+    "mixed": "Split byte-by-byte by CFG, static operands, SMC, and matching-ROM traces. The remainder is opaque_retained."
+  },
+  "regions": [
+    {
+      "id": "page0_runtime",
+      "lo": "0000",
+      "hi": "0100",
+      "class": "system_code",
+      "role": "RST and BIOS runtime page copied from 0E00"
+    },
+    {
+      "id": "boot_stubs",
+      "lo": "0100",
+      "hi": "0200",
+      "class": "system_code",
+      "role": "boot and native entry stubs"
+    },
+    {
+      "id": "adapter",
+      "lo": "0200",
+      "hi": "0996",
+      "class": "adapter_code_tables",
+      "role": "glue.asm: page-0 runtime entries, IRQ, BIOS stubs, plane I/O, keyboard, sound, replay (entries linked by tools/link_labels.py)",
+      "unit": "glue",
+      "unit_end": "GLUE_END"
+    },
+    {
+      "id": "adapter_free_tail",
+      "lo": "0996",
+      "hi": "0E00",
+      "class": "reclaimable_padding",
+      "role": "glue tail freed by moving the CPC sprite renderer to adapter_hi (05.11)",
+      "expected_fill": "00",
+      "prove_free": true,
+      "tail_of": "glue"
+    },
+    {
+      "id": "page0_source",
+      "lo": "0E00",
+      "hi": "0F00",
+      "class": "system_code_image",
+      "role": "source copied to page zero during boot"
+    },
+    {
+      "id": "vdp_state",
+      "lo": "0F00",
+      "hi": "0F0D",
+      "class": "mutable_state",
+      "role": "soft VDP registers, latch and read-ahead; 0F07..0F08 HC_GEN staging pass (hoop cache)"
+    },
+    {
+      "id": "replay_scratch",
+      "lo": "0F0D",
+      "hi": "0F19",
+      "class": "mutable_state",
+      "role": "replay scratch: 0F0F last shown IRQ count, 0F10 blit page, 0F11 compose court pointer, 0F15 marker flag, 0F16 blit source / saved CPU SP, 0F18 pace armed; 0F0D pair background origin"
+    },
+    {
+      "id": "native_fill_scratch",
+      "lo": "0F19",
+      "hi": "0F1A",
+      "class": "mutable_state",
+      "role": "byte scratch for direct constant and incrementing plane fills"
+    },
+    {
+      "id": "player_union_state",
+      "lo": "0F1A",
+      "hi": "0F20",
+      "class": "mutable_state",
+      "role": "pair union col,row,width,height and clipped-compositor row/col"
+    },
+    {
+      "id": "keyboard_rows",
+      "lo": "0F20",
+      "hi": "0F30",
+      "class": "mutable_state",
+      "role": "MSX keyboard row mirror"
+    },
+    {
+      "id": "io_scroll_rows",
+      "lo": "0F30",
+      "hi": "0F40",
+      "class": "mutable_state",
+      "role": "scroll, PPI, border, last keyboard inputs (0F33..0F37: port C, joystick, MATCH_MODE, rebuild flag, ONE_PLAYER) and Vector keyboard rows"
+    },
+    {
+      "id": "ay_mirror",
+      "lo": "0F40",
+      "hi": "0F50",
+      "class": "mutable_state",
+      "role": "AY register mirror"
+    },
+    {
+      "id": "vi53_state",
+      "lo": "0F50",
+      "hi": "0F59",
+      "class": "mutable_state",
+      "role": "VI53 channel flags and last divisors"
+    },
+    {
+      "id": "court_high_sample",
+      "lo": "0F59",
+      "hi": "0F5A",
+      "class": "mutable_state",
+      "role": "High colour byte returned by the exact CPC court fetcher"
+    },
+    {
+      "id": "sprite_state",
+      "lo": "0F5A",
+      "hi": "0F60",
+      "class": "mutable_state",
+      "role": "two-plane sprite source, stride, shift, output width and remaining rows"
+    },
+    {
+      "id": "irq_counter",
+      "lo": "0F60",
+      "hi": "0F61",
+      "class": "mutable_state",
+      "role": "IRQ frame counter"
+    },
+    {
+      "id": "replay_high_stamp_save",
+      "lo": "0F61",
+      "hi": "0F69",
+      "class": "mutable_state",
+      "role": "0F61 joystick idle, 0F62 joystick ready, 0F63..0F66 mirrored-row counters; 0F67 SS_ALL, 0F68 SS_LEFT (STAGE_SLOTS)"
+    },
+    {
+      "id": "staged_sprite_state",
+      "lo": "0F69",
+      "hi": "0F6D",
+      "class": "mutable_state",
+      "role": "sprite stream pointer, unchanged flag; 0F6C CS_STAGE (COLOR_SPRITE: record or stage rows)"
+    },
+    {
+      "id": "player_pair_buffer_pointer",
+      "lo": "0F6D",
+      "hi": "0F6F",
+      "class": "mutable_state",
+      "role": "pair buffer base: 2000 in match, B9F0 in menu"
+    },
+    {
+      "id": "player_compositor_count",
+      "lo": "0F6F",
+      "hi": "0F70",
+      "class": "mutable_state",
+      "role": "remaining objects in clipped pair compositor"
+    },
+    {
+      "id": "debug_state",
+      "lo": "0F70",
+      "hi": "0F80",
+      "class": "debug_state",
+      "role": "0F70..0F75 mirrored row, 0F76..0F77 SS_BASE (first staged byte of the pass), 0F78 tile table, 0F7A rect cursor; 0F7C noise flag and 0F7E..0F7F noise xorshift for the ВИ53 driver"
+    },
+    {
+      "id": "dirty_current",
+      "lo": "0F80",
+      "hi": "0FED",
+      "class": "mutable_state",
+      "role": "current dirty rectangle count and list"
+    },
+    {
+      "id": "menu_lz_end_page",
+      "lo": "0FED",
+      "hi": "0FEE",
+      "class": "mutable_state",
+      "role": "Menu LZ unpack end-page scratch (start_page+0x20)"
+    },
+    {
+      "id": "scene_flags",
+      "lo": "0FEE",
+      "hi": "0FF0",
+      "class": "mutable_state",
+      "role": "court synchronized and title snapshot flags"
+    },
+    {
+      "id": "hook_scratch",
+      "lo": "0FF0",
+      "hi": "1000",
+      "class": "mutable_state",
+      "role": "hook and boot scratch"
+    },
+    {
+      "id": "menu_text_lz",
+      "lo": "1000",
+      "hi": "1320",
+      "class": "graphics_resource",
+      "role": "Dual LZ text-menu chrome (dw hi_addr, low plane, high plane) from the game font"
+    },
+    {
+      "id": "menu_lz_body",
+      "lo": "1320",
+      "hi": "137B",
+      "class": "adapter_code_tables",
+      "role": "Menu LZ expander body; stops after 0x2000 bytes so C000 unpack is safe"
+    },
+    {
+      "id": "menu_slot_gap",
+      "lo": "137B",
+      "hi": "14E8",
+      "class": "adapter_code_tables",
+      "role": "menu_color_bg.asm: menu colour restore, prefix/skip/orphan restores, replay helpers, noise, X2 table, band snap, pad union (entries linked)",
+      "unit": "menu_color_bg"
+    },
+    {
+      "id": "dead_15a0",
+      "lo": "14E8",
+      "hi": "1600",
+      "class": "reclaimable_padding",
+      "role": "tail of the menu_color_bg slot (05.11)",
+      "expected_fill": "00",
+      "prove_free": true,
+      "tail_of": "menu_color_bg"
+    },
+    {
+      "id": "cpc_court_tile_tail",
+      "lo": "1600",
+      "hi": "16F0",
+      "class": "graphics_resource",
+      "role": "240-byte tail of the VECTOR CPC court tile bank (211 tiles)"
+    },
+    {
+      "id": "court_tail_gap",
+      "lo": "16F0",
+      "hi": "1710",
+      "class": "referenced_data",
+      "role": "Retained zero bytes after shorter court tile tail"
+    },
+    {
+      "id": "restore_background_pair",
+      "lo": "1710",
+      "hi": "171D",
+      "class": "adapter_code_tables",
+      "role": "Restore both hardware colour bits in one protected dirty pass"
+    },
+    {
+      "id": "court_codec_gap",
+      "lo": "171D",
+      "hi": "1720",
+      "class": "referenced_data",
+      "role": "Three retained zero bytes"
+    },
+    {
+      "id": "menu_lz_trampoline",
+      "lo": "1720",
+      "hi": "1723",
+      "class": "adapter_code_tables",
+      "role": "JP to menu LZ body at 1320"
+    },
+    {
+      "id": "menu_decoder_gap",
+      "lo": "1723",
+      "hi": "1748",
+      "class": "referenced_data",
+      "role": "PAIR_BUFFER_OK 1724; COURT_PAIR_OUT 1748..1763 (A0BF wipe writes both colour bits); zero bytes before tile row cache"
+    },
+    {
+      "id": "dead_1748",
+      "lo": "1748",
+      "hi": "1764",
+      "class": "reclaimable_padding",
+      "role": "freed COURT_PAIR_OUT (RST 08 wipe writer)",
+      "expected_fill": "FF",
+      "prove_free": true
+    },
+    {
+      "id": "menu_decoder_gap_1",
+      "lo": "1764",
+      "hi": "1774",
+      "class": "referenced_data",
+      "role": "PAIR_BUFFER_OK 1724; COURT_PAIR_OUT 1748..1763 (A0BF wipe writes both colour bits); zero bytes before tile row cache"
+    },
+    {
+      "id": "court_tile_row_cache",
+      "lo": "1774",
+      "hi": "17B5",
+      "class": "mutable_state",
+      "role": "32 tile pointers and row-group tag; rebuilt only for requested columns"
+    },
+    {
+      "id": "normalize_old_flags",
+      "lo": "17B5",
+      "hi": "17EF",
+      "class": "adapter_code_tables",
+      "role": "Reset old slot flags after depth-order normalization and reinsert player pair"
+    },
+    {
+      "id": "normalizer_gap",
+      "lo": "17EF",
+      "hi": "17F0",
+      "class": "referenced_data",
+      "role": "One retained zero byte"
+    },
+    {
+      "id": "court_normalizer_state",
+      "lo": "17F0",
+      "hi": "1800",
+      "class": "mutable_state",
+      "role": "Player-pair size, middle source, non-player count, tile-cache interval and rotated source/rectangle addresses"
+    },
+    {
+      "id": "court_tile_fetch",
+      "lo": "1800",
+      "hi": "184D",
+      "class": "adapter_code_tables",
+      "role": "Fetch both background bytes from the two tile-bank segments; legacy low writer"
+    },
+    {
+      "id": "dead_184d",
+      "lo": "184D",
+      "hi": "1851",
+      "class": "reclaimable_padding",
+      "role": "freed COURT_TILE_WRITE",
+      "expected_fill": "FF",
+      "prove_free": true
+    },
+    {
+      "id": "court_tile_cache_builder",
+      "lo": "1851",
+      "hi": "18B7",
+      "class": "adapter_code_tables",
+      "role": "Build only the requested tile-pointer interval; TEXT_GLYPH_PAIR follows (05.11)",
+      "unit": "court_tiles",
+      "unit_org": "1710"
+    },
+    {
+      "id": "dead_18ba",
+      "lo": "18B7",
+      "hi": "18CA",
+      "class": "reclaimable_padding",
+      "role": "tail after TEXT_GLYPH_PAIR",
+      "expected_fill": "00",
+      "prove_free": true,
+      "tail_of": "court_tiles"
+    },
+    {
+      "id": "player_scene_helpers",
+      "lo": "18CA",
+      "hi": "18F6",
+      "class": "adapter_code_tables",
+      "role": "menu_player_helpers.asm: scene setup (old-list guard), HUD text, background high, unchanged test",
+      "unit": "menu_player_helpers"
+    },
+    {
+      "id": "dead_1961",
+      "lo": "18F6",
+      "hi": "1B3E",
+      "class": "reclaimable_padding",
+      "role": "player compositor moved to adapter_hi (05.11)",
+      "expected_fill": "00",
+      "prove_free": true,
+      "tail_of": "menu_player_helpers"
+    },
+    {
+      "id": "title_resource_reserve",
+      "lo": "1B3E",
+      "hi": "1B40",
+      "class": "graphics_resource",
+      "role": "Five retained alignment bytes before replay ring"
+    },
+    {
+      "id": "replay_ring",
+      "lo": "1B40",
+      "hi": "2000",
+      "class": "mutable_state",
+      "role": "replay state ring including live 1FE1..1FFF tail"
+    },
+    {
+      "id": "shared_gfx_work",
+      "lo": "2000",
+      "hi": "2500",
+      "class": "graphics_buffer",
+      "role": "shared lifetime buffer: menu band, replay composed 8x60 quarter (960 bytes) or complete two-plane player union (at most 1280 bytes)"
+    },
+    {
+      "id": "court_bitmap",
+      "lo": "2500",
+      "hi": "3300",
+      "class": "graphics_resource",
+      "role": "CPC-styled low court plane, 32 by 112, including spectators and stands"
+    },
+    {
+      "id": "d252_pointers",
+      "lo": "3300",
+      "hi": "3304",
+      "class": "mutable_state",
+      "role": "relocated runtime pointers"
+    },
+    {
+      "id": "system_hud_0",
+      "lo": "3304",
+      "hi": "34C0",
+      "class": "mixed",
+      "role": "relocated system and HUD procedures, tables and data"
+    },
+    {
+      "id": "dead_34c0",
+      "lo": "34C0",
+      "hi": "34DF",
+      "class": "reclaimable_padding",
+      "role": "blit stub padding before the A75F flag cell",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "system_hud_1",
+      "lo": "34DF",
+      "hi": "3512",
+      "class": "mixed",
+      "role": "relocated system and HUD procedures, tables and data"
+    },
+    {
+      "id": "dead_3512",
+      "lo": "3512",
+      "hi": "35C0",
+      "class": "reclaimable_padding",
+      "role": "blit stub tail + D2C3 RAM blit + VPOKE/VPEEK",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "system_hud_2",
+      "lo": "35C0",
+      "hi": "3794",
+      "class": "mixed",
+      "role": "relocated system and HUD procedures, tables and data"
+    },
+    {
+      "id": "dead_3794",
+      "lo": "3794",
+      "hi": "37A4",
+      "class": "reclaimable_padding",
+      "role": "zero run D52C.. (probe)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "system_hud_3",
+      "lo": "37A4",
+      "hi": "3B2A",
+      "class": "mixed",
+      "role": "relocated system and HUD procedures, tables and data"
+    },
+    {
+      "id": "dead_3b2a",
+      "lo": "3B2A",
+      "hi": "3B3F",
+      "class": "reclaimable_padding",
+      "role": "D8C1 tail after RET (TMS glyph colour)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "system_hud_4",
+      "lo": "3B3F",
+      "hi": "3B82",
+      "class": "mixed",
+      "role": "relocated system and HUD procedures, tables and data"
+    },
+    {
+      "id": "dead_3b82",
+      "lo": "3B82",
+      "hi": "3B9D",
+      "class": "reclaimable_padding",
+      "role": "D914 tail after JP NATIVE_TEXT_GLYPH",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "system_hud_5",
+      "lo": "3B9D",
+      "hi": "3F80",
+      "class": "mixed",
+      "role": "relocated system and HUD procedures, tables and data"
+    },
+    {
+      "id": "legacy_sentinel",
+      "lo": "3F80",
+      "hi": "3F81",
+      "class": "referenced_data",
+      "role": "relocated legacy setup sentinel"
+    },
+    {
+      "id": "renderer_timing_helpers",
+      "lo": "3F81",
+      "hi": "3FB2",
+      "class": "adapter_code_tables",
+      "role": "fast dirty-row classifier and player-pair priority setup",
+      "unit": "win_3f81"
+    },
+    {
+      "id": "dead_3fe5",
+      "lo": "3FB2",
+      "hi": "4000",
+      "class": "reclaimable_padding",
+      "role": "tail of the win_3f81 slot (05.11)",
+      "expected_fill": "00",
+      "prove_free": true,
+      "tail_of": "win_3f81"
+    },
+    {
+      "id": "game_work_ram",
+      "lo": "4000",
+      "hi": "415A",
+      "class": "mutable_state",
+      "role": "keyboard, ISR hook and game work cells"
+    },
+    {
+      "id": "stage1_graphics",
+      "lo": "415A",
+      "hi": "6618",
+      "class": "graphics_resource",
+      "role": "stage-1 CPC sprite records, empty top/bottom rows trimmed (canvas h, w, top, keep); mirrored frames are 6-byte references (tools/pack_sprite_mirrors.py)"
+    },
+    {
+      "id": "sprite_mirror_gap",
+      "lo": "6618",
+      "hi": "6700",
+      "class": "reclaimable_padding",
+      "role": "freed by mirror references (05.11), up to the page-aligned MIR_REV",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "mir_rev_table",
+      "lo": "6700",
+      "hi": "6800",
+      "class": "graphics_resource",
+      "role": "MIR_REV: 256-byte bit-reverse table for mirrored sprite rows (MIR_ROW)"
+    },
+    {
+      "id": "hi_adapter_unit",
+      "lo": "6800",
+      "hi": "756A",
+      "class": "adapter_code_tables",
+      "role": "adapter_hi.asm: CPC sprite renderer, joystick, aligned row stage, clipped player compositor (05.11)",
+      "unit": "adapter_hi"
+    },
+    {
+      "id": "sprite_free_tail",
+      "lo": "756A",
+      "hi": "7760",
+      "class": "reclaimable_padding",
+      "role": "freed by trimming and mirroring sprite rows (04-05.11), after adapter_hi; 7018/7750/7758 are false references (false_references)",
+      "expected_fill": "00",
+      "prove_free": true,
+      "tail_of": "adapter_hi"
+    },
+    {
+      "id": "sprite_pointer_table",
+      "lo": "7760",
+      "hi": "77F6",
+      "class": "graphics_resource",
+      "role": "75 sprite record offsets from 415A (9E6F)"
+    },
+    {
+      "id": "cpc_stand_stamp",
+      "lo": "77F6",
+      "hi": "7A57",
+      "class": "graphics_resource",
+      "role": "CPC standing-fans stamp, 29x21 mode-1 rows (src/assets/cpc_stand_stamp_mode1.bin); was MSX scoreboard art read only by AFC8"
+    },
+    {
+      "id": "dead_7a57",
+      "lo": "7A57",
+      "hi": "7AE8",
+      "class": "reclaimable_padding",
+      "role": "former joy_p slot; JOY_MERGE moved to adapter_hi (05.11)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "court_colour_helpers",
+      "lo": "7AE8",
+      "hi": "7B51",
+      "class": "adapter_code_tables",
+      "role": "CPC-style court high-plane generator and priority non-player continuation",
+      "unit": "win_7ae8"
+    },
+    {
+      "id": "dead_7b7f",
+      "lo": "7B51",
+      "hi": "7B9C",
+      "class": "reclaimable_padding",
+      "role": "tail of the win_7ae8 slot (05.11)",
+      "expected_fill": "00",
+      "prove_free": true,
+      "tail_of": "win_7ae8"
+    },
+    {
+      "id": "released_ay_tail",
+      "lo": "7B9C",
+      "hi": "7B9D",
+      "class": "reclaimable_padding",
+      "role": "one remaining zero byte before music bundle",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "music_bundle",
+      "lo": "7B9D",
+      "hi": "7FBA",
+      "class": "sound_resource",
+      "role": "music pointer and note bundle"
+    },
+    {
+      "id": "vi53_sfx",
+      "lo": "7FBA",
+      "hi": "808A",
+      "class": "sound_resource",
+      "role": "packed VI53 SFX divisors"
+    },
+    {
+      "id": "hud_decor_low_rle",
+      "lo": "808A",
+      "hi": "810B",
+      "class": "graphics_resource",
+      "role": "packed 32x72 white HUD decoration plane"
+    },
+    {
+      "id": "hud_decor_high_rle",
+      "lo": "810B",
+      "hi": "8412",
+      "class": "graphics_resource",
+      "role": "packed 32x72 blue HUD decoration plane"
+    },
+    {
+      "id": "background_helpers",
+      "lo": "8412",
+      "hi": "84D0",
+      "class": "adapter_code_tables",
+      "role": "menu/HUD streamers and the COMPOSE_BOX SP tile band copier (to the game entry)",
+      "unit": "win_840e"
+    },
+    {
+      "id": "game_overlay_0",
+      "lo": "84D0",
+      "hi": "8AC6",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_8ac6",
+      "lo": "8AC6",
+      "hi": "8ADD",
+      "class": "reclaimable_padding",
+      "role": "8AAE tail after JP HUD_ICON",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_1",
+      "lo": "8ADD",
+      "hi": "92FF",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_92ff",
+      "lo": "92FF",
+      "hi": "932A",
+      "class": "reclaimable_padding",
+      "role": "92E8 tail after RET (TMS colour boxes)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_2",
+      "lo": "932A",
+      "hi": "932B",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_932b",
+      "lo": "932B",
+      "hi": "9348",
+      "class": "reclaimable_padding",
+      "role": "932A body after RET (TMS colour cells)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_3",
+      "lo": "9348",
+      "hi": "9F4B",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_9f4b",
+      "lo": "9F4B",
+      "hi": "9F60",
+      "class": "reclaimable_padding",
+      "role": "9F48 tail after JP NATIVE_PAIR_DIRECT",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_4",
+      "lo": "9F60",
+      "hi": "A133",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_a133",
+      "lo": "A133",
+      "hi": "A160",
+      "class": "reclaimable_padding",
+      "role": "A132 colour curtain after RET",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "rng_stubs",
+      "lo": "A160",
+      "hi": "A193",
+      "class": "mixed",
+      "role": "tools/rng_patch.py: deterministic RNG stubs (LD A,R replacements, IRQ seed bump outside a match)"
+    },
+    {
+      "id": "dead_a193",
+      "lo": "A193",
+      "hi": "A1AA",
+      "class": "reclaimable_padding",
+      "role": "A132 colour curtain after RET",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_5",
+      "lo": "A1AA",
+      "hi": "A4AB",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_a4ab",
+      "lo": "A4AB",
+      "hi": "A4E6",
+      "class": "reclaimable_padding",
+      "role": "former pair bounds helper of the old menu publisher (05.11)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_5b",
+      "lo": "A4E6",
+      "hi": "A524",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_a524",
+      "lo": "A524",
+      "hi": "A52C",
+      "class": "reclaimable_padding",
+      "role": "freed SET_VBLANK (BIOS_CLICK pinned at A52C)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_6_1",
+      "lo": "A52C",
+      "hi": "A54A",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_a54a",
+      "lo": "A54A",
+      "hi": "A5FD",
+      "class": "reclaimable_padding",
+      "role": "A54A MSX title panels (A605 calls NATIVE_TITLE)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_7",
+      "lo": "A5FD",
+      "hi": "A8FB",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_a8fb",
+      "lo": "A8FB",
+      "hi": "A95E",
+      "class": "reclaimable_padding",
+      "role": "old A8F4 replay doubling + A93C",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_8",
+      "lo": "A95E",
+      "hi": "AB3B",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_ab3b",
+      "lo": "AB3B",
+      "hi": "AB83",
+      "class": "reclaimable_padding",
+      "role": "music channel IY loop AB3B..AB82 → snd.asm MUSIC_TICK (06.11)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_8b",
+      "lo": "AB83",
+      "hi": "ABDB",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_abdb",
+      "lo": "ABDB",
+      "hi": "ABFF",
+      "class": "reclaimable_padding",
+      "role": "music tone/volume helpers ABDB/ABE7 → MUSIC_TICK (06.11)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_8c",
+      "lo": "ABFF",
+      "hi": "AFC8",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_afc8",
+      "lo": "AFC8",
+      "hi": "B01C",
+      "class": "reclaimable_padding",
+      "role": "AFC8 MSX scoreboard blit + B004",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_9",
+      "lo": "B01C",
+      "hi": "B01F",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_b01f",
+      "lo": "B01F",
+      "hi": "B020",
+      "class": "reclaimable_padding",
+      "role": "former buffered_players.asm (old menu publisher, 05.11)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "hoop_cache",
+      "lo": "B020",
+      "hi": "B1B4",
+      "class": "mutable_state",
+      "role": "HOOP_CACHE: staged rows of the two hoops keyed by record, X, Y, tagged by stream address and staging pass (color_sprite.asm, 06.11)"
+    },
+    {
+      "id": "dead_b1ac",
+      "lo": "B1B4",
+      "hi": "B1DC",
+      "class": "reclaimable_padding",
+      "role": "former buffered_players.asm (old menu publisher, 05.11)",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_9b",
+      "lo": "B1DC",
+      "hi": "B201",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dead_b201",
+      "lo": "B201",
+      "hi": "B257",
+      "class": "reclaimable_padding",
+      "role": "old B1FE row copier",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "game_overlay_10",
+      "lo": "B257",
+      "hi": "B258",
+      "class": "mixed",
+      "role": "game procedures, embedded data and work cells"
+    },
+    {
+      "id": "dirty_old",
+      "lo": "B258",
+      "hi": "B2C5",
+      "class": "mutable_state",
+      "role": "previous-frame dirty rectangle list"
+    },
+    {
+      "id": "sprite_frame_meta",
+      "lo": "B2C5",
+      "hi": "B331",
+      "class": "mutable_state",
+      "role": "27 previous-frame sprite descriptors (record pointer, x, y)"
+    },
+    {
+      "id": "mid_padding_tail",
+      "lo": "B331",
+      "hi": "B338",
+      "class": "reclaimable_padding",
+      "role": "unused zero tail after sprite metadata",
+      "expected_fill": "00",
+      "prove_free": true
+    },
+    {
+      "id": "cpc_stamp_code",
+      "lo": "B338",
+      "hi": "B455",
+      "class": "adapter_code_tables",
+      "role": "BG_FETCH gate B338, CPC_STAMP_ON/OFF, STAMP_PAIR, STAMP_FILL_ROW (src/v06/cpc_stamp.asm)"
+    },
+    {
+      "id": "hud_icon_code",
+      "lo": "B455",
+      "hi": "B498",
+      "class": "adapter_code_tables",
+      "role": "HUD_ICON (8AAE possession icon from CPC sprites 72/73), TIME caption; tail zero (src/v06/hud_icon.asm)"
+    },
+    {
+      "id": "replay_high_stage",
+      "lo": "B498",
+      "hi": "BC00",
+      "class": "graphics_buffer",
+      "role": "lifetime-shared staged p0/p1 sprite stream or high-plane replay capture"
+    },
+    {
+      "id": "stack",
+      "lo": "BC00",
+      "hi": "C000",
+      "class": "stack",
+      "role": "1K CPU stack growing down from C000"
+    },
+    {
+      "id": "video_plane_0",
+      "lo": "C000",
+      "hi": "E000",
+      "class": "video_plane",
+      "role": "active high colour-bit hardware video plane; contains the initial MSX splash high bits in the ROM image"
+    },
+    {
+      "id": "visible_plane",
+      "lo": "E000",
+      "hi": "10000",
+      "class": "video_plane",
+      "role": "active low colour-bit hardware video plane and initial splash image"
+    }
+  ],
+  "reclaimable_bytes": 4202,
+  "false_references": [
+    {
+      "addr": "7018",
+      "site": "8C6D",
+      "bytes": "211870",
+      "why": "LD HL,7018h: a coordinate pair, not an address"
+    },
+    {
+      "addr": "7750",
+      "site": "8AB2",
+      "bytes": "115077",
+      "why": "LD DE,7750h: possession icon selector, HUD_ICON compares E"
+    },
+    {
+      "addr": "7758",
+      "site": "8ABF",
+      "bytes": "115877",
+      "why": "LD DE,7758h: blank icon selector, HUD_ICON compares E"
+    }
+  ]
+}

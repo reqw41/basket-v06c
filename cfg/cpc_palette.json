@@ -1,0 +1,21 @@
+{
+  "format": "BB_GGG_RRR",
+  "plane_bits": {
+    "bit0": "E000..FFFF",
+    "bit1_target": "C000..DFFF"
+  },
+  "cpc_match_source": {
+    "code_table": "73B1",
+    "border_hardware_ink": "14",
+    "hardware_inks": ["15", "14", "0B", "07"],
+    "roles_by_source_pen": ["bright_blue_transparent", "black", "white", "warm_salmon"],
+    "vector_role_indices_for_visible_source_pens": [0, 2, 1, 3]
+  },
+  "pens": [
+    {"index": 0, "bits": "00", "role": "bright_blue", "vector": "C0", "preview_rgb": "#0000FF"},
+    {"index": 1, "bits": "01", "role": "white", "vector": "FF", "preview_rgb": "#FFFFFF"},
+    {"index": 2, "bits": "10", "role": "black", "vector": "00", "preview_rgb": "#000000"},
+    {"index": 3, "bits": "11", "role": "warm_salmon", "vector": "5F", "preview_rgb": "#FF805F"}
+  ],
+  "hardware_table": ["C0", "FF", "00", "5F", "C0", "FF", "00", "5F", "C0", "FF", "00", "5F", "C0", "FF", "00", "5F"]
+}

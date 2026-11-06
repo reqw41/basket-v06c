@@ -1,0 +1,26 @@
+build/
+__pycache__/
+*.pyc
+.DS_Store
+openmsx.log
+*.lst
+
+# крупные дампы и сканы — в git только манифесты SHA
+ref/msx/**/*.dsk
+ref/msx/**/*.bin
+ref/msx/**/*.rom
+ref/msx/**/*.cas
+ref/msx/**/*.wav
+ref/msx/**/*.rar
+ref/msx/**/*.zip
+ref/cpc/**/*.cdt
+ref/cpc/**/*.dsk
+ref/cpc/**/*.zip
+ref/zx/**/*.z80
+ref/zx/**/*.sna
+ref/zx/**/*.tzx
+ref/zx/**/*.zip
+
+src/v06/scheme.inc
+src/v06/cpu.inc
+src/v06/game_labels.inc
