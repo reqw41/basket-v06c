@@ -33,6 +33,7 @@ DP_ROWS         equ     0x0F5F
 DP_COUNT        equ     0x0F6F
 
 MATCH_PUBLISH:
+        call    DP_SYNC                 ; the last batch reads B498.. and DP_BUF
         ld      hl,0xB498               ; boxes first, the staged stream after
         ld      (DMG_BASE),hl
         ld      (DMG_END),hl
@@ -143,7 +144,7 @@ dp_fits:
         inc     hl
         jp      dp_box
 dp_last:
-        call    DP_FLUSH
+        call    DP_FLUSH_LAST           ; the IRQ copies it while the game runs
         jp      cfp_exit
 
 ; A = count, HL = rects, DE = their metas, BC = the other frame's metas
@@ -645,34 +646,63 @@ cb_menu:
 ; Hand the composed boxes DMG_PUB..HL (exclusive) to the frame interrupt
 ; and wait until it has copied them; then start the buffer again.
 DP_FLUSH:
-        ex      de,hl
-        ld      hl,(DMG_PUB)
-        ld      a,l
-        cp      e
-        jp      nz,df_some
-        ld      a,h
-        cp      d
+        call    DP_POST
         ret     z                       ; nothing composed: no vblank wait
-df_some:
-        ex      de,hl
-        ld      (DP_STOP),hl
-        ld      a,1
-        di
-        ld      (DP_READY),a
-df_wait:
-        ld      a,(DP_READY)
-        or      a
-        jp      z,df_done
-        call    NOISE_WAIT              ; the IRQ copies the batch (DP_ISR_COPY)
-        jp      df_wait
-df_done:
-        ei
+        call    DP_SYNC
         ld      hl,(DP_STOP)
         ld      (DMG_PUB),hl
         ld      hl,DP_BUF
         ld      (DP_BASE),hl
         ld      hl,(DP_START)
         ld      (DP_COST),hl
+        ret
+
+; The last batch of a publish (07.11): handed to the frame IRQ without a
+; wait, the game goes on while it is copied. Whoever next writes the box
+; list B498.., DP_BUF or the court on screen calls DP_SYNC first
+; (MATCH_PUBLISH, REPLAY_ZOOM, COURT_TO_PLANES, WIPE_COLUMN, TITLE_RELOAD).
+; The copy in the IRQ touches only DP_RECT, DP_BASE and 0F16, which only
+; that code uses. With the ball's AY noise the wait stays: the speaker
+; noise plays in it (NOISE_WAIT).
+DP_FLUSH_LAST:
+        ld      a,(V_NOISE)
+        or      a
+        jp      nz,DP_FLUSH
+        call    DP_POST
+        ld      hl,(DP_START)           ; as after a waited flush (the IRQ
+        ld      (DP_COST),hl            ; does not read it)
+        ret
+; HL = one past the last box: post DMG_PUB..HL to the IRQ. Z: nothing to post.
+DP_POST:
+        ex      de,hl
+        ld      hl,(DMG_PUB)
+        ld      a,l
+        cp      e
+        jp      nz,dpo_some
+        ld      a,h
+        cp      d
+        ret     z
+dpo_some:
+        ex      de,hl
+        ld      (DP_STOP),hl
+        ld      a,1
+        ld      (DP_READY),a            ; NZ
+        ret
+
+; Wait until the frame IRQ has copied the posted batch. Returns with EI.
+DP_SYNC:
+        ld      a,(DP_READY)
+        or      a
+        ret     z
+        di
+ds_wait:
+        ld      a,(DP_READY)
+        or      a
+        jp      z,ds_done
+        call    NOISE_WAIT              ; the IRQ copies the batch (DP_ISR_COPY)
+        jp      ds_wait
+ds_done:
+        ei
         ret
 
 ; IRQ_HANDLER, right after the keyboard poll (the beam is above the court):

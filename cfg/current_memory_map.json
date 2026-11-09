@@ -5,7 +5,7 @@
     "hi": "10000",
     "size": 65536
   },
-  "rom_sha256": "8136ba782cede4a18ed6159040f0f1a8bd20bea88927d2db497c41ad70a20bb8",
+  "rom_sha256": "1dfd8b99f5e21db1a7afb42c8eb96b74ee420b304846bb8291c513a6389d1134",
   "policy": {
     "opaque_retained": "Occupied bytes whose finer semantics are not proven. They are never free or relocatable by default.",
     "reclaimable_padding": "Uniform image padding with no typed static memory/control reference, CFG byte, SMC target, or matching-ROM trace access.",
@@ -29,7 +29,7 @@
     {
       "id": "adapter",
       "lo": "0200",
-      "hi": "0996",
+      "hi": "09F8",
       "class": "adapter_code_tables",
       "role": "glue.asm: page-0 runtime entries, IRQ, BIOS stubs, plane I/O, keyboard, sound, replay (entries linked by tools/link_labels.py)",
       "unit": "glue",
@@ -37,7 +37,7 @@
     },
     {
       "id": "adapter_free_tail",
-      "lo": "0996",
+      "lo": "09F8",
       "hi": "0E00",
       "class": "reclaimable_padding",
       "role": "glue tail freed by moving the CPC sprite renderer to adapter_hi (05.11)",
@@ -543,14 +543,14 @@
     {
       "id": "hi_adapter_unit",
       "lo": "6800",
-      "hi": "756A",
+      "hi": "7586",
       "class": "adapter_code_tables",
       "role": "adapter_hi.asm: CPC sprite renderer, joystick, aligned row stage, clipped player compositor (05.11)",
       "unit": "adapter_hi"
     },
     {
       "id": "sprite_free_tail",
-      "lo": "756A",
+      "lo": "7586",
       "hi": "7760",
       "class": "reclaimable_padding",
       "role": "freed by trimming and mirroring sprite rows (04-05.11), after adapter_hi; 7018/7750/7758 are false references (false_references)",
@@ -716,24 +716,22 @@
       "role": "game procedures, embedded data and work cells"
     },
     {
-      "id": "dead_a133",
+      "id": "ease_stub",
       "lo": "A133",
       "hi": "A160",
-      "class": "reclaimable_padding",
-      "role": "A132 colour curtain after RET",
-      "expected_fill": "00",
-      "prove_free": true
+      "class": "mixed",
+      "role": "tools/ease_patch.py: computer fires on contact with a level chance (889F)"
     },
     {
       "id": "rng_stubs",
       "lo": "A160",
-      "hi": "A193",
+      "hi": "A1A4",
       "class": "mixed",
-      "role": "tools/rng_patch.py: deterministic RNG stubs (LD A,R replacements, IRQ seed bump outside a match)"
+      "role": "tools/rng_patch.py: deterministic RNG stubs (LD A,R replacements, IRQ seed bump outside a match, main-loop seed step)"
     },
     {
-      "id": "dead_a193",
-      "lo": "A193",
+      "id": "dead_a1a4",
+      "lo": "A1A4",
       "hi": "A1AA",
       "class": "reclaimable_padding",
       "role": "A132 colour curtain after RET",
@@ -973,7 +971,7 @@
       "role": "active low colour-bit hardware video plane and initial splash image"
     }
   ],
-  "reclaimable_bytes": 4202,
+  "reclaimable_bytes": 4014,
   "false_references": [
     {
       "addr": "7018",

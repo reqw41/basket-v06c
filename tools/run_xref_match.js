@@ -163,6 +163,7 @@ const maxFrames = wantReplay ? 4500 : wantEsc ? 2200 : 1200;
 let phase = 'title';
 let frame = 0;
 let matchStart = 0;
+let readyAt = 0;
 let menuAt = 0;
 let playersMode = null; // 1 or 2
 const clearKeys = () => {
@@ -194,11 +195,13 @@ for (; frame < maxFrames; frame++) {
       else if (step === 4) keyboard.matrix[7] = 0x80;
       else keyboard.matrix[0] = 0x40;
     }
-    if (wantEsc && frame > matchStart + 80) {
-      // The original game requires SHIFT+CTRL+ESC (L_8685/D5DE).
-      keyboard.ss = true;
-      keyboard.us = true;
-      keyboard.matrix[1] = 0x04; // АР2 → ESC
+    if (wantEsc && phase === 'ready' && frame > readyAt + 40) {
+      // Leave the match: ВК pauses (8676), АР2 in the pause leaves it
+      // (kbd.asm PAUSE_WAIT / PAUSE_EXIT_TEST). Nothing else is pressed.
+      clearKeys();
+      const f = frame - (readyAt + 40);
+      if (f < 12) keyboard.matrix[0] = 0x04;       // ВК, over a game iteration
+      else if (f >= 40 && f < 46) keyboard.matrix[1] = 0x04; // АР2
     }
   }
   if (procCheck) break;
@@ -220,6 +223,7 @@ for (; frame < maxFrames; frame++) {
     console.log(`match@${frame} players=${playersMode} ea=${ea} digit=${digitMask.toString(16)}`);
   } else if (phase === 'match' && ball && y1 && y2 && y1 !== y2 && y1 !== 0x6e) {
     phase = 'ready';
+    readyAt = frame;
     console.log(`ready@${frame} y1=${y1} y2=${y2} ball=${ball}`);
   }
 
@@ -260,7 +264,7 @@ const execSet = new Set(execList);
 const expect = procCheck ? [] : ({
   '1p': ['FRAME_BEGIN', 'FRAME_END', 'COLOR_SPRITE', 'DIRTY_ADD', 'V_KBD_POLL'],
   '2p': ['FRAME_BEGIN', 'V_KBD_POLL'],
-  '1p_throw': ['FRAME_BEGIN', 'FRAME_END', 'COLOR_SPRITE', 'DIRTY_ADD', 'nks_fire'],
+  '1p_throw': ['FRAME_BEGIN', 'FRAME_END', 'COLOR_SPRITE', 'DIRTY_ADD', 'ks_fire'],
   '1p_esc': ['FRAME_BEGIN', 'V_KBD_POLL'],
   'replay': ['FRAME_BEGIN', 'COLOR_SPRITE', 'REPLAY_ZOOM'],
 }[mode] || ['FRAME_BEGIN']);

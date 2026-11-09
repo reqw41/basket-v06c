@@ -104,11 +104,14 @@ function boot() {
     Buffer.from(h, 'hex').forEach((b, i) => memory.write(at + i, b, false));
   }
   const oi = cpu.instruction.bind(cpu);
-  cpu.instruction = function () { const p = cpu.pc & 0xffff; if (HOOKS[p]) HOOKS[p](); return oi(); };
+  // A publish posts its last batch to the frame IRQ (damage_publish.asm
+  // DP_FLUSH_LAST): the check runs once the IRQ has copied it (DP_READY 0FEA = 0).
+  cpu.instruction = function () { const p = cpu.pc & 0xffff; if (PENDING && !memory.read(0x0fea, false)) { const f = PENDING; PENDING = null; f(); } if (HOOKS[p]) HOOKS[p](); return oi(); };
   return { memory, keyboard, cpu, v06c };
 }
 
 const HOOKS = {};
+let PENDING = null;   // the check of the last publish, run when its batch is on screen
 const emu = boot();
 if (process.env.WATCHW) {   // WATCHW=addr,addr2,from_frame: log writers
   const [w0, w1, wf] = process.env.WATCHW.split(',').map((x) => parseInt(x, 16));
@@ -254,11 +257,17 @@ function menuCheck() {
   if (shown++ < SHOW) console.log(`menu F${frame} n=${list.length} prev=${prev.length} differ ${diff.length}: ${diff.slice(0, 10).join(' ')} | ${objs(list)}`);
 }
 HOOKS[DONE] = () => {
-  if (phase === 'menu' && !rd(COURT_SYNCED) && rd(0x0fef)) return menuCheck();
+  if (phase === 'menu' && !rd(COURT_SYNCED) && rd(0x0fef)) { const L = list, P = prev; return later(() => { const l0 = list, p0 = prev; list = L; prev = P; menuCheck(); list = l0; prev = p0; }); }
   if (phase !== 'match' || rd(REPLAY) || !rd(COURT_SYNCED)) return;
+  // the expected frame is built now (stand state, court), compared once on screen
+  const L = list, P = prev, stampedNow = rw(BG_FETCH + 1) !== sym('COURT_TILE_PAIR'), E = predict(list);
+  later(() => { const l0 = list, p0 = prev; list = L; prev = P; matchCheck(stampedNow, E); list = l0; prev = p0; });
+};
+function later(f) { if (PENDING) PENDING(); if (rd(0x0fea)) PENDING = f; else f(); }
+function matchCheck(stampedNow, E) {
   checked++;
-  if (rw(BG_FETCH + 1) !== sym('COURT_TILE_PAIR')) stamped++;
-  const E = predict(list), diff = [];
+  if (stampedNow) stamped++;
+  const diff = [];
   for (let r = 0; r < 112; r++) for (let c = 0; c < 32; c++) {
     const a = c * 256 + 0xd7 - r, lo = rd(0xe000 + a), hi = rd(0xc000 + a), k = (r * 32 + c) * 2;
     if (lo !== E[k] || hi !== E[k + 1]) diff.push(`c${c}r${r}`);
@@ -287,7 +296,7 @@ HOOKS[DONE] = () => {
     E.copy(buf, 0x4000);
     fs.writeFileSync(path.join(OUT, `f${String(frame).padStart(5, '0')}.bin`), buf);
   }
-};
+}
 
 const keys = (row, mask) => { for (let i = 0; i < 8; i++) emu.keyboard.matrix[i] = 0; if (mask) emu.keyboard.matrix[row] = mask; };
 let rnd = +(process.env.SEED || 12345);

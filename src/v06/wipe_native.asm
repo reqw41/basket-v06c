@@ -17,6 +17,7 @@ COURT_SRC_HI    equ     0x25            ; court row 0 = 2500
 
         org     0xA0D0
 WIPE_COLUMN:                            ; C = step; A0BF points IX at WIPE_DIR
+        call    DP_SYNC                 ; the last match batch first
         ld      a,(WIPE_DIR)            ; read it directly: no IX on the i8080
         or      a
         jp      p,wc_right

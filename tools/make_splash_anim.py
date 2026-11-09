@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+"""CPC title animation -> Vector splash planes + animation data.
+
+  tools/cpc_speed/fetch_cpcbox.sh                      # once: CPCBox into build/cpcbox
+  NODE_PATH=$(npm root -g) node tools/cpc_speed/splash.js build/cpcbox \
+      "ref/cpc/Fernando Martin Basket Master.cdt" build/cpcbox/splash
+  python3 tools/make_splash_anim.py [build/cpcbox/splash]
+
+After the tape loads, the CPC title shows the player spinning the ball: a
+cycle of 24 steps, 5 frames (100 ms) each. Only a few hundred bytes of the
+picture change, in three independent pieces: the ball (3 states), the head
+and the spinning hand (8 states) and the elbow (4 states). The script reads
+one PNG per 50 Hz frame, drops one-frame tears (the CPC redraws without
+waiting for the beam), finds the cycle and writes:
+
+  src/assets/splash_planes_v06.z  step 0 as Vector planes (E000 low, C000 high)
+  src/v06/splash_anim_data.inc    pieces: byte runs on screen, states, steps
+
+Pens (CPC Mode 1 -> Vector bits, colour index = E000 bit | C000 bit << 1,
+palette sa_pal in splash_anim.asm). The border is entry 0 and is blue as in
+the menu, so the picture has three colours left: white -> 1, black -> 2,
+orange -> 3; the CPC salmon skin goes orange too (owner's choice 09.11).
+"""
+from __future__ import annotations
+
+import sys
+import zlib
+from pathlib import Path
+
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parents[1]
+SRC = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "build/cpcbox/splash"
+PLANES_Z = ROOT / "src/assets/splash_planes_v06.z"
+DATA_INC = ROOT / "src/v06/splash_anim_data.inc"
+
+# CPCBox canvas 768x272: Mode 1 pixel = 2x1 canvas pixels, screen at (64, 36).
+PEN = {(0, 0, 0): "black", (255, 255, 255): "white", (255, 148, 0): "orange", (255, 148, 133): "salmon"}
+BITS = {"white": (1, 0), "black": (0, 1), "orange": (1, 1), "salmon": (1, 1)}
+DX, DY = -36, 44          # CPC x 55..271 -> Vector 19..235 (centred), y 8..195 -> 52..239
+STEP_FRAMES = 5
+STEPS = 24
+
+
+def planes_of(png: Path) -> bytes:
+    im = Image.open(png).convert("RGB")
+    px = im.load()
+    lo, hi = bytearray(0x2000), bytearray(b"\xff" * 0x2000)   # black = (0,1)
+    for y in range(200):
+        vy = y + DY
+        for x in range(320):
+            pen = PEN[px[64 + 2 * x, 36 + y]]
+            vx = x + DX
+            if not (0 <= vx < 256 and 0 <= vy < 256):
+                if pen != "black":
+                    raise SystemExit(f"{png.name}: picture outside the Vector screen at {x},{y}")
+                continue
+            l, h = BITS[pen]
+            at, bit = (vx >> 3) * 256 + (0xFF - vy), 0x80 >> (vx & 7)
+            if l:
+                lo[at] |= bit
+            if not h:
+                hi[at] &= ~bit
+    return bytes(lo + hi)
+
+
+def find_cycle(frames: list[bytes]) -> list[bytes]:
+    runs: list[list] = []
+    for f in frames:
+        if runs and runs[-1][0] == f:
+            runs[-1][1] += 1
+        else:
+            runs.append([f, 1])
+    steady = [f for f, n in runs[1:-1] if n >= STEP_FRAMES - 1]   # tears last one frame
+    for start in range(len(steady)):
+        cyc = steady[start:start + STEPS]
+        if len(cyc) == STEPS and steady[start + STEPS:start + 2 * STEPS] == cyc and cyc[0] != cyc[-1]:
+            # rotate so the cycle starts where the first steady state of the capture is
+            k = cyc.index(steady[0]) if steady[0] in cyc else 0
+            return cyc[k:] + cyc[:k]
+    raise SystemExit(f"no {STEPS}-step cycle in {len(steady)} steady states")
+
+
+def addr(i: int) -> int:
+    return (0xE000 if i < 0x2000 else 0xC000 - 0x2000) + i
+
+
+def pieces(cyc: list[bytes]) -> list[list[int]]:
+    """Changing byte offsets grouped into connected pieces, merged by step pattern."""
+    pos = sorted({i for f in cyc for i in range(0x4000) if f[i] != cyc[0][i]})
+    cell = {}
+    for i in pos:
+        cell.setdefault(((i & 0x1FFF) >> 8, i & 0xFF), []).append(i)
+    seen, comps = set(), []
+    for c in cell:
+        if c in seen:
+            continue
+        stack, comp = [c], []
+        seen.add(c)
+        while stack:
+            col, row = stack.pop()
+            comp += cell[(col, row)]
+            for dc in (-1, 0, 1):
+                for dr in (-1, 0, 1):
+                    n = (col + dc, row + dr)
+                    if n in cell and n not in seen:
+                        seen.add(n)
+                        stack.append(n)
+        comps.append(sorted(comp))
+
+    def pattern(comp):
+        ids: dict[bytes, int] = {}
+        return tuple(ids.setdefault(bytes(f[i] for i in comp), len(ids)) for f in cyc)
+
+    groups: dict[tuple, list[int]] = {}
+    for comp in comps:
+        groups.setdefault(pattern(comp), []).extend(comp)
+    # merging pieces whose patterns differ costs states; keep the cheaper split
+    return [sorted(g) for g in sorted(groups.values(), key=min)]
+
+
+def emit(cyc: list[bytes], groups: list[list[int]]) -> tuple[str, int]:
+    out = ["; Generated by tools/make_splash_anim.py from the CPC title capture. Do not edit.",
+           f"; {STEPS} steps x {STEP_FRAMES} frames; {len(groups)} pieces.", "",
+           "SA_PIECES:"]
+    for n in range(len(groups)):
+        out.append(f"        dw      sa_runs{n}, sa_steps{n}")
+    out.append("        dw      0")
+    total = 0
+    for n, g in enumerate(groups):
+        runs = []
+        for i in g:
+            a = addr(i)
+            if runs and runs[-1][0] + runs[-1][1] == a and runs[-1][1] < 255:
+                runs[-1][1] += 1
+            else:
+                runs.append([a, 1])
+        out.append(f"sa_runs{n}:")
+        for a, k in runs:
+            out.append(f"        db      {k}")
+            out.append(f"        dw      0x{a:04X}")
+        out.append("        db      0")
+        states: dict[bytes, int] = {}
+        seq = [states.setdefault(bytes(f[i] for i in g), len(states)) for f in cyc]
+        out.append(f"sa_steps{n}:")
+        out.append("        dw      " + ", ".join(f"sa_st{n}_{s}" for s in seq))
+        for s, k in states.items():
+            out.append(f"sa_st{n}_{k}:")
+            for j in range(0, len(s), 16):
+                out.append("        db      " + ",".join(f"0x{b:02X}" for b in s[j:j + 16]))
+        size = len(runs) * 3 + 1 + STEPS * 2 + len(states) * len(g) + 4
+        total += size
+        print(f"piece {n}: {len(g)} bytes in {len(runs)} runs, {len(states)} states, "
+              f"steps {''.join(chr(48 + s) for s in seq)}, {size} B")
+    return "\n".join(out) + "\n", total
+
+
+def main() -> None:
+    pngs = sorted(SRC.glob("f*.png"))
+    if len(pngs) < 3 * STEPS * STEP_FRAMES:
+        raise SystemExit(f"{SRC}: need >= {3 * STEPS * STEP_FRAMES} frames, have {len(pngs)}")
+    cyc = find_cycle([planes_of(p) for p in pngs])
+    groups = pieces(cyc)
+    text, total = emit(cyc, groups)
+    PLANES_Z.write_bytes(zlib.compress(cyc[0], 9))
+    DATA_INC.write_text(text)
+    print(f"{PLANES_Z.relative_to(ROOT)}; {DATA_INC.relative_to(ROOT)} ~{total} B")
+
+
+if __name__ == "__main__":
+    main()

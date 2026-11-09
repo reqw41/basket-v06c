@@ -164,7 +164,7 @@
       "sig": "fe019f"
     },
     "STAGE_ALIGNED_ROW": {
-      "addr": "6D9D",
+      "addr": "6D97",
       "kind": "adapter_code",
       "note": "aligned_sprite_row.asm",
       "sig": "2a5a0f"
@@ -265,7 +265,7 @@
       "addr": "1710",
       "kind": "adapter_code",
       "note": "fixed cross-module entry",
-      "sig": "cd0e6f"
+      "sig": "cd086f"
     },
     "PAIR_BUFFER_OK": {
       "addr": "1721",
@@ -292,13 +292,13 @@
       "sig": "774f3a"
     },
     "PLAYER_COMPOSE_CLIPPED": {
-      "addr": "6DD8",
+      "addr": "6DD2",
       "kind": "adapter_code",
       "note": "fixed cross-module entry",
       "sig": "e52af6"
     },
     "PLAYER_BACKGROUND_ROW": {
-      "addr": "6F0E",
+      "addr": "6F08",
       "kind": "adapter_code",
       "note": "fixed cross-module entry",
       "sig": "3aef0f"
@@ -369,7 +369,7 @@
       "note": "256-byte bit-reverse table for mirrored sprite rows (page aligned; build_v06_rom after the sprite records)"
     },
     "CLEAR_OFFCOURT": {
-      "addr": "0415",
+      "addr": "041B",
       "kind": "adapter_code",
       "note": "softvdp: clear the off-court rows (CPC_STAMP_OFF tail)",
       "sig": "16e00e"
@@ -396,7 +396,7 @@
       "addr": "6803",
       "kind": "adapter_code",
       "note": "color_sprite: menu frame entry",
-      "sig": "c3f303"
+      "sig": "c3f603"
     },
     "COLOR_SPRITE": {
       "addr": "6816",
@@ -411,7 +411,7 @@
       "sig": "f5c5d5"
     },
     "COLOR_MENU_PREP": {
-      "addr": "03F3",
+      "addr": "03F6",
       "kind": "adapter_code",
       "note": "softvdp: menu-frame preparation",
       "sig": "f5c5d5"
@@ -428,7 +428,7 @@
       "note": "org of the color_sprite unit (freed sprite space after MIR_REV)"
     },
     "DIRTY_ADD": {
-      "addr": "03BE",
+      "addr": "03C1",
       "kind": "adapter_code",
       "note": "cross-unit entry (glue <-> color_sprite)",
       "sig": "f5c5d5"
@@ -505,7 +505,7 @@
       "sig": "210025"
     },
     "MEM_COPY": {
-      "addr": "6F1B",
+      "addr": "6F15",
       "kind": "adapter_code",
       "note": "clipped_player_object: i8080 ldir (BC bytes HL->DE, none when 0)",
       "sig": "79e603"
@@ -522,7 +522,7 @@
       "note": "MSX D0AC: post-score wipe direction (A0BF LD IX,3314; bit 7 = from the left)"
     },
     "DP_ISR_COPY": {
-      "addr": "7332",
+      "addr": "734E",
       "kind": "adapter_code",
       "note": "damage_publish.asm: frame IRQ copies the ready batch of damage boxes (glue IRQ_HANDLER)",
       "sig": "3aea0f"
@@ -540,25 +540,25 @@
       "sig": "3a800f"
     },
     "RING_PUSH": {
-      "addr": "7508",
+      "addr": "7524",
       "kind": "adapter_code",
       "note": "ring.asm: replay ring in a circle",
       "sig": "2ad493"
     },
     "RING_RESET": {
-      "addr": "7531",
+      "addr": "754D",
       "kind": "adapter_code",
       "note": "ring.asm: replay ring in a circle",
       "sig": "af3204"
     },
     "RING_REPLAY": {
-      "addr": "753C",
+      "addr": "7558",
       "kind": "adapter_code",
       "note": "ring.asm: replay ring in a circle",
       "sig": "3e0e32"
     },
     "RING_PULL": {
-      "addr": "754D",
+      "addr": "7569",
       "kind": "adapter_code",
       "note": "ring.asm: replay ring in a circle",
       "sig": "2ad493"
@@ -579,7 +579,7 @@
       "note": "1 = replay playback reached the end"
     },
     "STAGE_SLOTS": {
-      "addr": "723A",
+      "addr": "7237",
       "kind": "adapter_code",
       "note": "damage_publish.asm: stage the recorded objects a damage box touches (replay: all)",
       "sig": "32670f"
@@ -624,7 +624,7 @@
       "sig": "7de61f"
     },
     "CROWD_TICK": {
-      "addr": "74DA",
+      "addr": "74F6",
       "kind": "adapter_code",
       "note": "damage_publish: jumping fans after a basket (A502 calls it)",
       "sig": "210018"
@@ -633,6 +633,55 @@
       "addr": "9451",
       "kind": "game_data",
       "note": "basket celebration countdown, once per game frame (A502 bit 0: fans stand on even steps)"
+    },
+    "SYS_KEY_POLL": {
+      "addr": "3A56",
+      "kind": "sys_code",
+      "note": "MSX D7EE: short delay, then the key parse 3811 (G_KEY_CODE/G_KEY_ASCII)",
+      "sig": "3e05cd"
+    },
+    "GAME_PAUSE_RESUME": {
+      "addr": "937C",
+      "kind": "game_code",
+      "note": "L_937C: JP 9F60, the match clock and music run again (end of the pause)",
+      "sig": "c3609f"
+    },
+    "DP_SYNC": {
+      "addr": "7339",
+      "kind": "adapter_code",
+      "note": "damage_publish: wait until the frame IRQ has copied the posted last batch (07.11 async publish)",
+      "sig": "3aea0f"
+    },
+    "PAL_TAB": {
+      "addr": "0235",
+      "kind": "adapter_data",
+      "note": "glue.asm: 16 palette bytes PAL_WRITE latches from the IRQ"
+    },
+    "SPLASH_ANIM": {
+      "addr": "1B40",
+      "kind": "adapter_code",
+      "note": "splash_anim.asm: CPC title animation until Space, lives in the replay ring/DP_BUF (cleared after)",
+      "sig": "213502"
+    },
+    "MUSIC_SLOT": {
+      "addr": "3702",
+      "kind": "sys_code",
+      "note": "game ISR: CALL music tick (operand +1 = AB28 once a tune plays; AAE6 writes it)"
+    },
+    "MUSIC_START": {
+      "addr": "AA7C",
+      "kind": "game_code",
+      "note": "start the tune at (BLIT_Y); MUSIC_LOOP 0 = repeat"
+    },
+    "MUSIC_LOOP": {
+      "addr": "AA82",
+      "kind": "game_data",
+      "note": "0: the tune repeats after its last pattern (AAAA)"
+    },
+    "SONG_MENU": {
+      "addr": "7EAF",
+      "kind": "sys_data",
+      "note": "menu tune (pattern list), started at 84F8/8508"
     }
   }
 }

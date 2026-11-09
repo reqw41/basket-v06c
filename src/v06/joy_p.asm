@@ -7,11 +7,11 @@
 ; builds the same two bytes from the Vector inputs directly:
 ;   PAD_P1 (AC4D) / PAD_P2 (AC4E): b0 up, b0|b1 down, b2 left, b2|b3 right,
 ;   b4 fire; opposite directions cancel (as AF05 did).
-; Player 2 (two players only) fires with ВК or SPACE; with one player its
+; Player 2 (two players only) fires with SPACE (ВК pauses, kbd.asm
+; PAUSE_WAIT); with one player its
 ; byte stays 0 for the AI, as on the MSX. Letters
 ; and digits no longer steer anyone; menu item 5 (SELECT CONTROL) is gone.
 
-V_MSXROW        equ     0x0F20
 V_VROW          equ     0x0F38          ; raw Vector rows (frame IRQ poll)
 V_KJOY          equ     0x0F34          ; port 6 as polled (0 outside a match)
 JOY_IDLE        equ     0x0F61          ; port 6 value at rest
@@ -82,10 +82,7 @@ np_p1:
         ld      a,(ONE_PLAYER)          ; one player: player 2 is the AI,
         or      a                       ; its keys stay up (as on the MSX
         jp      nz,np_p2                ; with only 1 Q D F Z pressed)
-        ld      a,b
-        and     0x04                    ; ВК
-        jp      nz,np_p2fire
-        ld      a,(V_VROW+7)            ; SPACE fires too
+        ld      a,(V_VROW+7)            ; SPACE fires (ВК is the pause)
         rlca
         jp      c,np_p2dirs
 np_p2fire:

@@ -127,7 +127,16 @@ function check(name, ok, detail) {
   if (!ok) fails++;
 }
 
+// A publish leaves its last batch to the frame IRQ (DP_FLUSH_LAST): these
+// procedure calls run without IRQs, so the copy runs here as the IRQ would.
 function call(addr, regs, opts = {}) {
+  const flush = () => { if (rd(0x0fea) && addr !== SYM.DP_ISR_COPY) call0(SYM.DP_ISR_COPY, {}); };
+  flush();
+  const r = call0(addr, regs, opts);
+  flush();
+  return r;
+}
+function call0(addr, regs, opts = {}) {
   const RET = 0x0ff8;
   wr(RET, 0xc9);
   const st = cpu.getState();

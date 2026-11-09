@@ -178,8 +178,37 @@ cs_draw:
 cs_stage:
         call    CS_CACHE_FETCH          ; Z: a hoop as staged last time
         jp      z,cs_done
+        ; Shifted rows: the entry into the unrolled pair code for this shift
+        ; and stride (CP3_<shift> + (3 - stride) blocks), once per object,
+        ; into the calls of both row paths.
+        ld      a,(CSPR_SHIFT)
+        or      a
+        jp      z,csd_path
+        cp      4
+        ld      hl,CP3_FOUR
+        ld      de,CP3_FOUR_BLOCK
+        jp      z,csd_entry
+        ld      hl,CP3_TWO
+        ld      e,CP3_TWO_BLOCK         ; = CP3_SIX_BLOCK
+        jp      c,csd_entry
+        ld      hl,CP3_SIX
+csd_entry:
+        ld      a,(CSPR_STRIDE)
+        cpl
+        add     a,4                     ; 3 - stride (sprites are <= 24 px)
+        jp      z,csd_patch
+csd_skip:
+        add     hl,de
+        dec     a
+        jp      nz,csd_skip
+csd_patch:
+        ld      (crd_p0+1),hl
+        ld      (crd_p1+1),hl
+        ld      (crl_p0+1),hl
+        ld      (crl_p1+1),hl
+csd_path:
         ; Unclipped columns (no left skip, full width): shifted rows go
-        ; straight into the stream (cs_row_direct), else through the lanes.
+        ; straight into the stream (cs_row_direct), else through the lane.
         ld      hl,cs_row_lanes
         ld      a,(B1_SKIP)
         or      a
@@ -213,14 +242,20 @@ cs_row_shifted:
         jp      cs_row_lanes            ; patched by cs_draw
 cs_row_lanes:
         ld      hl,(CSPR_SRC)
-        ld      de,SPR_STRIP
-        call    CSPR_BUILD_PLANE
-        ld      de,SPR_STRIP+4
-        call    CSPR_BUILD_PLANE
+        ld      de,SPR_STRIP            ; plane 0 -> SPR_STRIP+0, +2, ...
+        ld      c,0
+crl_p0:
+        call    CP3_FOUR                ; patched by cs_draw
+        ld      de,SPR_STRIP+1          ; plane 1 -> SPR_STRIP+1, +3, ...
+        ld      c,0
+crl_p1:
+        call    CP3_FOUR                ; patched by cs_draw
         ld      (CSPR_SRC),hl
 
-        ; SPR_STRIP..+7 sits in one page: E walks it, plane 1 is E+4.
+        ; SPR_STRIP..+7 sits in one page and holds the shifted pairs: the
+        ; visible ones (B1_SKIP on, B1_WIDTH of them) go to the stream.
         ld      a,(B1_SKIP)
+        add     a,a
         add     a,SPR_STRIP & 255
         ld      e,a
         ld      d,SPR_STRIP >> 8
@@ -231,15 +266,11 @@ cs_blit:
         ld      a,(de)
         ld      (hl),a
         inc     hl
-        ld      a,e
-        add     a,4
-        ld      e,a
+        inc     e
         ld      a,(de)
         ld      (hl),a
         inc     hl
-        ld      a,e
-        sub     3
-        ld      e,a
+        inc     e
         dec     b
         jp      nz,cs_blit
         ld      (CSPR_CACHE_PTR),hl
@@ -294,75 +325,6 @@ CSPR_META_STAGE:
         ld      (hl),a
         jp      DIRTY_ADD
 
-; Expand a source plane row (HL, CSPR_STRIDE bytes) into a shifted scratch
-; lane at DE (stride + 1 bytes). C carries the bits shifted out.
-CSPR_BUILD_PLANE:
-        ld      a,(CSPR_STRIDE)
-        ld      (CBP_LEFT),a
-        ld      c,0
-        ld      a,(CSPR_SHIFT)
-        cp      4
-        jp      z,cbp_four
-        jp      c,cbp_two
-cbp_six_l:
-        ld      a,(hl)
-        rlca
-        rlca
-        ld      b,a
-        and     0x03
-        or      c
-        ld      (de),a
-        inc     de
-        ld      a,b
-        and     0xFC
-        ld      c,a
-        inc     hl
-        ld      a,(CBP_LEFT)
-        dec     a
-        ld      (CBP_LEFT),a
-        jp      nz,cbp_six_l
-        jp      cbp_last
-cbp_four:
-        ld      a,(hl)
-        rrca
-        rrca
-        rrca
-        rrca
-        ld      b,a
-        and     0x0F
-        or      c
-        ld      (de),a
-        inc     de
-        ld      a,b
-        and     0xF0
-        ld      c,a
-        inc     hl
-        ld      a,(CBP_LEFT)
-        dec     a
-        ld      (CBP_LEFT),a
-        jp      nz,cbp_four
-        jp      cbp_last
-cbp_two:
-        ld      a,(hl)
-        rrca
-        rrca
-        ld      b,a
-        and     0x3F
-        or      c
-        ld      (de),a
-        inc     de
-        ld      a,b
-        and     0xC0
-        ld      c,a
-        inc     hl
-        ld      a,(CBP_LEFT)
-        dec     a
-        ld      (CBP_LEFT),a
-        jp      nz,cbp_two
-cbp_last:
-        ld      a,c
-        ld      (de),a
-        ret
 ; Shifted row straight into the staged stream (no left/right clip: B1_SKIP
 ; = 0, B1_WIDTH = stride + 1): each plane is shifted into every other byte
 ; of the stream (p0 at even, p1 at odd), no SPR_STRIP lane and no blit.
@@ -373,53 +335,70 @@ cs_row_direct:
         ex      de,hl
         ld      hl,(CSPR_SRC)
         push    de
-        call    CSPR_PAIRS              ; plane 0 -> DE, DE+2, ...
+        ld      c,0
+crd_p0:
+        call    CP3_FOUR                ; plane 0 -> DE, DE+2, ... (patched)
         pop     de
         inc     de
-        call    CSPR_PAIRS              ; plane 1 -> DE+1, DE+3, ...
+        ld      c,0
+crd_p1:
+        call    CP3_FOUR                ; plane 1 -> DE+1, DE+3, ... (patched)
         ld      (CSPR_SRC),hl
         ex      de,hl
         dec     hl                      ; DE stepped past the last pair
         ld      (CSPR_CACHE_PTR),hl
         jp      cs_row_advance
 
-; One plane row (HL, CSPR_STRIDE bytes) shifted right by CSPR_SHIFT into
-; DE, DE+2, ... (stride + 1 bytes). HL, DE end past the row.
-CSPR_PAIRS:
-        ld      a,(CSPR_STRIDE)
-        add     a,l
-        ld      c,a                     ; end of the plane row (low byte)
-        ld      a,(CSPR_SHIFT)
-        cp      4
-        ld      a,c
-        jp      z,cp_four
-        jp      c,cp_two
-        ld      (cp6_end+1),a
-        ld      c,0
-cp_six:
+; One plane row (HL, stride 1..3 bytes) shifted right by CSPR_SHIFT into
+; DE, DE+2, ... (stride + 1 bytes); C = 0 on entry. Three identical blocks
+; per shift, entered (3 - stride) blocks in: cs_draw patches the entry into
+; cs_row_direct once per object, so no row or byte pays a loop test. HL, DE
+; end past the row. Shift 2: rrca x2; 4: rrca x4 (nibble swap); 6: rlca x2.
+CP3_TWO:
         ld      a,(hl)
-        rlca
-        rlca
+        inc     hl
+        rrca
+        rrca
         ld      b,a
-        and     0x03
+        and     0x3F
         or      c
         ld      (de),a
         inc     de
         inc     de
         ld      a,b
-        and     0xFC
+        and     0xC0
         ld      c,a
-        inc     hl
-        ld      a,l
-cp6_end:
-        cp      0                       ; patched
-        jp      nz,cp_six
-        jp      cp_last
-cp_four:
-        ld      (cp4_end+1),a
-        ld      c,0
-cp4_lp:
+CP3_TWO_1:
         ld      a,(hl)
+        inc     hl
+        rrca
+        rrca
+        ld      b,a
+        and     0x3F
+        or      c
+        ld      (de),a
+        inc     de
+        inc     de
+        ld      a,b
+        and     0xC0
+        ld      c,a
+        ld      a,(hl)
+        inc     hl
+        rrca
+        rrca
+        ld      b,a
+        and     0x3F
+        or      c
+        ld      (de),a
+        inc     de
+        inc     de
+        ld      a,b
+        and     0xC0
+        ld      c,a
+        jp      cp3_last
+CP3_FOUR:
+        ld      a,(hl)
+        inc     hl
         rrca
         rrca
         rrca
@@ -433,39 +412,88 @@ cp4_lp:
         ld      a,b
         and     0xF0
         ld      c,a
-        inc     hl
-        ld      a,l
-cp4_end:
-        cp      0                       ; patched
-        jp      nz,cp4_lp
-        jp      cp_last
-cp_two:
-        ld      (cp2_end+1),a
-        ld      c,0
-cp2_lp:
+CP3_FOUR_1:
         ld      a,(hl)
+        inc     hl
+        rrca
+        rrca
         rrca
         rrca
         ld      b,a
-        and     0x3F
+        and     0x0F
         or      c
         ld      (de),a
         inc     de
         inc     de
         ld      a,b
-        and     0xC0
+        and     0xF0
         ld      c,a
+        ld      a,(hl)
         inc     hl
-        ld      a,l
-cp2_end:
-        cp      0                       ; patched
-        jp      nz,cp2_lp
-cp_last:
+        rrca
+        rrca
+        rrca
+        rrca
+        ld      b,a
+        and     0x0F
+        or      c
+        ld      (de),a
+        inc     de
+        inc     de
+        ld      a,b
+        and     0xF0
+        ld      c,a
+        jp      cp3_last
+CP3_SIX:
+        ld      a,(hl)
+        inc     hl
+        rlca
+        rlca
+        ld      b,a
+        and     0x03
+        or      c
+        ld      (de),a
+        inc     de
+        inc     de
+        ld      a,b
+        and     0xFC
+        ld      c,a
+CP3_SIX_1:
+        ld      a,(hl)
+        inc     hl
+        rlca
+        rlca
+        ld      b,a
+        and     0x03
+        or      c
+        ld      (de),a
+        inc     de
+        inc     de
+        ld      a,b
+        and     0xFC
+        ld      c,a
+        ld      a,(hl)
+        inc     hl
+        rlca
+        rlca
+        ld      b,a
+        and     0x03
+        or      c
+        ld      (de),a
+        inc     de
+        inc     de
+        ld      a,b
+        and     0xFC
+        ld      c,a
+cp3_last:
         ld      a,c
         ld      (de),a
         inc     de
         inc     de
         ret
+CP3_TWO_BLOCK   equ     CP3_TWO_1 - CP3_TWO
+CP3_FOUR_BLOCK  equ     CP3_FOUR_1 - CP3_FOUR
+#assert CP3_SIX_1 - CP3_SIX == CP3_TWO_BLOCK
 
 
 ; Hoop cache. The two hoops stand still and are staged into the same bytes

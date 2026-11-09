@@ -61,6 +61,8 @@ def prepare_bank(raw: bytes) -> bytes:
     table = len(raw) - count * 2
     msx_masks = load_msx_opaque_masks(layout["runtime_records"])
     canvas_widths = {int(k): int(v) for k, v in layout.get("canvas_widths", {}).items()}
+    pen_remap = {int(k): {int(a): int(b) for a, b in v.items()}
+                 for k, v in layout.get("pen_remap", {}).items()}
     records = bytearray()
     offsets = []
     for index in range(layout["runtime_records"]):
@@ -71,6 +73,8 @@ def prepare_bank(raw: bytes) -> bytes:
         if index in canvas_widths:
             width = canvas_widths[index]
         out_stride = (width + 7) // 8
+        if width > 24:   # color_sprite.asm CP3_*: unrolled for strides 1..3
+            raise ValueError(f"sprite {index}: width {width} > 24 px")
         dx = layout["x_offsets_pixels"].get(str(index), 0)
         opaque = msx_masks[index]
         if len(opaque) != h:
@@ -85,6 +89,7 @@ def prepare_bank(raw: bytes) -> bytes:
                 bit = 0x80 >> (x & 7)
                 pen = (bool(raw[start + x // 8] & bit)
                        + 2 * bool(raw[start + stride + x // 8] & bit))
+                pen = pen_remap.get(index, {}).get(pen, pen)
                 if not pen:
                     continue
                 target = x + dx

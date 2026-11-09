@@ -63,4 +63,4 @@ HC_GEN          equ     0x0F07          ; word: staging pass, +1 per STAGE_SLOTS
 DP_WAIT         equ     0x0F01          ; lines the frame IRQ waits before a box copied behind the beam
 PCC_RECT        equ     0x0FF6          ; PLAYER_COMPOSE_CLIPPED: object rect (word)
 NRM_RECT        equ     0x0F7A          ; STAGED_RECT_ADVANCE: rect cursor (word)
-CBP_LEFT        equ     0x0F0C          ; CSPR_BUILD_PLANE: source bytes left
+V_NOISE         equ     0x0F7C          ; ball noise flag (menu_color_bg.asm SND_NOISE_SCAN)

@@ -598,9 +598,9 @@ console.log('VDP_STATUS', memory.read(0x0f08, false).toString(16));
 console.log('VDP_ADDR', memory.read(0x0f0a, false).toString(16).padStart(2,'0') + memory.read(0x0f09, false).toString(16).padStart(2,'0'));
 console.log('VDP_LATCH', memory.read(0x0f0b, false));
 
-// MSX shadow keyboard rows (V_MSXROW at 0x0F20)
+// MSX shadow keyboard rows (V_MSXROW = KEY_SNAP at 0x4104)
 const msxRows = [];
-for (let i = 0; i < 9; i++) msxRows.push(memory.read(0x0f20 + i, false).toString(16).padStart(2, '0'));
+for (let i = 0; i < 9; i++) msxRows.push(memory.read(0x4104 + i, false).toString(16).padStart(2, '0'));
 console.log('MSX_SHADOW', msxRows.join(' '));
 
 // PSG shadow (V_AYREG at 0x0F40)

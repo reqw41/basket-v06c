@@ -24,3 +24,4 @@ ref/zx/**/*.zip
 src/v06/scheme.inc
 src/v06/cpu.inc
 src/v06/game_labels.inc
+build/cpcbox/

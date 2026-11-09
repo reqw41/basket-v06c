@@ -97,6 +97,11 @@ function boot() {
 const MAPI = {}; for (const [z, n] of Object.entries(MAP.map)) MAPI[parseInt(z, 16)] = parseInt(n, 16);
 const imgZ = fs.readFileSync(path.join(ROOT, 'build/v06/basket.full.bin'));
 const imgI = fs.readFileSync(path.join(ROOT, 'build/i8080/basket-i8080.full.bin'));
+// DP_COST (0FE4, word) ends a publish as DP_START, the copy start of that
+// CPU (build_i8080_rom.py writes the i8080 timing): equal when each image
+// holds its own DP_START.
+const DP_COST = 0x0fe4, DP_START = require('./v06syms').SYMS.DP_START;
+const ownStart = (img, mem) => mem[DP_COST] === img[DP_START] && mem[DP_COST + 1] === img[DP_START + 1];
 const codeZ = new Uint8Array(0x10000), insnZ = new Uint8Array(0x10000);
 for (const [lo, n] of JSON.parse(fs.readFileSync(path.join(ROOT, 'build/v06/disasm_v06_code.json'), 'utf8'))) {
   insnZ[lo] = 1; for (let a = lo; a < lo + n; a++) codeZ[a] = 1;
@@ -160,7 +165,10 @@ const Z80_R = RT + 20; let rseries = [], rpos = 0;
 const isCodeAddr = (w) => insnZ[w] && MAPI[w] !== undefined;
 function i8080Mem(snap) {
   const m = Uint8Array.from(snap);
-  for (let a = 0; a < 0x10000; a++) if (imgZ[a] !== imgI[a] || codeZ[a] || usedI[a]) m[a] = imgI[a];
+  // 1B40..24FF holds the splash animation in the image (its adapter operands
+  // differ per image) and is cleared on Space: at run time it is RAM.
+  const splash = (a) => a >= 0x1B40 && a < 0x2500;
+  for (let a = 0; a < 0x10000; a++) if ((imgZ[a] !== imgI[a] && !splash(a)) || codeZ[a] || usedI[a]) m[a] = imgI[a];
   // runtime-modified bytes: SMC in Z80 code moves with its instruction;
   // RAM words holding Z80 code addresses take the i8080 address
   for (let a = 0; a < 0x10000; a++) {
@@ -271,6 +279,7 @@ for (const s of snaps) {
     for (let a = 0; a < 0x10000; a++) {
       if (codeZ[a] || usedI[a] || (a >= RT && a < RT + 0x20) || Z.mem[a] === I.mem[a]) continue;
       if (a >= 0xBC00 && a < s.st.sp + 2) continue;                       // scratch below the caller's stack
+      if ((a === DP_COST || a === DP_COST + 1) && ownStart(imgZ, Z.mem) && ownStart(imgI, I.mem)) continue;
       if (imgZ[a] !== imgI[a] && Z.mem[a] === imgZ[a] && I.mem[a] === imgI[a]) continue;   // static image difference
       if (a < 0xffff && eqw(Z.mem[a] | Z.mem[a + 1] << 8, I.mem[a] | I.mem[a + 1] << 8)) { a++; continue; }
       if (a > 0 && eqw(Z.mem[a - 1] | Z.mem[a] << 8, I.mem[a - 1] | I.mem[a] << 8)) continue;

@@ -46,6 +46,7 @@ REPLAY_ZOOM:
         push    bc
         push    de
         push    hl
+        call    DP_SYNC                 ; the last match batch reads B498.., 2000
         ld      hl,0xB498               ; every object of the state
         ld      a,1
         call    STAGE_SLOTS

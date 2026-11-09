@@ -55,6 +55,15 @@
     "Offsets are measured against the original Executive masks, not against the new renderer.",
     "Head 22 has a cropped eight-pixel left margin; seven other heads use the same 24-pixel MSX canvas.",
     "Right-side hoops 67..71 are CPC-cropped to 20px; pad to the 24px MSX canvas with a 4px left margin so boards meet the sideline.",
-    "CPC-only records 75..77 have no corresponding original game index and are omitted from this runtime bank. Raw extraction retains all 78 records."
-  ]
+    "CPC-only records 75..77 have no corresponding original game index and are omitted from this runtime bank. Raw extraction retains all 78 records.",
+    "pen_remap: back-of-head frames 46/47 lose the CPC white hair highlight (pen 2 -> hair pen 1) at the user's request (2026-11-07)."
+  ],
+  "pen_remap": {
+    "46": {
+      "2": 1
+    },
+    "47": {
+      "2": 1
+    }
+  }
 }

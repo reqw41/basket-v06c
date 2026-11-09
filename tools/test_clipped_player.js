@@ -210,18 +210,24 @@ wr(0x2000+8*32+8,0);{const st=emu.cpu.getState();st.h=0x20;st.l=8*32+8;emu.cpu.s
 wr(0xfef,0);
 console.log(`PASS exact CPC tiles: ${rowCases} two-plane bytes, both bank segments, register preservation and menu`);
 
-const planeEntry=sym('CSPR_BUILD_PLANE');
 let shiftCases=0;
-// Shift 0 rows take STAGE_ALIGNED_ROW; CSPR_BUILD_PLANE: HL source, DE lane, CSPR_STRIDE bytes.
+// Shift 0 rows take STAGE_ALIGNED_ROW. Shifted rows: the unrolled CP3_<shift>
+// code entered (3 - stride) blocks in, HL source, DE stream (every other
+// byte), C = 0 (color_sprite.asm).
+const cp3={2:sym('CP3_TWO'),4:sym('CP3_FOUR'),6:sym('CP3_SIX')};
+const cp3block={2:sym('CP3_TWO_1')-sym('CP3_TWO'),4:sym('CP3_FOUR_1')-sym('CP3_FOUR'),6:sym('CP3_SIX_1')-sym('CP3_SIX')};
 for(const shift of [2,4,6])for(const stride of [1,2,3])for(let seed=0;seed<256;seed++){
  const src=Array.from({length:stride},(_,i)=>(seed+i*83)&255);
- src.forEach((v,i)=>wr(0xb498+i,v));for(let i=0;i<5;i++)wr(0xb1e4+i,0xa5);
- wr(0xf5d,shift);wr(0xf5c,stride);const st=emu.cpu.getState();Object.assign(st,{h:0xb4,l:0x98,d:0xb1,e:0xe4});emu.cpu.setState(st);invoke(planeEntry);
+ src.forEach((v,i)=>wr(0xb498+i,v));for(let i=0;i<10;i++)wr(0xb1e4+i,0xa5);
+ const st=emu.cpu.getState();Object.assign(st,{h:0xb4,l:0x98,d:0xb1,e:0xe4,c:0});emu.cpu.setState(st);invoke(cp3[shift]+(3-stride)*cp3block[shift]);
  const expected=[];let carry=0;
- for(const byte of src){expected.push((byte>>>shift)|carry);carry=shift?(byte<<(8-shift))&255:0;}
- if(shift)expected.push(carry);
- assert.deepStrictEqual(Array.from({length:expected.length},(_,i)=>rd(0xb1e4+i)),expected,`shift=${shift}, stride=${stride}, seed=${seed}`);
- assert.strictEqual(rd(0xb1e4+expected.length),0xa5);shiftCases++;
+ for(const byte of src){expected.push((byte>>>shift)|carry);carry=(byte<<(8-shift))&255;}
+ expected.push(carry);
+ assert.deepStrictEqual(Array.from({length:expected.length},(_,i)=>rd(0xb1e4+2*i)),expected,`shift=${shift}, stride=${stride}, seed=${seed}`);
+ for(let i=0;i<expected.length;i++)assert.strictEqual(rd(0xb1e5+2*i),0xa5,'odd bytes untouched');
+ assert.strictEqual(rd(0xb1e4+2*expected.length),0xa5);
+ const after=emu.cpu.getState();assert.strictEqual((after.h<<8)|after.l,0xb498+stride);assert.strictEqual((after.d<<8)|after.e,0xb1e4+2*expected.length);
+ shiftCases++;
 }
 let alignedCases=0;
 for(const stride of [1,2,3])for(let skip=0;skip<stride;skip++)for(let width=1;width<=stride-skip;width++){

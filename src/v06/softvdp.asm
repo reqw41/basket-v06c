@@ -195,6 +195,7 @@ COLOR_MATCH_PREP:
 
 ; 2500 (ROM image, row-major) → visible plane. No C298 shadow.
 COURT_TO_PLANES:
+        call    DP_SYNC                 ; a posted batch would land on top
         call    CPC_STAMP_OFF           ; seated fans again, then rows 0..7
         call    COURT_COLORIZE
         ld      a,1
@@ -311,6 +312,7 @@ COLOR_MENU_PREP:
         ret
 
 TITLE_RELOAD:
+        call    DP_SYNC                 ; the last match batch first
         jp      MENU_BG_RELOAD
 
 TITLE_SNAP:                             ; the menu is on screen

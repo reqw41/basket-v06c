@@ -285,12 +285,17 @@ ADAPTER_INIT:
         xor     a
         ld      (IRQ_FRAME_COUNT),a
         ei
-        ; Hold the loader picture until Space (MSX row 8 bit 0, active low).
-title_wait:
-        halt
-        ld      a,(V_MSXROW+8)
-        rrca
-        jp      c,title_wait
+        ; The CPC title animation until Space (splash_anim.asm, in the
+        ; replay ring/DP_BUF), then those buffers go back to zero as in the
+        ; image: the game starts on the same memory as without it.
+        call    SPLASH_ANIM
+        ld      hl,SPLASH_ANIM
+title_clear:
+        ld      (hl),0
+        inc     hl
+        ld      a,h
+        cp      0x25                    ; SA_END: DP_BUF ends at 24FF
+        jp      nz,title_clear
         jp      GAME_ENTRY
 
 GAME_STACK      equ     0xC000

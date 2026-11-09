@@ -100,7 +100,8 @@ const kb = (rows) => { for (let i = 0; i < 8; i++) emu.keyboard.matrix[i] = 0; f
 const V_VROW = 0x0F38;   // kbd.asm: raw Vector rows of the frame poll
 const KEYS = { up: [[0, 0x20], [0, 0x02]], down: [[0, 0x80], [4, 0x40]], left: [[0, 0x10], [3, 0x02]],
   right: [[0, 0x40], [3, 0x08]], fire: [[7, 0x80], [5, 0x80]] };
-const V_MSXROW = 0x0F20;
+const V_MSXROW = 0x4104;  // kbd.asm: the MSX rows are KEY_SNAP itself
+const V_KCHG = 0x0F20;    // kbd.asm: inputs changed, NATIVE_ISR_KEYS parses once
 const REGIONS = PLAN.port_regions;          // [[portLo, len], ...] in MSX order
 const dumps = [];
 let k = -1, phase = 'title';
@@ -139,9 +140,9 @@ global.STEP = (p) => {
   }
   for (let r = 0; r < 9; r++) {
     let v = 0xff; for (const n of keys) if (KEYS[n][1][0] === r) v &= ~KEYS[n][1][1];
-    wr(V_MSXROW + r, v);
-    wr(0x4104 + r, v);            // the game's IRQ key snapshot, as on the MSX side
+    wr(V_MSXROW + r, v);          // = the game's IRQ key snapshot (KEY_SNAP), as on the MSX side
   }
+  wr(V_KCHG, 1);                  // the next game ISR parses the rows (3811), as the MSX does
   const parts = REGIONS.map(([lo, n]) => { const b = Buffer.alloc(n); for (let i = 0; i < n; i++) b[i] = rd(lo + i); return b; });
   dumps.push(Buffer.concat(parts));
 };

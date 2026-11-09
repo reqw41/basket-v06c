@@ -15,11 +15,11 @@ G_KEY_CODE:	equ	0x410F
 G_KEY_ASCII:	equ	0x4110
 GAME_ISR_HOOK:	equ	0x4141
 NATIVE_PADS:	equ	0x6CED
-CROWD_TICK:	equ	0x74DA
-RING_PUSH:	equ	0x7508
-RING_RESET:	equ	0x7531
-RING_REPLAY:	equ	0x753C
-RING_PULL:	equ	0x754D
+CROWD_TICK:	equ	0x74F6
+RING_PUSH:	equ	0x7524
+RING_RESET:	equ	0x754D
+RING_REPLAY:	equ	0x7558
+RING_PULL:	equ	0x7569
 HUD_ICON:	equ	0xB455
 
 ; ---- 3304..3F7F system block (MSX D09C..DD17, relocated)
@@ -361,7 +361,7 @@ Z_3724:
 D_3727:
 	db	0x00, 0x00, 0x00, 0x00, 0xC9	; 3727
 Z_372C:
-	call Z_37D2	; 372C CD D2 37
+	call 0x061D	; 372C CD 1D 06
 Z_372F:
 	jp Z_3811	; 372F C3 11 38
 Z_3732:
@@ -499,7 +499,7 @@ Z_37D0:
 Z_37D1:
 	ret	; 37D1 C9
 Z_37D2:
-	jp 0x05D9	; 37D2 C3 D9 05
+	jp 0x061C	; 37D2 C3 1C 06
 D_37D5:
 	db	0xAF, 0xF5, 0xCD, 0x41, 0x01, 0xF3, 0x77, 0x23, 0xF1, 0x3C, 0xFE, 0x09, 0x38, 0xF3, 0x3E, 0x01	; 37D5
 D_37E5:
@@ -1437,7 +1437,7 @@ Z_84FE:
 Z_84FF:
 	ld (D_AA82),a	; 84FF 32 82 AA
 Z_8502:
-	call Z_AA7C	; 8502 CD 7C AA
+	jp Z_8515	; 8502 C3 15 85
 Z_8505:
 	nop	; 8505 00
 Z_8506:
@@ -1501,7 +1501,7 @@ Z_854E:
 Z_8551:
 	call Z_869C	; 8551 CD 9C 86
 Z_8554:
-	call Z_B1F2	; 8554 CD F2 B1
+	call Z_A193	; 8554 CD 93 A1
 Z_8557:
 	call Z_A092	; 8557 CD 92 A0
 Z_855A:
@@ -1749,23 +1749,23 @@ Z_867C:
 Z_867F:
 	call Z_3A2F	; 867F CD 2F 3A
 Z_8682:
-	jp Z_937C	; 8682 C3 7C 93
+	jp 0x062B	; 8682 C3 2B 06
 Z_8685:
 	ld a,0x30	; 8685 3E 30
 Z_8687:
-	call Z_3846	; 8687 CD 46 38
+	call 0x063E	; 8687 CD 3E 06
 Z_868A:
 	ret nz	; 868A C0
 Z_868B:
 	ld a,0x31	; 868B 3E 31
 Z_868D:
-	call Z_3846	; 868D CD 46 38
+	call 0x0647	; 868D CD 47 06
 Z_8690:
 	ret nz	; 8690 C0
 Z_8691:
 	ld a,0x3A	; 8691 3E 3A
 Z_8693:
-	jp Z_3846	; 8693 C3 46 38
+	jp 0x0647	; 8693 C3 47 06
 D_8696:
 	db	0x00	; 8696
 D_8697:
@@ -2239,9 +2239,13 @@ Z_889C:
 Z_889D:
 	jr Z_88C6	; 889D 18 27
 Z_889F:
-	bit 6,(ix+0x01)	; 889F DD CB 01 76
+	call Z_A133	; 889F CD 33 A1
+Z_88A2:
+	nop	; 88A2 00
 Z_88A3:
-	ld a,0x10	; 88A3 3E 10
+	nop	; 88A3 00
+Z_88A4:
+	nop	; 88A4 00
 Z_88A5:
 	jr nz,Z_88C6	; 88A5 20 1F
 Z_88A7:
@@ -7466,12 +7470,60 @@ Z_A0CF:
 	ret	; A0CF C9
 ; adapter hole A0D0..A132: wipe_native.asm (A0D0 column, A132 RET)
         org     0xA133
-D_A133:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A133
-D_A143:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A143
-D_A153:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A153
+Z_A133:
+	bit 6,(ix+0x01)	; A133 DD CB 01 76
+Z_A137:
+	ld a,0x10	; A137 3E 10
+Z_A139:
+	ret z	; A139 C8
+Z_A13A:
+	ld a,(D_93D2)	; A13A 3A D2 93
+Z_A13D:
+	and 0x03	; A13D E6 03
+Z_A13F:
+	cp 0x02	; A13F FE 02
+Z_A141:
+	jr nc,Z_A158	; A141 30 15
+Z_A143:
+	push hl	; A143 E5
+Z_A144:
+	push de	; A144 D5
+Z_A145:
+	inc a	; A145 3C
+Z_A146:
+	rrca	; A146 0F
+Z_A147:
+	rrca	; A147 0F
+Z_A148:
+	rrca	; A148 0F
+Z_A149:
+	ld e,a	; A149 5F
+Z_A14A:
+	call Z_386E	; A14A CD 6E 38
+Z_A14D:
+	ld a,h	; A14D 7C
+Z_A14E:
+	cp e	; A14E BB
+Z_A14F:
+	pop de	; A14F D1
+Z_A150:
+	pop hl	; A150 E1
+Z_A151:
+	jr c,Z_A158	; A151 38 05
+Z_A153:
+	or 0x01	; A153 F6 01
+Z_A155:
+	ld a,0x00	; A155 3E 00
+Z_A157:
+	ret	; A157 C9
+Z_A158:
+	ld a,0x10	; A158 3E 10
+Z_A15A:
+	or a	; A15A B7
+Z_A15B:
+	ret	; A15B C9
+D_A15C:
+	db	0x00, 0x00, 0x00, 0x00	; A15C
 Z_A160:
 	push hl	; A160 E5
 Z_A161:
@@ -7534,10 +7586,26 @@ Z_A18F:
 	ld (0x4114),hl	; A18F 22 14 41
 Z_A192:
 	ret	; A192 C9
-D_A193:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A193
-D_A1A3:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A1A3
+Z_A193:
+	push hl	; A193 E5
+Z_A194:
+	push de	; A194 D5
+Z_A195:
+	ld hl,(0x4114)	; A195 2A 14 41
+Z_A198:
+	ld de,0x07	; A198 11 07 00
+Z_A19B:
+	add hl,de	; A19B 19
+Z_A19C:
+	ld (0x4114),hl	; A19C 22 14 41
+Z_A19F:
+	pop de	; A19F D1
+Z_A1A0:
+	pop hl	; A1A0 E1
+Z_A1A1:
+	jp Z_B1F2	; A1A1 C3 F2 B1
+D_A1A4:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A1A4
 Z_A1AA:
 	ld a,(D_93E5)	; A1AA 3A E5 93
 Z_A1AD:
@@ -8085,7 +8153,7 @@ Z_A4FD:
 Z_A4FF:
 	jp Z_3A2C	; A4FF C3 2C 3A
 Z_A502:
-	call CROWD_TICK	; A502 CD DA 74
+	call CROWD_TICK	; A502 CD F6 74
 Z_A505:
 	and 0x0F	; A505 E6 0F
 Z_A507:
@@ -8561,7 +8629,7 @@ Z_A854:
 Z_A856:
 	call Z_A75F	; A856 CD 5F A7
 Z_A859:
-	call RING_REPLAY	; A859 CD 3C 75
+	call RING_REPLAY	; A859 CD 58 75
 Z_A85C:
 	nop	; A85C 00
 Z_A85D:
@@ -8645,7 +8713,7 @@ Z_A8BB:
 Z_A8BE:
 	ldir	; A8BE ED B0
 Z_A8C0:
-	call 0x0819	; A8C0 CD 19 08
+	call 0x087B	; A8C0 CD 7B 08
 Z_A8C3:
 	xor a	; A8C3 AF
 Z_A8C4:
@@ -8653,7 +8721,7 @@ Z_A8C4:
 Z_A8C7:
 	ret	; A8C7 C9
 Z_A8C8:
-	jp 0x083E	; A8C8 C3 3E 08
+	jp 0x08A0	; A8C8 C3 A0 08
 D_A8CB:
 	db	0x3C, 0xE6, 0x01, 0x32, 0xCA, 0xD0, 0xC8, 0x01, 0x03, 0x00, 0x3A, 0xCB, 0xD0, 0xCB, 0x7F, 0x28	; A8CB
 D_A8DB:
@@ -8661,7 +8729,7 @@ D_A8DB:
 D_A8EB:
 	db	0x13, 0x78, 0x06, 0x00, 0x09, 0x47, 0x10, 0xF5, 0xC9	; A8EB
 Z_A8F4:
-	jp 0x07C3	; A8F4 C3 C3 07
+	jp 0x0822	; A8F4 C3 22 08
 D_A8F7:
 	db	0xC3, 0x11	; A8F7
 D_A8F9:
@@ -8683,7 +8751,7 @@ Z_A95E:
 Z_A95F:
 	ld (D_93D3),a	; A95F 32 D3 93
 Z_A962:
-	jp RING_RESET	; A962 C3 31 75
+	jp RING_RESET	; A962 C3 4D 75
 D_A965:
 	db	0x00, 0x00, 0x00, 0x00	; A965
 Z_A969:
@@ -8693,13 +8761,13 @@ Z_A96C:
 Z_A96D:
 	ret nz	; A96D C0
 Z_A96E:
-	jp RING_PUSH	; A96E C3 08 75
+	jp RING_PUSH	; A96E C3 24 75
 D_A971:
 	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A971
 D_A981:
 	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A981
 Z_A991:
-	jp RING_PULL	; A991 C3 4D 75
+	jp RING_PULL	; A991 C3 69 75
 D_A994:
 	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A994
 D_A9A4:
@@ -8931,7 +8999,7 @@ D_AB23:
 Z_AB25:
 	jp Z_ABFF	; AB25 C3 FF AB
 Z_AB28:
-	call 0x066B	; AB28 CD 6B 06
+	call 0x06CA	; AB28 CD CA 06
 Z_AB2B:
 	jr nz,Z_AB83	; AB2B 20 56
 Z_AB2D:
@@ -9207,7 +9275,7 @@ Z_AE53:
 Z_AE56:
 	ret	; AE56 C9
 D_AE57:
-	db	0x01, 0x26, 0x19, 0x1B, 0x2F, 0x06	; AE57
+	db	0x01, 0x26, 0x19, 0x1B, 0x2F, 0x3F	; AE57
 D_AE5D:
 	dw	D_AF0E	; AE5D 0E AF
 D_AE5F:

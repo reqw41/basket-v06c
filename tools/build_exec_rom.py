@@ -155,7 +155,10 @@ def build_stub(meta: list[dict]) -> bytes:
         import sys as _sys
         _sys.path.insert(0, str(Path(__file__).resolve().parent))
         import rng_patch
-        for at, _old, new in rng_patch.patches(**rng_patch.MSX):
+        import ease_patch                                # easier steals (trial 09.11)
+        pokes = [(at, new) for at, _old, new in rng_patch.patches(**rng_patch.MSX)]
+        pokes += ease_patch.patches(**ease_patch.MSX)
+        for at, new in pokes:
             code += z80_ld_imm16(0x21, at)
             for b in new:
                 code += bytes([0x36, b, 0x23])          # ld (hl),n / inc hl

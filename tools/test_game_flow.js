@@ -159,8 +159,8 @@ emu.keyboard.matrix[1] = 0x04;
 let row7Chord = 0xff, exitChordMapped = false;
 for (let i = 0; i < 10 && !exitChordMapped; i++) {
   emu.v06c.oneFrame();
-  row6Stuck = rd(0x0f26);
-  row7Chord = rd(0x0f27);
+  row6Stuck = rd(0x4104 + 6);   // MSX rows live in KEY_SNAP (kbd.asm V_MSXROW)
+  row7Chord = rd(0x4104 + 7);
   exitChordMapped = (row6Stuck & 0x03) === 0 && (row7Chord & 0x04) === 0;
 }
 const sha = crypto.createHash('sha256').update(fs.readFileSync(ROM)).digest('hex').slice(0, 16);

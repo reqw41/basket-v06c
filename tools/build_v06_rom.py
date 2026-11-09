@@ -317,6 +317,12 @@ JUMP_OPS = {0xCD, 0xC3, 0xCA, 0xC2, 0xDA, 0xD2, 0xCC, 0xC4, 0xDC, 0xD4,
             0x21, 0x11, 0x01, 0x31, 0x22, 0x2A, 0x32, 0x3A}
 # LD rr,nn immediates that only look like pointers (data bytes / coordinates)
 FALSE_REFS = {0x7A22}
+# Adapter sites whose immediate + the next opcode read as such a pointer
+# (the scan is not instruction-aligned): (glue symbol, byte offset).
+FALSE_REF_SITES = (
+    ("mt_next", 7),           # `cp MT_END & 0xFF` = FE 21, `jp nz,mt_ch` = C2 A5 06
+    ("PAUSE_EXIT_TEST", 7),   # `cp 3Ah / ret / xor a` = FE 3A C9 AF: "ld a,(AFC9)"
+)
 
 
 def code_refs_into(rom: bytearray, lo: int, hi: int) -> list[str]:
@@ -667,6 +673,28 @@ def install_splash_planes(rom: bytearray) -> None:
     low, high = splash_plane_pair()
     rom[0xE000:0x10000] = low
     rom[0xC000:0xE000] = high
+
+
+SPLASH_ANIM_ADDR, SPLASH_ANIM_END = 0x1B40, 0x2500   # replay ring + DP_BUF, idle before the game
+
+
+def install_splash_anim(rom: bytearray) -> None:
+    """CPC title animation in the (zero, idle) replay ring and DP_BUF; cleared on Space."""
+    src, lst, out = ROOT / "src/v06/splash_anim.asm", OUTDIR / "splash_anim.lst", OUTDIR / "splash_anim.bin"
+    out.unlink(missing_ok=True)
+    r = subprocess.run([str(SJASM), "--8080", "-b", "-w", str(src), str(lst), str(out)],
+                       capture_output=True, text=True, cwd=ROOT / "src/v06")
+    text = r.stdout + r.stderr
+    if r.returncode or not out.exists() or ("error" in text.lower() and "no errors" not in text.lower()):
+        raise RuntimeError(f"splash_anim assembly failed:\n{text}")
+    raw = out.read_bytes()
+    blob = raw[SPLASH_ANIM_ADDR:] if len(raw) > SPLASH_ANIM_END - SPLASH_ANIM_ADDR else raw
+    if SPLASH_ANIM_ADDR + len(blob) > SPLASH_ANIM_END:
+        raise RuntimeError(f"splash animation {len(blob)} B does not fit 1B40..24FF")
+    if any(rom[SPLASH_ANIM_ADDR:SPLASH_ANIM_END]):
+        raise RuntimeError("1B40..24FF is not zero before the splash animation goes in")
+    rom[SPLASH_ANIM_ADDR:SPLASH_ANIM_ADDR + len(blob)] = blob
+    print(f"[4d] splash animation 1B40..{SPLASH_ANIM_ADDR + len(blob) - 1:04X} ({len(blob)} B)")
 
 
 def install_window_slots(rom: bytearray) -> None:
@@ -1125,6 +1153,38 @@ def build_rom() -> None:
     install_cpc_stamp(rom, p)
     rom[0xA4AB:0xA4E6] = bytes(0xA4E6 - 0xA4AB)   # former pair bounds helper (old menu)
     relocate_high_memory(rom)
+    # The ISR's `call 37D2` at 372C (then `jp 3811`, the key parse): the
+    # relocation manifest owns that operand, so the patch follows it.
+    # NATIVE_ISR_KEYS skips both unless an input changed (kbd.asm).
+    if rom[0x372C:0x372F] != bytes.fromhex("cdd237"):
+        raise RuntimeError(f"372C: {rom[0x372C:0x372F].hex()}, want cdd237")
+    rom[0x372C:0x372F] = bytes([0xCD, syms["NATIVE_ISR_KEYS"] & 0xFF, syms["NATIVE_ISR_KEYS"] >> 8])
+    print("    372C ISR snapshot+parse → CALL NATIVE_ISR_KEYS")
+    def le(a: int) -> str:
+        return a.to_bytes(2, "little").hex()
+    # Pause on ВК, leave the match with АР2 in the pause (kbd.asm PAUSE_END).
+    # AE5C: the pause key of the control table AE57 (AE40 copies it to AC4F,
+    # 8521 patches it into `cp n` at 8679 each match): MSX key 6 → code 3Fh
+    # (RETURN = ВК). The game's wait 3A2F stays; 8682 (`jp 937C`, resume)
+    # → PAUSE_END; 8685: the SHIFT+CTRL+ESC exit test → PAUSE_EXIT_TEST.
+    # Relocated operands nearby: after relocate_high_memory.
+    for site, old, new, why in (
+        (0xAE57, "0126191b2f06", "0126191b2f3f", "pause key 6 → ВК (RETURN), table AE57"),
+        (0x8682, "c37c93", "c3" + le(syms['PAUSE_END']),
+         "pause resume → PAUSE_END (remember the key, wait for its release)"),
+        # Only the call targets change: the instruction boundaries stay for
+        # the disassembler seeds, and no zero run joins the zero data cells
+        # 8696..869B (recompile_i8080 would lay code over them).
+        (0x8685, "3e30cd4638c03e31cd4638c03e3ac34638",
+         "3e30cd" + le(syms['PAUSE_EXIT_TEST']) + "c03e31cd" + le(syms['PAUSE_EXIT_Z'])
+         + "c03e3ac3" + le(syms['PAUSE_EXIT_Z']),
+         "exit chord → PAUSE_EXIT_TEST / PAUSE_EXIT_Z"),
+    ):
+        o, n = bytes.fromhex(old), bytes.fromhex(new)
+        if rom[site:site + len(o)] != o:
+            raise RuntimeError(f"{site:04X}: {rom[site:site + len(o)].hex()}, want {old} ({why})")
+        rom[site:site + len(n)] = n
+        print(f"    {site:04X} {why}")
     # Music: runtime `ld (3703),HL` turns GAME_ISR `call 3714` into `call AB28`
     # (or AB83). Keep that classic hook — a side MUSIC_FN broke Emu80 audio.
     if rom[0xAAE6:0xAAE9] != bytes.fromhex("220337"):
@@ -1141,6 +1201,9 @@ def build_rom() -> None:
     rom[0x18CA:0x18CA + len(scene_helpers)] = scene_helpers
     rom[0xB01F:0xB1DC] = bytes(0xB1DC - 0xB01F)   # former menu pair buffer code
     install_splash_planes(rom)
+    install_splash_anim(rom)
+    p.put(0x8502, bytes.fromhex("cd7caa"), bytes.fromhex("c31585"),
+          "boot: the menu tune plays on from the splash (no restart at 8502/8512)")
     p.put(0xB01C, bytes.fromhex("2a0233"),
           bytes([0xC3, NATIVE_SPRITE & 0xFF, NATIVE_SPRITE >> 8]),
           "B01C → staged CPC two-plane sprite")
@@ -1159,11 +1222,17 @@ def build_rom() -> None:
     install_native_wipe(rom)
     import rng_patch
     n = rng_patch.apply(rom, **rng_patch.PORT)
+    import ease_patch
+    ne = ease_patch.apply(rom, **ease_patch.PORT)
+    print(f"[4] easier steals on ROOKIE/AMATEUR: stub {ease_patch.PORT['base']:04X}..{ease_patch.PORT['base'] + ne - 1:04X}, "
+          f"call at {ease_patch.SITE:04X}")
     print(f"[4] deterministic RNG: stubs {rng_patch.PORT['base']:04X}..{rng_patch.PORT['base'] + n - 1:04X}, "
           f"{len(rng_patch.SITES)} LD A,R sites, IRQ seed bump only outside a match")
     install_native_blit(rom)
     install_no_vdp_status(rom)
     zero_dead_vdp_bodies(rom)
+    for name, off in FALSE_REF_SITES:
+        FALSE_REFS.add(syms[name] + off)
     zero_dead_code(rom)
     fix_unrelocated(rom)
     # Match background fetchers go through BG_FETCH (B338), the stamp gate.

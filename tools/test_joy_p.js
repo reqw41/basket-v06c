@@ -2,11 +2,13 @@
 /**
  * Fixed controls (joy_p.asm NATIVE_PADS), headless:
  *   1 PLAYER:  joystick «П», cursor keys and SPACE steer player 1;
- *   2 PLAYERS: joystick «П» = player 1, cursor keys + ВК/SPACE = player 2;
+ *   2 PLAYERS: joystick «П» = player 1, cursor keys + SPACE = player 2;
+ *   ВК pauses (match clock stands), a key resumes, АР2 in the pause leaves;
  *   the old letter keys (1 Q D F Z) steer nobody.
  * Checks the control bytes PAD_P1/PAD_P2 (AC4D/AC4E: up 01, down 03,
  * left 04, right 0C, fire 10) and that player 1 really walks.
  *   node tools/test_joy_p.js [path/to.rom]     JOYDEAD=1: port 6 silent (negative control)
+ *   CPU=i8080 node tools/test_joy_p.js build/i8080/basket-i8080.rom   the i8080 image
  * Does not write PC, SP, or game flags. Keyboard and port 6 only.
  */
 'use strict';
@@ -40,7 +42,7 @@ for (const f of [
   'i8080-js/i8080_trace.js', 'i8080-js/i8080_disasm.js', 'i8080-js/i8080.js',
   'src/fili.js', 'src/ay.js', 'src/fd1793.js', 'src/fddimage.js', 'src/i8253.js',
   'src/io.js', 'src/keyboard.js', 'src/memory.js', 'src/sound.js', 'src/tv.js',
-  'Z80_v06.js', 'z80_adapter.js',
+  ...(process.env.CPU === 'i8080' ? [] : ['Z80_v06.js', 'z80_adapter.js']),
 ]) vm.runInContext(fs.readFileSync(path.join(V06, f), 'utf8'), ctx, { filename: f });
 const { Memory, IO, AY, I8253, Keyboard, I8080, Vector06c, Floppy } = ctx;
 
@@ -65,9 +67,12 @@ function boot() {
   const base = file.length === 65536 ? 0 : 0x100;
   for (let i = 0; i < file.length && base + i < 0x10000; i++) memory.write(base + i, file[i], false);
   if (base === 0x100) for (let i = 0; i < 0x100; i++) memory.write(i, memory.read(0x0e00 + i, false), false);
-  const st = cpu.getState();
-  st.pc = 0x0100; st.sp = 0xe000; st.iff1 = 0; st.iff2 = 0; st.halted = false; st.imode = 1;
-  cpu.setState(st); cpu.pc = 0x0100; cpu.sp = 0xe000;
+  if (process.env.CPU !== 'i8080') {        // CPU=i8080: the recompiled image on the i8080 core
+    const st = cpu.getState();
+    st.pc = 0x0100; st.sp = 0xe000; st.iff1 = 0; st.iff2 = 0; st.halted = false; st.imode = 1;
+    cpu.setState(st);
+  }
+  cpu.pc = 0x0100; cpu.sp = 0xe000;
   timer.Write(3, 0x36); timer.Write(3, 0x76); timer.Write(3, 0xb6);
   const exec = new Uint8Array(0x10000);
   const oi = cpu.instruction.bind(cpu);
@@ -152,8 +157,27 @@ for (const [name, press, want] of [
   ['joy up', J(0x04), [0x01, 0x00]], ['joy right', J(0x01), [0x0c, 0x00]], ['joy fire', J(0x40), [0x10, 0x00]],
   ['cursor up', K(0, 0x20), [0x00, 0x01]], ['cursor down', K(0, 0x80), [0x00, 0x03]],
   ['cursor left', K(0, 0x10), [0x00, 0x04]], ['cursor right', K(0, 0x40), [0x00, 0x0c]],
-  ['ВК', K(0, 0x04), [0x00, 0x10]], ['space', K(7, 0x80), [0x00, 0x10]],
+  ['space', K(7, 0x80), [0x00, 0x10]],
 ]) pads(`2P ${name}`, press, want);
 for (const [k, row, m] of LETTERS) pads(`2P letter ${k} steers nobody`, K(row, m), [0x00, 0x00]);
+
+// --- pause: ВК pauses (match clock 4111 stops), a key resumes, ВК + АР2 leaves ---
+function frames(n, press) { for (let i = 0; i < n; i++) { clear(); if (press) press(); emu.v06c.oneFrame(); } }
+const clock = () => rd(0x4111) | rd(0x4112) << 8;
+function check(name, ok, info) { console.log(`${ok ? 'ok  ' : 'FAIL'} ${name}${info ? ': ' + info : ''}`); if (!ok) fail++; }
+{
+  frames(12, K(0, 0x04)); frames(20);                         // ВК held over a game iteration (~8 frames on the i8080)
+  const c0 = clock(); frames(100); const c1 = clock();
+  check('ВК pauses (match clock stands)', c1 === c0, `clock ${c0} -> ${c1}`);
+  check('pause keeps the match', rd(0x0fed) === 1);
+  frames(6, K(7, 0x80)); frames(20);                          // SPACE resumes
+  const c2 = clock(); frames(100); const c3 = clock();
+  check('a key resumes', c3 !== c2, `clock ${c2} -> ${c3}`);
+  frames(12, K(0, 0x04)); frames(20);                         // ВК again
+  frames(6, K(1, 0x04));                                      // АР2 in the pause
+  let left = false;
+  for (let i = 0; i < 300 && !left; i++) { frames(1); left = rd(0x0fed) !== 1; }
+  check('АР2 in the pause leaves the match', left);
+}
 console.log(fail ? `JOY_P_FAIL ${fail}` : 'JOY_P_PASS');
 process.exit(fail ? 1 : 0);

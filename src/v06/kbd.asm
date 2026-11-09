@@ -17,7 +17,9 @@
 ; ============================================================================
 
 ; Shadow MSX keyboard matrix (9 rows, row 0..8)
-V_MSXROW        equ     0x0F20          ; 16 bytes, align 16 for fast lookup
+; The MSX rows are the game's ISR key snapshot itself: V_KBD_POLL and the
+; snapshot ran in the same IRQ one after the other, so the copy was identity.
+V_MSXROW        equ     KEY_SNAP        ; 4104..410C rows 0..8, 410D/410E stick
 
 ; PPI state save
 V_SCROLL        equ     0x0F30          ; scroll register value
@@ -33,17 +35,23 @@ V_KBD_INIT:
         push    hl
         push    bc
         
-        ; Fill shadow with 0xFF (all released)
+        push    de
+        ; Fill the rows with 0xFF (all released); stick bytes from them
         ld      hl,V_MSXROW
-        ld      b,16
+        ld      b,9
 vki_loop:
         ld      (hl),0xFF
         inc     hl
         dec    b
         jp    nz,vki_loop
+        call    ks_stick
+        pop     de
 
         ld      a,1
         ld      (V_KFORCE),a            ; first poll builds the MSX rows
+        ld      (V_KANY),a              ; ... after a full matrix scan
+        xor     a
+        ld      (PAUSE_EXIT),a
 
         ; Game waits on (A10F)==0xFF (no key) before title blit
         ld      a,0xFF
@@ -74,6 +82,11 @@ V_KJOY          equ     0x0F34          ; joystick «П» port 6 (0 outside a ma
 V_KMODE         equ     0x0F35          ; MATCH_MODE
 V_KFORCE        equ     0x0F36          ; 1 = rebuild on the next poll
 V_KONE          equ     0x0F37          ; ONE_PLAYER
+; 0F20..0F2F: the former MSX row shadow (now KEY_SNAP).
+V_KCHG          equ     0x0F20          ; <> 0: inputs changed since the last
+                                        ; key parse (NATIVE_ISR_KEYS clears)
+V_KANY          equ     0x0F21          ; <> 0: a key was down at the last scan
+PAUSE_EXIT      equ     0x0F22          ; key code that ended the last pause (3Ah: АР2 = leave)
 K_MATCH_MODE    equ     0x0FED
 K_JOY_READY     equ     0x0F62
 
@@ -88,6 +101,28 @@ V_KBD_POLL:
         ld      hl,V_VROW
         ld      a,(V_KFORCE)
         ld      c,a                     ; C <> 0: inputs changed
+        xor     a
+        out     (0x03),a                ; every row selected: port 02 is the
+        in      a,(0x02)                ; AND of the rows, FF = no key down
+        inc     a
+        jp      nz,vkp_full
+        ld      a,(V_KANY)              ; nothing down now; nothing at the
+        or      a                       ; last scan either: the rows stand
+        jp      z,vkp_rows
+        xor     a
+        ld      (V_KANY),a
+        ld      c,h                     ; all released: rows FF, changed
+        ld      b,8
+        ld      a,0xFF
+vkp_clear:
+        ld      (hl),a
+        inc     hl
+        dec     b
+        jp      nz,vkp_clear
+        jp      vkp_rows
+vkp_full:
+        ld      a,1
+        ld      (V_KANY),a
         ld      a,0xFE
 vkp_scan:
         out     (0x03),a
@@ -102,6 +137,7 @@ vkp_same:
         ld      a,b
         rlca
         jp      c,vkp_scan
+vkp_rows:
         in      a,(0x01)
         and     0x60                    ; СС, УС
         ld      hl,V_KPORTC
@@ -124,6 +160,9 @@ vkp_joy:
         ld      a,(ONE_PLAYER)
         ld      hl,V_KONE
         call    vkp_sig
+        ld      a,(V_KCHG)
+        or      c                       ; sticky until NATIVE_ISR_KEYS parses
+        ld      (V_KCHG),a
         ld      a,c
         or      a
         jp      z,vkp_restore           ; same inputs: the MSX rows stand
@@ -214,6 +253,7 @@ vkp_letters:
         rlca
         and     c
         ld      (V_MSXROW+8),a
+        call    ks_stick                ; KEY_SNAP+9/+10, KEY_TRIG_NO
         call    JOY_MERGE                  ; JOY_MERGE: joystick «П», cursor keys (joy_p.asm)
 
         ; --- Restore PPI state ---
@@ -299,24 +339,63 @@ gt_notpressed:
 
 ; ============================================================================
 ;  NATIVE_KEYSNAP - the game ISR key snapshot (MSX D56A, port 37D2; JP from
-;  build_v06_rom.py). Same result as the MSX loop over SNSMAT rows 0..8 and
-;  the two GTSTCK/GTTRIG reads: KEY_SNAP+0..8 = MSX rows, +9 = KEY_DIR_TAB
-;  [GTSTCK(1)] with bit 0 cleared while trigger 1 (SPACE) is down, +10 = the
-;  same for trigger 2 (none on the Vector), KEY_TRIG_NO = 2. Keeps BC, DE.
+;  build_v06_rom.py). The MSX rows live in KEY_SNAP itself (V_MSXROW), and
+;  V_KBD_POLL, in the same IRQ just before, refreshes +9/+10 and KEY_TRIG_NO
+;  (ks_stick) whenever an input changes: nothing is left to copy.
+;  NATIVE_ISR_KEYS replaces `call 37D2` at 372C (the ISR: snapshot, then
+;  `jp 3811`, the key parse). Without an input change since the last parse
+;  3811 would produce the same G_KEY_CODE/G_KEY_ASCII (KEY_SNAP, the table
+;  pointer D_3436 and both cells are read-only for the game), so it drops
+;  its return into 372F and returns to the ISR; the parse's own exit to 36D7
+;  (end of a match) happens on the change frame as before.
 ; ============================================================================
 NATIVE_KEYSNAP:
-        push    bc
-        push    de
-        ld      hl,V_MSXROW
-        ld      de,KEY_SNAP
-        ld      b,9
-nks_row:
+        ret
+NATIVE_ISR_KEYS:
+        ld      a,(V_KCHG)
+        or      a
+        jp      z,nik_skip
+        xor     a
+        ld      (V_KCHG),a
+        ret                             ; to 372F: jp 3811
+nik_skip:
+        pop     hl                      ; drop 372F: no parse this frame
+        ret
+
+; ============================================================================
+;  Pause (07.11): ВК pauses a match, АР2 in the pause leaves it.
+;  The game's own pause stays: 8676 `ld a,(G_KEY_CODE) / cp n` with n = the
+;  pause key of the control table AE57 (MSX key 6 -> 3Fh, RETURN = ВК), 937F
+;  (clock and music stop), 3A2F (release, then any key). Its `jp 937C` at
+;  8682 comes here: remember the key that ended the pause, wait until it is
+;  released (else ВК would pause again at once), then resume. Right after
+;  it the loop calls 8685, the former SHIFT+CTRL+ESC test; its first call is
+;  PAUSE_EXIT_TEST, the other two PAUSE_EXIT_Z: Z = leave (8590 JP Z,8508).
+; ============================================================================
+PAUSE_END:
+        ld      a,(G_KEY_CODE)
+        ld      (PAUSE_EXIT),a
+pe_up:
+        call    SYS_KEY_POLL            ; the game's delay + key parse
+        ld      a,(G_KEY_ASCII)
+        inc     a
+        jp      nz,pe_up                ; FF: nothing down
+        jp      GAME_PAUSE_RESUME
+PAUSE_EXIT_TEST:
+        ld      hl,PAUSE_EXIT
         ld      a,(hl)
-        ld      (de),a
-        inc     hl
-        inc     de
-        dec     b
-        jp      nz,nks_row
+        ld      (hl),0                  ; once
+        cp      0x3A                    ; MSX ESC (АР2)
+        ret                             ; Z: leave the match
+PAUSE_EXIT_Z:
+        xor     a
+        ret
+
+; KEY_SNAP+9 = KEY_DIR_TAB[GTSTCK(1)] with bit 0 cleared while trigger 1
+; (SPACE) is down, +10 = the same for trigger 2 (none on the Vector),
+; KEY_TRIG_NO = 2: what the MSX ISR snapshot stored after the nine rows.
+; Clobbers A, BC, DE, HL.
+ks_stick:
         ld      a,1
         call    BIOS_GTSTCK             ; A = direction 0..8
         ld      l,a
@@ -324,22 +403,21 @@ nks_row:
         ld      bc,KEY_DIR_TAB
         add     hl,bc
         ld      a,(hl)
-        ld      (de),a                  ; +10: trigger 2 never down
-        inc     de
+        ld      de,KEY_SNAP+9
         ld      (de),a
+        inc     de
+        ld      (de),a                  ; +10: trigger 2 never down
         ld      a,(V_MSXROW+8)          ; trigger 1: SPACE (BIOS_GTTRIG)
         rrca
-        jp      c,nks_trig
-nks_fire:                               ; trigger 1 down (xref 1p_throw)
+        jp      c,ks_trig
+ks_fire:                                ; trigger 1 down (xref 1p_throw)
         dec     de
         ld      a,(de)
         and     0xFE
         ld      (de),a
-nks_trig:
+ks_trig:
         ld      a,2
         ld      (KEY_TRIG_NO),a
-        pop     de
-        pop     bc
         ret
 
 ; ============================================================================

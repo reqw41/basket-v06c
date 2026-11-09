@@ -10,7 +10,14 @@ play the same match. After this patch:
     value (7 bits, like R): `push hl / call RNG / ld a,h / pop hl / <op>`;
   * the interrupt bumps 4114 only outside a match (menu, demo), so the seed
     still varies with how long the player stays in the menu, and inside a
-    match every random number follows from the seed and the inputs.
+    match every random number follows from the seed and the inputs;
+  * instead, every pass of the main loop (8554, CALL B1F2) adds 7 to 4114.
+    The RNG multiplies by 41, which is 1 mod 8: without an addition the low
+    3 bits never change, and the game takes them (`and 3` choosing the
+    computer's play at 86B2 and others). Without the interrupt bump the
+    computer then made the same choice all match (09.11, "plays far too
+    hard even on ROOKIE"). 7 is odd (all 8 residues) and about the MSX
+    frame IRQs per pass (50 Hz / ~8 passes a second).
 
 Stubs are plain Z80 game code: on the port they live in the game window
 (A160.., freed by the native wipe) and the recompiler translates them with
@@ -28,6 +35,7 @@ SITES = (
     (0xA510, "ed5fdd210300", "ix3"),
 )
 ISR_BUMP = "2a144123221441"          # ld hl,(4114) / inc hl / ld (4114),hl
+LOOP_SITE, LOOP_CALL, LOOP_STEP = 0x8554, 0xB1F2, 7   # main loop head: CALL B1F2
 TAILS = {"cp64": "fe64", "and10": "e610", "and0f": "e60f", "ix3": "dd210300"}
 
 
@@ -41,6 +49,10 @@ def stubs(base: int, rng: int, match_flag: int) -> tuple[bytes, dict[str, int]]:
     addr["seed"] = base + len(out)
     out += bytes((0x3A, match_flag & 0xFF, match_flag >> 8, 0x3D, 0xC8))  # ld a,(flag)/dec a/ret z
     out += bytes.fromhex(ISR_BUMP) + b"\xC9"
+    addr["loop"] = base + len(out)
+    # push hl/push de/ld hl,(4114)/ld de,7/add hl,de/ld (4114),hl/pop de/pop hl/jp B1F2
+    out += bytes.fromhex("e5d52a1441") + bytes((0x11, LOOP_STEP, 0)) + bytes.fromhex("19221441d1e1")
+    out += bytes((0xC3, LOOP_CALL & 0xFF, LOOP_CALL >> 8))
     return bytes(out), addr
 
 
@@ -55,6 +67,8 @@ def patches(base: int, rng: int, match_flag: int, isr: int) -> list[tuple[int, b
     old = bytes.fromhex(ISR_BUMP)
     new = bytes((0xC3, addr["seed"] & 0xFF, addr["seed"] >> 8))
     out.append((isr, old, new + bytes(len(old) - 3)))
+    out.append((LOOP_SITE, bytes((0xCD, LOOP_CALL & 0xFF, LOOP_CALL >> 8)),
+                bytes((0xCD, addr["loop"] & 0xFF, addr["loop"] >> 8))))
     return out
 
 
