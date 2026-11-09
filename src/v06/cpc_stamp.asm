@@ -176,54 +176,5 @@ sp_court:
         pop     hl
         jp      COURT_PAIR
 
-; COMPOSE_BOX stand rows: the SP tile copier cannot see the stamp, so a
-; stamped row is patched cell by cell after it. DE = end of the buffer row
-; (kept), B1_ROW = its court row. IRQs stay on. Clobbers A, BC.
-STAMP_ROW_FIX:
-        ld      a,(BG_GATE)
-        cp      STAMP_PAIR & 255
-        ret     nz
-        ld      a,(B1_ROW)              ; BROW: court row of this buffer row
-        sub     STAMP_ROW
-        cp      STAMP_H
-        ret     nc
-        push    de
-        push    hl
-        ld      a,(0x0F1C)              ; RECT width
-        ld      b,a
-        add     a,a
-        ld      c,a
-        ld      a,e
-        sub     c
-        ld      e,a
-        jp      nc,sfr_de
-        dec     d                       ; DE = start of this buffer row
-sfr_de:
-        ld      a,(B1_ROW)
-        ld      l,a
-        ld      h,0
-        add     hl,hl
-        add     hl,hl
-        add     hl,hl
-        add     hl,hl
-        add     hl,hl
-        ld      a,(0x0F1A)              ; RECT column
-        add     a,l
-        ld      l,a
-        ld      a,h
-        add     a,0x25
-        ld      h,a                     ; HL = court address of the first cell
-sfr_col:
-        call    STAMP_PAIR
-        ld      (de),a
-        inc     de
-        ld      a,(PAIR_HIGH)
-        ld      (de),a
-        inc     de
-        inc     hl
-        dec    b
-        jp    nz,sfr_col
-        pop     hl
-        pop     de
-        ret
+; STAMP_ROW_FIX (COMPOSE_BOX stand rows) is in stamp_row.asm (glue).
 CPC_STAMP_END:

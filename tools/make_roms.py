@@ -3,9 +3,10 @@
 
   python3 tools/make_roms.py     # after the build (README: build_v06_rom, i8080, build_v06_rom)
 
-  rom/basket.c00, basket-0100.rom          i8080 (plain Vector)       English
-  rom/basket-z80.c00, basket-z80-0100.rom  Z80 processor board        English
-  rom/basket-ru.c00, basket-ru-0100.rom, rom/basket-z80-ru.*          the same in Russian
+  rom/basket.c00, basket-0100.rom          i8080 (plain Vector), English
+  rom/basket-ru.c00, basket-ru-0100.rom    the same in Russian
+Only the i8080 image is released (09.11); the Z80 image stays the build's
+intermediate step (recompile_i8080) and the MSX lockstep reference.
 .rom loads at 0100; .c00 is the 64 KB memory from 0000 (JP 0100 in front),
 for the MiSTer core and emulators (.r0m).
 """
@@ -17,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "rom"
-BUILT = {"basket": ROOT / "build/i8080/basket-i8080.rom", "basket-z80": ROOT / "build/v06/basket.rom"}
+BUILT = {"basket": ROOT / "build/i8080/basket-i8080.rom"}
 
 
 def c00(rom: bytes) -> bytes:

@@ -7,18 +7,20 @@
 BLIT_PASS_FLAG:	equ	0x34DF
 BLIT_SRC:	equ	0x3302
 BLIT_Y:	equ	0x3300
-CROWD_TICK:	equ	0x74F6
+CROWD_TICK:	equ	0x74BA
 GAME_ISR_HOOK:	equ	0x4141
 G_KEY_ASCII:	equ	0x4110
 G_KEY_CODE:	equ	0x410F
 HUD_ICON:	equ	0xB455
-NATIVE_PADS:	equ	0x6CED
-REPLAY_SCENE:	equ	0x144B
-REPLAY_STATE_BEGIN:	equ	0x1448
-RING_PULL:	equ	0x7569
-RING_PUSH:	equ	0x7524
-RING_REPLAY:	equ	0x7558
-RING_RESET:	equ	0x754D
+MENU_BOX_CLEAR:	equ	0x18F6
+MENU_KEY:	equ	0x06BB
+NATIVE_PADS:	equ	0x6CD0
+REPLAY_SCENE:	equ	0x144F
+REPLAY_STATE_BEGIN:	equ	0x144C
+RING_PULL:	equ	0x752D
+RING_PUSH:	equ	0x74E8
+RING_REPLAY:	equ	0x751C
+RING_RESET:	equ	0x7511
 TEXT_COL:	equ	0x4103
 TEXT_ROW:	equ	0x4102
 RT_VARS:	equ	0x9300	; ячейки рантайма (мёртвая зона 92FF..9329)
@@ -36,7 +38,7 @@ il_d:	equ	RT_VARS+19
 z80_r:	equ	RT_VARS+20
 RT_VARS_END:	equ	RT_VARS+21
 
-	org	0x09F8
+	org	0x0B63
 Z_8871:
 	jp Z_88C6	; 8871 18 53
 Z_8873:
@@ -617,6 +619,8 @@ Z_8A44:
 	db 0x00
 Z_8A47:
 	add a,0x06	; 8A47 C6 06
+	jp	Z_8A49	; мост в следующий кусок
+	org	0x14F8
 Z_8A49:
 	rst 0x20	; 8A49 DD 77 00
 	db 0x00
@@ -807,6 +811,8 @@ Z_8B1D:
 	jp z,Z_8B32	; 8B1D 28 13
 Z_8B1F:
 	and 0xE0	; 8B1F E6 E0
+	jp	Z_8B21	; мост в следующий кусок
+	org	0x1748
 Z_8B21:
 	push af	; 8B21 CB E7
 	or 0x10
@@ -831,6 +837,7 @@ Z_8B2F:
 	ld (hl),0x00	; 8B2F 36 00
 Z_8B31:
 	ret	; 8B31 C9
+	org	0x18B7
 Z_8B32:
 	ld a,(D_944F)	; 8B32 3A 4F 94
 Z_8B35:
@@ -843,6 +850,8 @@ Z_8B3A:
 	call Z_398C	; 8B3A CD 8C 39
 Z_8B3D:
 	ld bc,0x46	; 8B3D 01 46 00
+	jp	Z_8B40	; мост в следующий кусок
+	org	0x190A
 Z_8B40:
 	call Z_39A3	; 8B40 CD A3 39
 Z_8B43:
@@ -909,8 +918,6 @@ Z_8B80:
 	call Z_39A3	; 8B80 CD A3 39
 Z_8B83:
 	add hl,de	; 8B83 19
-	jp	Z_8B84	; мост в следующий кусок
-	org	0x14E8
 Z_8B84:
 	call Z_A172	; 8B84 CD 72 A1
 Z_8B87:
@@ -1094,8 +1101,6 @@ Z_8C23:
 	ld (il_a),a
 	pop af
 	ld a,(il_a)
-	jp	Z_8C25	; мост в следующий кусок
-	org	0x1748
 Z_8C25:
 	push af	; 8C25 CB D7
 	or 0x04
@@ -1115,8 +1120,6 @@ Z_8C2D:
 Z_8C31:
 	rst 0x10	; 8C31 DD 7E FD
 	db 0xFD
-	jp	Z_8C34	; мост в следующий кусок
-	org	0x18B7
 Z_8C34:
 	add a,0x02	; 8C34 C6 02
 Z_8C36:
@@ -1133,8 +1136,6 @@ Z_8C3F:
 	db 0xFD
 Z_8C42:
 	and a	; 8C42 A7
-	jp	Z_8C43	; мост в следующий кусок
-	org	0x18F6
 Z_8C43:
 	jp z,Z_8C48	; 8C43 28 03
 Z_8C45:
@@ -1280,6 +1281,188 @@ Z_8CC6:
 	add a,(hl)	; 8CC6 86
 Z_8CC7:
 	ld (hl),a	; 8CC7 77
+	jp	Z_8CC8	; мост в следующий кусок
+	org	0x3304
+D_3304:
+Z_3304:
+	db	0x04, 0xCA, 0x84, 0x4A	; 3304
+	org	0x3308
+D_3308:
+Z_3308:
+	db	0x84, 0x4A	; 3308
+	org	0x330A
+D_330A:
+Z_330A:
+	db	0x04, 0x4A, 0x04, 0xCA, 0x14, 0x4A, 0x04, 0x4A, 0x94, 0x4A	; 330A
+	org	0x3314
+D_3314:
+Z_3314:
+	db	0x14, 0xC2, 0x14, 0x4A, 0x04, 0x42, 0x04, 0xCA, 0x04, 0x42, 0x16, 0x4A, 0x16, 0x42, 0x14, 0x4A	; 3314
+	org	0x3324
+D_3324:
+Z_3324:
+	db	0x04, 0x42, 0x14, 0xCA, 0x04, 0x4A, 0x04, 0xCA, 0x04, 0x4A, 0x04, 0xCA, 0x04, 0x4A	; 3324
+	org	0x3332
+D_3332:
+Z_3332:
+	db	0x04	; 3332
+	org	0x3333
+D_3333:
+Z_3333:
+	db	0xCA, 0x04, 0x48, 0x04, 0xCA, 0x04, 0x4A, 0x04, 0xCA, 0x94, 0x4A, 0x04, 0xCA, 0x04, 0x4A, 0x14	; 3333
+	org	0x3343
+D_3343:
+Z_3343:
+	db	0xCA, 0x04, 0x4A, 0x94, 0xCA, 0x14, 0x4A, 0x04, 0xCA, 0x04, 0x4A, 0x04, 0xCA, 0x04, 0x4A, 0x04	; 3343
+	org	0x3353
+D_3353:
+Z_3353:
+	db	0xCA, 0x14, 0x4A, 0x04, 0xCA, 0x14, 0x48, 0x14, 0xCA, 0x16, 0x48, 0x14, 0xCA, 0x14, 0x48, 0x15	; 3353
+	org	0x3363
+D_3363:
+Z_3363:
+	db	0xCA, 0x16, 0xC8, 0x17, 0xCA, 0x03, 0xB9, 0x4B, 0x35, 0x6B, 0x11, 0x6B, 0x11, 0x6B, 0x90, 0x6B	; 3363
+	org	0x3373
+D_3373:
+Z_3373:
+	db	0x15, 0x6B, 0x10, 0x6B, 0x95, 0x6B, 0x90, 0x6B, 0x15, 0x6B, 0x10, 0x6B, 0x11, 0x7B, 0x91, 0x6B	; 3373
+	org	0x3383
+D_3383:
+Z_3383:
+	db	0x95, 0x7B, 0x10, 0x6B, 0x95, 0x7B, 0x10, 0x6B, 0x11, 0x7B, 0x10, 0x6B, 0x90, 0x6B, 0x10, 0x6B	; 3383
+	org	0x3393
+D_3393:
+Z_3393:
+	db	0x10, 0x6B, 0x90, 0x6B, 0x90, 0x7B, 0x90, 0x6B, 0x10, 0x6B, 0x10, 0x6B, 0x10, 0x7B, 0x10, 0x6B	; 3393
+	org	0x33A3
+D_33A3:
+Z_33A3:
+	db	0x90, 0x7B, 0x10, 0x6B, 0x15, 0x6B, 0x15, 0x6B, 0x35, 0x7B, 0x15, 0x7B, 0x31, 0x7F, 0x11, 0x7B	; 33A3
+	org	0x33B3
+D_33B3:
+Z_33B3:
+	db	0x11, 0x7F, 0x11, 0x7B, 0x11, 0x6B, 0x95, 0x6B, 0x90, 0x6B, 0x10, 0x6B, 0x10, 0x6B, 0x15, 0x6B	; 33B3
+	org	0x33C3
+D_33C3:
+Z_33C3:
+	db	0x90, 0x6B, 0x91, 0x6B, 0x90, 0xC3, 0x58, 0xD3, 0xC3, 0x1B, 0xD6, 0xC3, 0x80, 0xD6, 0xC3, 0xC7	; 33C3
+	org	0x33D3
+D_33D3:
+Z_33D3:
+	db	0xD7, 0xC3, 0x24, 0xD7, 0xC3, 0x5B, 0xD7, 0xC3, 0x3B, 0xD7, 0xC3, 0x69, 0xD7, 0xC3, 0x6F, 0xD4	; 33D3
+	org	0x33E3
+D_33E3:
+Z_33E3:
+	db	0xC3, 0xF8, 0xD5, 0xC3, 0x06, 0xD6, 0xC3, 0x45, 0xD5, 0xC3, 0x3C, 0xD5, 0xC3, 0xCA, 0xD4, 0xC3	; 33E3
+	org	0x33F3
+D_33F3:
+Z_33F3:
+	db	0x55, 0xD5, 0xC3, 0x6C, 0xD6, 0xC3, 0x4D, 0xD5, 0xC3, 0x3C, 0xD6, 0xC3, 0xC4, 0xD7, 0xC3, 0xB8	; 33F3
+	org	0x3403
+D_3403:
+Z_3403:
+	db	0xD8, 0xC3, 0xFC, 0xD7, 0xC3, 0xF9, 0xD7, 0xC3, 0x64, 0xD5, 0xC3, 0xDE, 0xD5, 0xC3, 0x41, 0xD2	; 3403
+	org	0x3413
+D_3413:
+Z_3413:
+	db	0xC3, 0x4C, 0xD2, 0xC3, 0x7E, 0xD7, 0x00, 0x00	; 3413
+	org	0x341B
+D_341B:
+Z_341B:
+	db	0x08	; 341B
+	org	0x341C
+D_341C:
+Z_341C:
+	db	0x00	; 341C
+	org	0x341D
+D_341D:
+Z_341D:
+	db	0x20	; 341D
+	org	0x341E
+D_341E:
+Z_341E:
+	db	0x28, 0xA0	; 341E
+	org	0x3420
+D_3420:
+Z_3420:
+	db	0xE0, 0xAB	; 3420
+	org	0x3422
+D_3422:
+Z_3422:
+	db	0x00, 0x00	; 3422
+	org	0x3424
+D_3424:
+Z_3424:
+	db	0xF1, 0xF1, 0xF1, 0xF1, 0xF1, 0xF1, 0xF1, 0xF1, 0x02	; 3424
+	org	0x342D
+D_342D:
+Z_342D:
+	db	0xE0, 0x06, 0xFF, 0x03, 0x36, 0x07	; 342D
+	org	0x3433
+D_3433:
+Z_3433:
+	db	0x04	; 3433
+	org	0x3434
+D_3434:
+Z_3434:
+	db	0x80, 0x3B	; 3434
+	org	0x3436
+D_3436:
+Z_3436:
+	db	0x38, 0x34, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2D, 0x3D, 0x5C, 0x28	; 3436
+	org	0x3446
+D_3446:
+Z_3446:
+	db	0x29, 0x3A, 0x2C, 0x3B, 0x2C, 0x26, 0x2F, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48	; 3446
+	org	0x3456
+D_3456:
+Z_3456:
+	db	0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58	; 3456
+	org	0x3466
+D_3466:
+Z_3466:
+	db	0x59, 0x5A, 0x01, 0x02, 0x03, 0x04, 0x06, 0x31, 0x32, 0x33, 0x34, 0x35, 0x00, 0x09, 0x0A, 0x10	; 3466
+	org	0x3476
+D_3476:
+Z_3476:
+	db	0x0B, 0x0D, 0x20, 0x14, 0x15, 0x16, 0x10, 0x02, 0x01, 0x09, 0xFF, 0xDF, 0x5F, 0x7F, 0x3F, 0xBF	; 3476
+	org	0x3486
+D_3486:
+Z_3486:
+	db	0xAF, 0xEF, 0xCF	; 3486
+	org	0x3489
+D_3489:
+Z_3489:
+	db	0x00	; 3489
+	org	0x348A
+D_348A:
+Z_348A:
+	db	0x00, 0x00, 0x00	; 348A
+	org	0x348D
+D_348D:
+Z_348D:
+	db	0x00	; 348D
+	org	0x348E
+D_348E:
+Z_348E:
+	db	0x00	; 348E
+	org	0x348F
+D_348F:
+Z_348F:
+	db	0x00, 0x00, 0x44, 0x69, 0x4E, 0x61, 0x4D, 0x69, 0x43	; 348F
+	org	0x3498
+D_3498:
+Z_3498:
+	db	0x49, 0x6E, 0x73, 0x75, 0x66, 0x69, 0x63, 0x69, 0x65, 0x6E, 0x74, 0x65, 0x20, 0x52, 0x61, 0x6D	; 3498
+	org	0x34A8
+D_34A8:
+Z_34A8:
+	db	0x2B, 0x3A, 0x1C, 0x34, 0xB7, 0x00, 0x00	; 34A8
+	org	0x34B4
+D_34B4:
+Z_34B4:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; 34B4
+	org	0x352B
 Z_8CC8:
 	ld a,(D_93D3)	; 8CC8 3A D3 93
 Z_8CCB:
@@ -1493,6 +1676,52 @@ Z_8D88:
 Z_8D8A:
 	call il_iy_bit	; 8D8A FD CB 00 66
 	db 0x00, 0x10
+	jp	Z_8D8E	; мост в следующий кусок
+	org	0x3636
+D_3636:
+Z_3636:
+	db	0x00, 0x04, 0xC5, 0x05, 0x28, 0x04, 0x0F, 0x0F, 0x18, 0xF9, 0xE6, 0x03, 0x5F, 0x16, 0x00, 0x21	; 3636
+	org	0x3646
+D_3646:
+Z_3646:
+	db	0xC1, 0xFC, 0x19, 0x5F, 0x7E, 0xE6, 0x80, 0xB3, 0x5F, 0x23, 0x23, 0x23, 0x23, 0x7E	; 3646
+	org	0x3654
+D_3654:
+Z_3654:
+	db	0xC1, 0x05, 0x28, 0x04, 0x0F, 0x0F, 0x18, 0xF9, 0x07, 0x07, 0xE6, 0x0C, 0xB3, 0xC9	; 3654
+	org	0x3664
+D_3664:
+Z_3664:
+	db	0x00, 0x00, 0x5F, 0x16, 0x00, 0x21, 0xC1, 0xFC, 0x19, 0xCB, 0x7E, 0x20, 0x1E, 0x3A, 0x25, 0xD2	; 3664
+	org	0x3674
+D_3674:
+Z_3674:
+	db	0x67, 0x3A, 0x23, 0xD2, 0x32, 0x26, 0xD2, 0xCD, 0x24, 0x00, 0xCD, 0x53, 0xD4, 0x20, 0x02, 0xAF	; 3674
+	org	0x3684
+D_3684:
+Z_3684:
+	db	0xC9, 0x3A, 0x23, 0xD2, 0x3C, 0xFE, 0x04, 0x38, 0xD6, 0x37, 0xC9, 0xAF, 0x32, 0x24, 0xD2, 0x07	; 3684
+	org	0x3694
+D_3694:
+Z_3694:
+	db	0x07, 0xE6, 0x0C, 0xCB, 0xFF, 0x5F, 0x3A, 0x23, 0xD2, 0xB3, 0x5F, 0x3A, 0x25, 0xD2, 0x67, 0x7B	; 3694
+	org	0x36A4
+D_36A4:
+Z_36A4:
+	db	0x32, 0x26, 0xD2, 0xCD, 0x24, 0x00, 0xCD, 0x53, 0xD4, 0x20, 0x02, 0xAF, 0xC9, 0x3A, 0x24, 0xD2	; 36A4
+	org	0x36B4
+D_36B4:
+Z_36B4:
+	db	0x3C, 0xFE, 0x04, 0x38, 0xD7, 0x18, 0xCA, 0x3A, 0x25, 0xD2, 0x57, 0x1E, 0x00, 0x21, 0x29, 0xD2	; 36B4
+	org	0x36C4
+D_36C4:
+Z_36C4:
+	db	0xD5, 0xE5, 0x01, 0x07, 0x00, 0xED, 0xB0, 0xE1, 0xD1, 0x06, 0x07, 0x1A, 0xBE, 0xC0, 0x13, 0x23	; 36C4
+	org	0x36D4
+D_36D4:
+Z_36D4:
+	db	0x10, 0xF9, 0xC9	; 36D4
+	org	0x36D7
 Z_8D8E:
 	jp z,Z_8DC0	; 8D8E 28 30
 Z_8D90:
@@ -1507,6 +1736,12 @@ Z_8D98:
 Z_8D9A:
 	call il_iy_bit	; 8D9A FD CB FF 5E
 	db 0xFF, 0x08
+	jp	Z_8D9E	; мост в следующий кусок
+	org	0x36F0
+D_36F0:
+Z_36F0:
+	db	0xC3, 0x9B, 0x40	; 36F0
+	org	0x36F3
 Z_8D9E:
 	jp nz,Z_8DAB	; 8D9E 20 0B
 Z_8DA0:
@@ -1555,6 +1790,12 @@ Z_8DC7:
 	jp z,Z_8DCB	; 8DC7 28 02
 Z_8DC9:
 	ld d,h	; 8DC9 54
+	jp	Z_8DCA	; мост в следующий кусок
+	org	0x3727
+D_3727:
+Z_3727:
+	db	0x00, 0x00, 0x00, 0x00, 0xC9	; 3727
+	org	0x372C
 Z_8DCA:
 	ld h,a	; 8DCA 67
 Z_8DCB:
@@ -1605,6 +1846,12 @@ Z_8DEE:
 Z_8DF0:
 	call il_iy_bit	; 8DF0 FD CB FF 4E
 	db 0xFF, 0x02
+	jp	Z_8DF4	; мост в следующий кусок
+	org	0x3761
+D_3761:
+Z_3761:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; 3761
+	org	0x3769
 Z_8DF4:
 	jp z,Z_8E0E	; 8DF4 28 18
 Z_8DF6:
@@ -1624,188 +1871,6 @@ Z_8E03:
 	ld e,a	; 8E03 5F
 Z_8E04:
 	inc c	; 8E04 0C
-	jp	Z_8E05	; мост в следующий кусок
-	org	0x3304
-D_3304:
-Z_3304:
-	db	0x04, 0xCA, 0x84, 0x4A	; 3304
-	org	0x3308
-D_3308:
-Z_3308:
-	db	0x84, 0x4A	; 3308
-	org	0x330A
-D_330A:
-Z_330A:
-	db	0x04, 0x4A, 0x04, 0xCA, 0x14, 0x4A, 0x04, 0x4A, 0x94, 0x4A	; 330A
-	org	0x3314
-D_3314:
-Z_3314:
-	db	0x14, 0xC2, 0x14, 0x4A, 0x04, 0x42, 0x04, 0xCA, 0x04, 0x42, 0x16, 0x4A, 0x16, 0x42, 0x14, 0x4A	; 3314
-	org	0x3324
-D_3324:
-Z_3324:
-	db	0x04, 0x42, 0x14, 0xCA, 0x04, 0x4A, 0x04, 0xCA, 0x04, 0x4A, 0x04, 0xCA, 0x04, 0x4A	; 3324
-	org	0x3332
-D_3332:
-Z_3332:
-	db	0x04	; 3332
-	org	0x3333
-D_3333:
-Z_3333:
-	db	0xCA, 0x04, 0x48, 0x04, 0xCA, 0x04, 0x4A, 0x04, 0xCA, 0x94, 0x4A, 0x04, 0xCA, 0x04, 0x4A, 0x14	; 3333
-	org	0x3343
-D_3343:
-Z_3343:
-	db	0xCA, 0x04, 0x4A, 0x94, 0xCA, 0x14, 0x4A, 0x04, 0xCA, 0x04, 0x4A, 0x04, 0xCA, 0x04, 0x4A, 0x04	; 3343
-	org	0x3353
-D_3353:
-Z_3353:
-	db	0xCA, 0x14, 0x4A, 0x04, 0xCA, 0x14, 0x48, 0x14, 0xCA, 0x16, 0x48, 0x14, 0xCA, 0x14, 0x48, 0x15	; 3353
-	org	0x3363
-D_3363:
-Z_3363:
-	db	0xCA, 0x16, 0xC8, 0x17, 0xCA, 0x03, 0xB9, 0x4B, 0x35, 0x6B, 0x11, 0x6B, 0x11, 0x6B, 0x90, 0x6B	; 3363
-	org	0x3373
-D_3373:
-Z_3373:
-	db	0x15, 0x6B, 0x10, 0x6B, 0x95, 0x6B, 0x90, 0x6B, 0x15, 0x6B, 0x10, 0x6B, 0x11, 0x7B, 0x91, 0x6B	; 3373
-	org	0x3383
-D_3383:
-Z_3383:
-	db	0x95, 0x7B, 0x10, 0x6B, 0x95, 0x7B, 0x10, 0x6B, 0x11, 0x7B, 0x10, 0x6B, 0x90, 0x6B, 0x10, 0x6B	; 3383
-	org	0x3393
-D_3393:
-Z_3393:
-	db	0x10, 0x6B, 0x90, 0x6B, 0x90, 0x7B, 0x90, 0x6B, 0x10, 0x6B, 0x10, 0x6B, 0x10, 0x7B, 0x10, 0x6B	; 3393
-	org	0x33A3
-D_33A3:
-Z_33A3:
-	db	0x90, 0x7B, 0x10, 0x6B, 0x15, 0x6B, 0x15, 0x6B, 0x35, 0x7B, 0x15, 0x7B, 0x31, 0x7F, 0x11, 0x7B	; 33A3
-	org	0x33B3
-D_33B3:
-Z_33B3:
-	db	0x11, 0x7F, 0x11, 0x7B, 0x11, 0x6B, 0x95, 0x6B, 0x90, 0x6B, 0x10, 0x6B, 0x10, 0x6B, 0x15, 0x6B	; 33B3
-	org	0x33C3
-D_33C3:
-Z_33C3:
-	db	0x90, 0x6B, 0x91, 0x6B, 0x90, 0xC3, 0x58, 0xD3, 0xC3, 0x1B, 0xD6, 0xC3, 0x80, 0xD6, 0xC3, 0xC7	; 33C3
-	org	0x33D3
-D_33D3:
-Z_33D3:
-	db	0xD7, 0xC3, 0x24, 0xD7, 0xC3, 0x5B, 0xD7, 0xC3, 0x3B, 0xD7, 0xC3, 0x69, 0xD7, 0xC3, 0x6F, 0xD4	; 33D3
-	org	0x33E3
-D_33E3:
-Z_33E3:
-	db	0xC3, 0xF8, 0xD5, 0xC3, 0x06, 0xD6, 0xC3, 0x45, 0xD5, 0xC3, 0x3C, 0xD5, 0xC3, 0xCA, 0xD4, 0xC3	; 33E3
-	org	0x33F3
-D_33F3:
-Z_33F3:
-	db	0x55, 0xD5, 0xC3, 0x6C, 0xD6, 0xC3, 0x4D, 0xD5, 0xC3, 0x3C, 0xD6, 0xC3, 0xC4, 0xD7, 0xC3, 0xB8	; 33F3
-	org	0x3403
-D_3403:
-Z_3403:
-	db	0xD8, 0xC3, 0xFC, 0xD7, 0xC3, 0xF9, 0xD7, 0xC3, 0x64, 0xD5, 0xC3, 0xDE, 0xD5, 0xC3, 0x41, 0xD2	; 3403
-	org	0x3413
-D_3413:
-Z_3413:
-	db	0xC3, 0x4C, 0xD2, 0xC3, 0x7E, 0xD7, 0x00, 0x00	; 3413
-	org	0x341B
-D_341B:
-Z_341B:
-	db	0x08	; 341B
-	org	0x341C
-D_341C:
-Z_341C:
-	db	0x00	; 341C
-	org	0x341D
-D_341D:
-Z_341D:
-	db	0x20	; 341D
-	org	0x341E
-D_341E:
-Z_341E:
-	db	0x28, 0xA0	; 341E
-	org	0x3420
-D_3420:
-Z_3420:
-	db	0xE0, 0xAB	; 3420
-	org	0x3422
-D_3422:
-Z_3422:
-	db	0x00, 0x00	; 3422
-	org	0x3424
-D_3424:
-Z_3424:
-	db	0xF1, 0xF1, 0xF1, 0xF1, 0xF1, 0xF1, 0xF1, 0xF1, 0x02	; 3424
-	org	0x342D
-D_342D:
-Z_342D:
-	db	0xE0, 0x06, 0xFF, 0x03, 0x36, 0x07	; 342D
-	org	0x3433
-D_3433:
-Z_3433:
-	db	0x04	; 3433
-	org	0x3434
-D_3434:
-Z_3434:
-	db	0x80, 0x3B	; 3434
-	org	0x3436
-D_3436:
-Z_3436:
-	db	0x38, 0x34, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2D, 0x3D, 0x5C, 0x28	; 3436
-	org	0x3446
-D_3446:
-Z_3446:
-	db	0x29, 0x3A, 0x2C, 0x3B, 0x2C, 0x26, 0x2F, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48	; 3446
-	org	0x3456
-D_3456:
-Z_3456:
-	db	0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58	; 3456
-	org	0x3466
-D_3466:
-Z_3466:
-	db	0x59, 0x5A, 0x01, 0x02, 0x03, 0x04, 0x06, 0x31, 0x32, 0x33, 0x34, 0x35, 0x00, 0x09, 0x0A, 0x10	; 3466
-	org	0x3476
-D_3476:
-Z_3476:
-	db	0x0B, 0x0D, 0x20, 0x14, 0x15, 0x16, 0x10, 0x02, 0x01, 0x09, 0xFF, 0xDF, 0x5F, 0x7F, 0x3F, 0xBF	; 3476
-	org	0x3486
-D_3486:
-Z_3486:
-	db	0xAF, 0xEF, 0xCF	; 3486
-	org	0x3489
-D_3489:
-Z_3489:
-	db	0x00	; 3489
-	org	0x348A
-D_348A:
-Z_348A:
-	db	0x00, 0x00, 0x00	; 348A
-	org	0x348D
-D_348D:
-Z_348D:
-	db	0x00	; 348D
-	org	0x348E
-D_348E:
-Z_348E:
-	db	0x00	; 348E
-	org	0x348F
-D_348F:
-Z_348F:
-	db	0x00, 0x00, 0x44, 0x69, 0x4E, 0x61, 0x4D, 0x69, 0x43	; 348F
-	org	0x3498
-D_3498:
-Z_3498:
-	db	0x49, 0x6E, 0x73, 0x75, 0x66, 0x69, 0x63, 0x69, 0x65, 0x6E, 0x74, 0x65, 0x20, 0x52, 0x61, 0x6D	; 3498
-	org	0x34A8
-D_34A8:
-Z_34A8:
-	db	0x2B, 0x3A, 0x1C, 0x34, 0xB7, 0x00, 0x00	; 34A8
-	org	0x34B4
-D_34B4:
-Z_34B4:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; 34B4
-	org	0x352B
 Z_8E05:
 	rst 0x08	; 8E05 DD CB 01 46
 	db 0x01, 0x01
@@ -1824,6 +1889,12 @@ Z_8E12:
 Z_8E13:
 	rst 0x08	; 8E13 DD CB FF 4E
 	db 0xFF, 0x02
+	jp	Z_8E17	; мост в следующий кусок
+	org	0x3790
+D_3790:
+Z_3790:
+	db	0x00	; 3790
+	org	0x3791
 Z_8E17:
 	jp nz,Z_8E27	; 8E17 20 0E
 Z_8E19:
@@ -1848,6 +1919,12 @@ Z_8E2B:
 	jp nz,Z_8E44	; 8E2B 20 17
 Z_8E2D:
 	dec c	; 8E2D 0D
+	jp	Z_8E2E	; мост в следующий кусок
+	org	0x37AD
+D_37AD:
+Z_37AD:
+	db	0x32, 0xCB, 0xD1, 0x47, 0x0E, 0x07, 0x18, 0xAB, 0x47, 0x3A, 0xBC, 0xD1, 0xE6, 0xF0, 0x18, 0x0A	; 37AD
+	org	0x37BD
 Z_8E2E:
 	jp Z_8E44	; 8E2E 18 14
 Z_8E30:
@@ -1868,6 +1945,24 @@ Z_8E3E:
 	jp nz,Z_8E44	; 8E3E 20 04
 Z_8E40:
 	sub 0x0A	; 8E40 D6 0A
+	jp	Z_8E42	; мост в следующий кусок
+	org	0x37D5
+D_37D5:
+Z_37D5:
+	db	0xAF, 0xF5, 0xCD, 0x41, 0x01, 0xF3, 0x77, 0x23, 0xF1, 0x3C, 0xFE, 0x09, 0x38, 0xF3, 0x3E, 0x01	; 37D5
+	org	0x37E5
+D_37E5:
+Z_37E5:
+	db	0x32, 0x21, 0x41, 0xCD, 0xF1, 0x37, 0x3E, 0x02, 0x32, 0x21, 0x41, 0x3D, 0xE5, 0xCD, 0xD5, 0x00	; 37E5
+	org	0x37F5
+D_37F5:
+Z_37F5:
+	db	0xF3, 0x21, 0x80, 0x34, 0x5F, 0x16, 0x00, 0x19, 0x7E, 0xE1, 0x77, 0xE5, 0x3A, 0x21, 0x41, 0xCD	; 37F5
+	org	0x3805
+D_3805:
+Z_3805:
+	db	0xD8, 0x00, 0xF3, 0xE1, 0xFE, 0xFF, 0x20, 0x02, 0xCB, 0x86, 0x23, 0xC9	; 3805
+	org	0x3811
 Z_8E42:
 	ld e,l	; 8E42 5D
 Z_8E43:
@@ -1945,6 +2040,12 @@ Z_8E83:
 	db 0x01, 0x01
 Z_8E87:
 	jp z,Z_8E8B	; 8E87 28 02
+	jp	Z_8E89	; мост в следующий кусок
+	org	0x3860
+D_3860:
+Z_3860:
+	db	0xCD, 0xDE, 0xD5, 0x26, 0x00, 0x28, 0x04, 0x3E, 0xFF, 0x6F, 0xC9, 0xAF, 0x6F, 0xC9	; 3860
+	org	0x386E
 Z_8E89:
 	push af	; 8E89 CB FF
 	or 0x80
@@ -1957,6 +2058,12 @@ Z_8E8E:
 	xor a	; 8E8E AF
 Z_8E8F:
 	ld (D_93F5),a	; 8E8F 32 F5 93
+	jp	Z_8E92	; мост в следующий кусок
+	org	0x3883
+D_3883:
+Z_3883:
+	db	0xED, 0x5B, 0x00, 0x33, 0x2A, 0x9A, 0xD0	; 3883
+	org	0x388A
 Z_8E92:
 	call il_iy_res	; 8E92 FD CB 00 96
 	db 0x00, 0xFB
@@ -1972,6 +2079,28 @@ Z_8E9E:
 Z_8EA2:
 	call il_iy_res	; 8EA2 FD CB 00 A6
 	db 0x00, 0xEF
+	jp	Z_8EA6	; мост в следующий кусок
+	org	0x38A4
+D_38A4:
+Z_38A4:
+	db	0xEB, 0x73, 0x23, 0x72, 0x23, 0xEB, 0xC9, 0xFE, 0x30, 0x38, 0x5B, 0xFE, 0x3A, 0x38, 0x1C, 0xFE	; 38A4
+	org	0x38B4
+D_38B4:
+Z_38B4:
+	db	0x41, 0x38, 0x53, 0xFE, 0x47, 0x30, 0x4F, 0xDF, 0xD6, 0x37, 0x18, 0x65, 0xFE, 0x26, 0x20, 0x03	; 38B4
+	org	0x38C4
+D_38C4:
+Z_38C4:
+	db	0xDF, 0x18, 0x17, 0xFE, 0x30, 0x38, 0x3F, 0xFE, 0x3A, 0x30, 0x3B, 0xDF, 0xD6, 0x30, 0x18, 0x51	; 38C4
+	org	0x38D4
+D_38D4:
+Z_38D4:
+	db	0x01, 0x0A, 0x00, 0x3E, 0x05, 0x11, 0x58, 0xD6, 0x18, 0x13, 0x01, 0x10, 0x00, 0x3E, 0x04, 0x11	; 38D4
+	org	0x38E4
+D_38E4:
+Z_38E4:
+	db	0x43, 0xD6, 0x18, 0x09	; 38E4
+	org	0x38E8
 Z_8EA6:
 	call il_iy_res	; 8EA6 FD CB 01 A6
 	db 0x01, 0xEF
@@ -2036,52 +2165,6 @@ Z_8EE4:
 Z_8EE7:
 	call il_ix_sth	; 8EE7 DD 74 05
 	db 0x05
-	jp	Z_8EEA	; мост в следующий кусок
-	org	0x3636
-D_3636:
-Z_3636:
-	db	0x00, 0x04, 0xC5, 0x05, 0x28, 0x04, 0x0F, 0x0F, 0x18, 0xF9, 0xE6, 0x03, 0x5F, 0x16, 0x00, 0x21	; 3636
-	org	0x3646
-D_3646:
-Z_3646:
-	db	0xC1, 0xFC, 0x19, 0x5F, 0x7E, 0xE6, 0x80, 0xB3, 0x5F, 0x23, 0x23, 0x23, 0x23, 0x7E	; 3646
-	org	0x3654
-D_3654:
-Z_3654:
-	db	0xC1, 0x05, 0x28, 0x04, 0x0F, 0x0F, 0x18, 0xF9, 0x07, 0x07, 0xE6, 0x0C, 0xB3, 0xC9	; 3654
-	org	0x3664
-D_3664:
-Z_3664:
-	db	0x00, 0x00, 0x5F, 0x16, 0x00, 0x21, 0xC1, 0xFC, 0x19, 0xCB, 0x7E, 0x20, 0x1E, 0x3A, 0x25, 0xD2	; 3664
-	org	0x3674
-D_3674:
-Z_3674:
-	db	0x67, 0x3A, 0x23, 0xD2, 0x32, 0x26, 0xD2, 0xCD, 0x24, 0x00, 0xCD, 0x53, 0xD4, 0x20, 0x02, 0xAF	; 3674
-	org	0x3684
-D_3684:
-Z_3684:
-	db	0xC9, 0x3A, 0x23, 0xD2, 0x3C, 0xFE, 0x04, 0x38, 0xD6, 0x37, 0xC9, 0xAF, 0x32, 0x24, 0xD2, 0x07	; 3684
-	org	0x3694
-D_3694:
-Z_3694:
-	db	0x07, 0xE6, 0x0C, 0xCB, 0xFF, 0x5F, 0x3A, 0x23, 0xD2, 0xB3, 0x5F, 0x3A, 0x25, 0xD2, 0x67, 0x7B	; 3694
-	org	0x36A4
-D_36A4:
-Z_36A4:
-	db	0x32, 0x26, 0xD2, 0xCD, 0x24, 0x00, 0xCD, 0x53, 0xD4, 0x20, 0x02, 0xAF, 0xC9, 0x3A, 0x24, 0xD2	; 36A4
-	org	0x36B4
-D_36B4:
-Z_36B4:
-	db	0x3C, 0xFE, 0x04, 0x38, 0xD7, 0x18, 0xCA, 0x3A, 0x25, 0xD2, 0x57, 0x1E, 0x00, 0x21, 0x29, 0xD2	; 36B4
-	org	0x36C4
-D_36C4:
-Z_36C4:
-	db	0xD5, 0xE5, 0x01, 0x07, 0x00, 0xED, 0xB0, 0xE1, 0xD1, 0x06, 0x07, 0x1A, 0xBE, 0xC0, 0x13, 0x23	; 36C4
-	org	0x36D4
-D_36D4:
-Z_36D4:
-	db	0x10, 0xF9, 0xC9	; 36D4
-	org	0x36D7
 Z_8EEA:
 	call il_iy_bit	; 8EEA FD CB 00 6E
 	db 0x00, 0x20
@@ -2097,12 +2180,6 @@ Z_8EF9:
 	xor a	; 8EF9 AF
 Z_8EFA:
 	ld (D_93D3),a	; 8EFA 32 D3 93
-	jp	Z_8EFD	; мост в следующий кусок
-	org	0x36F0
-D_36F0:
-Z_36F0:
-	db	0xC3, 0x9B, 0x40	; 36F0
-	org	0x36F3
 Z_8EFD:
 	jp Z_93BE	; 8EFD C3 BE 93
 Z_8F00:
@@ -2143,12 +2220,6 @@ Z_8F23:
 	db 0x01, 0x01
 Z_8F27:
 	jp nz,Z_8F2F	; 8F27 20 06
-	jp	Z_8F29	; мост в следующий кусок
-	org	0x3727
-D_3727:
-Z_3727:
-	db	0x00, 0x00, 0x00, 0x00, 0xC9	; 3727
-	org	0x372C
 Z_8F29:
 	cp 0x0D	; 8F29 FE 0D
 Z_8F2B:
@@ -2193,12 +2264,6 @@ Z_8F54:
 	ld b,0x04	; 8F54 06 04
 Z_8F56:
 	and a	; 8F56 A7
-	jp	Z_8F57	; мост в следующий кусок
-	org	0x3761
-D_3761:
-Z_3761:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; 3761
-	org	0x3769
 Z_8F57:
 	jp nz,Z_8F5F	; 8F57 20 06
 Z_8F59:
@@ -2209,6 +2274,20 @@ Z_8F5B:
 Z_8F5F:
 	call il_ix_stb	; 8F5F DD 70 08
 	db 0x08
+	jp	Z_8F62	; мост в следующий кусок
+	org	0x39C3
+D_39C3:
+Z_39C3:
+	db	0x6F, 0x06, 0x08, 0xAF, 0xCB, 0x39, 0x30, 0x01, 0x85, 0xCB, 0x25, 0x10, 0xF7, 0xC9, 0x6F, 0xAF	; 39C3
+	org	0x39D3
+D_39D3:
+Z_39D3:
+	db	0x06, 0x08, 0xCB, 0x15, 0x8F, 0x99, 0x30, 0x01, 0x81, 0x3F, 0x10, 0xF6, 0xCB, 0x15, 0x32, 0x1A	; 39D3
+	org	0x39E3
+D_39E3:
+Z_39E3:
+	db	0x41, 0x7D, 0xC9	; 39E3
+	org	0x39E6
 Z_8F62:
 	rst 0x28	; 8F62 DD CB 00 C6
 	db 0x00, 0x01
@@ -2227,12 +2306,6 @@ Z_8F70:
 Z_8F73:
 	call il_ix_sth	; 8F73 DD 74 05
 	db 0x05
-	jp	Z_8F76	; мост в следующий кусок
-	org	0x3790
-D_3790:
-Z_3790:
-	db	0x00	; 3790
-	org	0x3791
 Z_8F76:
 	call il_ix_inc	; 8F76 DD 34 FC
 	db 0xFC
@@ -2252,12 +2325,6 @@ Z_8F89:
 	db 0x00, 0x20
 Z_8F8D:
 	jp z,Z_8FE6	; 8F8D 28 57
-	jp	Z_8F8F	; мост в следующий кусок
-	org	0x37AD
-D_37AD:
-Z_37AD:
-	db	0x32, 0xCB, 0xD1, 0x47, 0x0E, 0x07, 0x18, 0xAB, 0x47, 0x3A, 0xBC, 0xD1, 0xE6, 0xF0, 0x18, 0x0A	; 37AD
-	org	0x37BD
 Z_8F8F:
 	rst 0x08	; 8F8F DD CB FF 56
 	db 0xFF, 0x04
@@ -2278,24 +2345,6 @@ Z_8FA1:
 Z_8FA3:
 	rst 0x10	; 8FA3 DD 7E FF
 	db 0xFF
-	jp	Z_8FA6	; мост в следующий кусок
-	org	0x37D5
-D_37D5:
-Z_37D5:
-	db	0xAF, 0xF5, 0xCD, 0x41, 0x01, 0xF3, 0x77, 0x23, 0xF1, 0x3C, 0xFE, 0x09, 0x38, 0xF3, 0x3E, 0x01	; 37D5
-	org	0x37E5
-D_37E5:
-Z_37E5:
-	db	0x32, 0x21, 0x41, 0xCD, 0xF1, 0x37, 0x3E, 0x02, 0x32, 0x21, 0x41, 0x3D, 0xE5, 0xCD, 0xD5, 0x00	; 37E5
-	org	0x37F5
-D_37F5:
-Z_37F5:
-	db	0xF3, 0x21, 0x80, 0x34, 0x5F, 0x16, 0x00, 0x19, 0x7E, 0xE1, 0x77, 0xE5, 0x3A, 0x21, 0x41, 0xCD	; 37F5
-	org	0x3805
-D_3805:
-Z_3805:
-	db	0xD8, 0x00, 0xF3, 0xE1, 0xFE, 0xFF, 0x20, 0x02, 0xCB, 0x86, 0x23, 0xC9	; 3805
-	org	0x3811
 Z_8FA6:
 	and 0x08	; 8FA6 E6 08
 Z_8FA8:
@@ -2347,6 +2396,60 @@ Z_8FD5:
 	inc a	; 8FD5 3C
 Z_8FD6:
 	ld b,0x01	; 8FD6 06 01
+	jp	Z_8FD8	; мост в следующий кусок
+	org	0x3A61
+D_3A61:
+Z_3A61:
+	db	0x6F, 0x26, 0x00, 0xAF, 0x32, 0x22, 0x41, 0xCB, 0x7C, 0x28, 0x08, 0x3E, 0x2D, 0x32, 0x22, 0x41	; 3A61
+	org	0x3A71
+D_3A71:
+Z_3A71:
+	db	0xCD, 0x0A, 0xD7, 0x3A, 0xB1, 0xD1, 0xFE, 0x01, 0x38, 0x08, 0x28, 0x10, 0x01, 0x9D, 0xD8, 0xAF	; 3A71
+	org	0x3A81
+D_3A81:
+Z_3A81:
+	db	0x18, 0x0E, 0xCD, 0x72, 0xD8, 0x01, 0x8D, 0xD8, 0x3E, 0xC9, 0x18, 0x04, 0x01, 0x9A, 0xD8, 0xAF	; 3A81
+	org	0x3A91
+D_3A91:
+Z_3A91:
+	db	0xED, 0x43, 0x1C, 0x41, 0x32, 0x1E, 0x41, 0x3A, 0xB2, 0xD1, 0xB7, 0x28, 0x1B, 0x7C, 0xCD, 0xA6	; 3A91
+	org	0x3AA1
+D_3AA1:
+Z_3AA1:
+	db	0xD8, 0xCD, 0x88, 0xD8, 0x7C, 0xCD, 0xB4, 0xD8, 0xCD, 0x88, 0xD8, 0x7D, 0xCD, 0xA6, 0xD8, 0xCD	; 3AA1
+	org	0x3AB1
+D_3AB1:
+Z_3AB1:
+	db	0x88, 0xD8, 0x7D, 0xCD, 0xB4, 0xD8, 0x18, 0x1B, 0x11, 0xF0, 0xD8, 0xCD, 0x79, 0xD8, 0x11, 0x18	; 3AB1
+	org	0x3AC1
+D_3AC1:
+Z_3AC1:
+	db	0xFC, 0xCD, 0x79, 0xD8, 0x11, 0x9C, 0xFF, 0xCD, 0x79, 0xD8, 0x11, 0xF6, 0xFF, 0xCD, 0x79, 0xD8	; 3AC1
+	org	0x3AD1
+D_3AD1:
+Z_3AD1:
+	db	0x7D, 0xC6, 0x30, 0xDF, 0x3A, 0x1E, 0x41, 0xB7, 0xC0, 0x3A, 0x22, 0x41, 0xB7, 0xC8, 0xDF, 0xC9	; 3AD1
+	org	0x3AE1
+D_3AE1:
+Z_3AE1:
+	db	0x0E, 0x2F, 0x0C, 0x19, 0x38, 0xFC, 0xEB, 0x7A, 0xCD, 0x0A, 0xD7, 0x2F, 0x19, 0x57, 0x79, 0xE5	; 3AE1
+	org	0x3AF1
+D_3AF1:
+Z_3AF1:
+	db	0x2A, 0x1C, 0x41, 0xE9, 0xE1, 0xFE, 0x30, 0xC8, 0x01, 0x9A, 0xD8, 0xED, 0x43, 0x1C, 0x41, 0xDF	; 3AF1
+	org	0x3B01
+D_3B01:
+Z_3B01:
+	db	0xC9, 0xE1, 0xDF, 0xC9, 0xE1, 0xFE, 0x30, 0x20, 0xEF, 0x3E, 0x20, 0xDF, 0xC9, 0xE6, 0xF0, 0x1F	; 3B01
+	org	0x3B11
+D_3B11:
+Z_3B11:
+	db	0x1F, 0x1F, 0x1F, 0xC6, 0x30, 0xFE, 0x3A, 0xD8, 0xC6, 0x07, 0xC9, 0xE6, 0x0F, 0x18, 0xF4, 0xE1	; 3B11
+	org	0x3B21
+D_3B21:
+Z_3B21:
+	db	0x7E, 0x23, 0xE5, 0xB7, 0xC8, 0xDF, 0x18, 0xF7, 0xC9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; 3B21
+	org	0x3B31
 Z_8FD8:
 	jp Z_8FDD	; 8FD8 18 03
 Z_8FDA:
@@ -2369,15 +2472,15 @@ Z_8FE9:
 Z_8FEB:
 	rst 0x20	; 8FEB DD 77 04
 	db 0x04
+	jp	Z_8FEE	; мост в следующий кусок
+	org	0x3B47
+D_3B47:
+Z_3B47:
+	db	0xC5, 0xD5, 0xE5, 0xCD, 0xEB, 0xD8, 0xE1, 0xD1, 0xC1, 0xF1, 0xF1, 0xC9	; 3B47
+	org	0x3B53
 Z_8FEE:
 	call il_ix_dec	; 8FEE DD 35 08
 	db 0x08
-	jp	Z_8FF1	; мост в следующий кусок
-	org	0x3860
-D_3860:
-Z_3860:
-	db	0xCD, 0xDE, 0xD5, 0x26, 0x00, 0x28, 0x04, 0x3E, 0xFF, 0x6F, 0xC9, 0xAF, 0x6F, 0xC9	; 3860
-	org	0x386E
 Z_8FF1:
 	jp nz,Z_9009	; 8FF1 20 16
 Z_8FF3:
@@ -2393,12 +2496,6 @@ Z_8FFD:
 	db 0x01, 0x80
 Z_9001:
 	jp z,Z_9009	; 9001 28 06
-	jp	Z_9003	; мост в следующий кусок
-	org	0x3883
-D_3883:
-Z_3883:
-	db	0xED, 0x5B, 0x00, 0x33, 0x2A, 0x9A, 0xD0	; 3883
-	org	0x388A
 Z_9003:
 	rst 0x28	; 9003 DD CB FE E6
 	db 0xFE, 0x10
@@ -2422,28 +2519,6 @@ Z_9018:
 Z_9019:
 	rst 0x08	; 9019 DD CB 00 66
 	db 0x00, 0x10
-	jp	Z_901D	; мост в следующий кусок
-	org	0x38A4
-D_38A4:
-Z_38A4:
-	db	0xEB, 0x73, 0x23, 0x72, 0x23, 0xEB, 0xC9, 0xFE, 0x30, 0x38, 0x5B, 0xFE, 0x3A, 0x38, 0x1C, 0xFE	; 38A4
-	org	0x38B4
-D_38B4:
-Z_38B4:
-	db	0x41, 0x38, 0x53, 0xFE, 0x47, 0x30, 0x4F, 0xDF, 0xD6, 0x37, 0x18, 0x65, 0xFE, 0x26, 0x20, 0x03	; 38B4
-	org	0x38C4
-D_38C4:
-Z_38C4:
-	db	0xDF, 0x18, 0x17, 0xFE, 0x30, 0x38, 0x3F, 0xFE, 0x3A, 0x30, 0x3B, 0xDF, 0xD6, 0x30, 0x18, 0x51	; 38C4
-	org	0x38D4
-D_38D4:
-Z_38D4:
-	db	0x01, 0x0A, 0x00, 0x3E, 0x05, 0x11, 0x58, 0xD6, 0x18, 0x13, 0x01, 0x10, 0x00, 0x3E, 0x04, 0x11	; 38D4
-	org	0x38E4
-D_38E4:
-Z_38E4:
-	db	0x43, 0xD6, 0x18, 0x09	; 38E4
-	org	0x38E8
 Z_901D:
 	jp nz,Z_9041	; 901D 20 22
 Z_901F:
@@ -2572,421 +2647,6 @@ Z_9096:
 	db 0xFF, 0x04
 Z_909A:
 	jp Z_93BE	; 909A C3 BE 93
-Z_909D:
-	rst 0x00	; 909D DD 36 FF 0C
-	db 0xFF, 0x0C
-Z_90A1:
-	jp Z_93BE	; 90A1 C3 BE 93
-Z_90A4:
-	ld (il_a),a	; 90A4 CB 51
-	ld a,c
-	and 0x04
-	ld a,(il_a)
-Z_90A6:
-	jp z,Z_909D	; 90A6 28 F5
-Z_90A8:
-	ld (il_a),a	; 90A8 CB 59
-	ld a,c
-	and 0x08
-	ld a,(il_a)
-Z_90AA:
-	jp nz,Z_90EF	; 90AA 20 43
-Z_90AC:
-	rst 0x00	; 90AC DD 36 FF 01
-	db 0xFF, 0x01
-Z_90B0:
-	jp Z_93BE	; 90B0 C3 BE 93
-Z_90B3:
-	rst 0x28	; 90B3 DD CB 01 CE
-	db 0x01, 0x02
-Z_90B7:
-	call il_ix_ldc	; 90B7 DD 4E FF
-	db 0xFF
-Z_90BA:
-	rst 0x10	; 90BA DD 7E 02
-	db 0x02
-Z_90BD:
-	cp 0x55	; 90BD FE 55
-Z_90BF:
-	jp nc,Z_90E7	; 90BF 30 26
-Z_90C1:
-	ld (il_a),a	; 90C1 CB 41
-	ld a,c
-	and 0x01
-	ld a,(il_a)
-Z_90C3:
-	jp z,Z_90D9	; 90C3 28 14
-	jp	Z_90C5	; мост в следующий кусок
-	org	0x39C3
-D_39C3:
-Z_39C3:
-	db	0x6F, 0x06, 0x08, 0xAF, 0xCB, 0x39, 0x30, 0x01, 0x85, 0xCB, 0x25, 0x10, 0xF7, 0xC9, 0x6F, 0xAF	; 39C3
-	org	0x39D3
-D_39D3:
-Z_39D3:
-	db	0x06, 0x08, 0xCB, 0x15, 0x8F, 0x99, 0x30, 0x01, 0x81, 0x3F, 0x10, 0xF6, 0xCB, 0x15, 0x32, 0x1A	; 39D3
-	org	0x39E3
-D_39E3:
-Z_39E3:
-	db	0x41, 0x7D, 0xC9	; 39E3
-	org	0x39E6
-Z_90C5:
-	ld (il_a),a	; 90C5 CB 49
-	ld a,c
-	and 0x02
-	ld a,(il_a)
-Z_90C7:
-	jp nz,Z_90EF	; 90C7 20 26
-Z_90C9:
-	ld a,0x04	; 90C9 3E 04
-Z_90CB:
-	rst 0x08	; 90CB DD CB 01 46
-	db 0x01, 0x01
-Z_90CF:
-	jp z,Z_90D3	; 90CF 28 02
-Z_90D1:
-	ld a,0x0C	; 90D1 3E 0C
-Z_90D3:
-	rst 0x20	; 90D3 DD 77 FF
-	db 0xFF
-Z_90D6:
-	jp Z_93BE	; 90D6 C3 BE 93
-Z_90D9:
-	rst 0x00	; 90D9 DD 36 FF 03
-	db 0xFF, 0x03
-Z_90DD:
-	jp Z_93BE	; 90DD C3 BE 93
-Z_90E0:
-	rst 0x00	; 90E0 DD 36 FF 01
-	db 0xFF, 0x01
-Z_90E4:
-	jp Z_93BE	; 90E4 C3 BE 93
-Z_90E7:
-	jp c,il_KC5	; 90E7 CB 41
-	ld (il_a),a
-	ld a,c
-	and 0x01
-	ld a,(il_a)
-	jp il_KD6
-il_KC5:
-	ld (il_a),a
-	ld a,c
-	and 0x01
-	scf
-	ld a,(il_a)
-il_KD6:
-Z_90E9:
-	jp z,Z_90E0	; 90E9 28 F5
-Z_90EB:
-	jp c,il_KC7	; 90EB CB 49
-	ld (il_a),a
-	ld a,c
-	and 0x02
-	ld a,(il_a)
-	jp il_KD8
-il_KC7:
-	ld (il_a),a
-	ld a,c
-	and 0x02
-	scf
-	ld a,(il_a)
-il_KD8:
-Z_90ED:
-	jp nz,Z_90C9	; 90ED 20 DA
-Z_90EF:
-	ld a,0x02	; 90EF 3E 02
-Z_90F1:
-	rst 0x08	; 90F1 DD CB 01 46
-	db 0x01, 0x01
-Z_90F5:
-	jp z,Z_90F9	; 90F5 28 02
-Z_90F7:
-	push af	; 90F7 CB FF
-	or 0x80
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_90F9:
-	ld (D_93EB),a	; 90F9 32 EB 93
-Z_90FC:
-	rst 0x30	; 90FC DD CB 00 A6
-	db 0x00, 0xEF
-	jp	Z_9100	; мост в следующий кусок
-	org	0x3A61
-D_3A61:
-Z_3A61:
-	db	0x6F, 0x26, 0x00, 0xAF, 0x32, 0x22, 0x41, 0xCB, 0x7C, 0x28, 0x08, 0x3E, 0x2D, 0x32, 0x22, 0x41	; 3A61
-	org	0x3A71
-D_3A71:
-Z_3A71:
-	db	0xCD, 0x0A, 0xD7, 0x3A, 0xB1, 0xD1, 0xFE, 0x01, 0x38, 0x08, 0x28, 0x10, 0x01, 0x9D, 0xD8, 0xAF	; 3A71
-	org	0x3A81
-D_3A81:
-Z_3A81:
-	db	0x18, 0x0E, 0xCD, 0x72, 0xD8, 0x01, 0x8D, 0xD8, 0x3E, 0xC9, 0x18, 0x04, 0x01, 0x9A, 0xD8, 0xAF	; 3A81
-	org	0x3A91
-D_3A91:
-Z_3A91:
-	db	0xED, 0x43, 0x1C, 0x41, 0x32, 0x1E, 0x41, 0x3A, 0xB2, 0xD1, 0xB7, 0x28, 0x1B, 0x7C, 0xCD, 0xA6	; 3A91
-	org	0x3AA1
-D_3AA1:
-Z_3AA1:
-	db	0xD8, 0xCD, 0x88, 0xD8, 0x7C, 0xCD, 0xB4, 0xD8, 0xCD, 0x88, 0xD8, 0x7D, 0xCD, 0xA6, 0xD8, 0xCD	; 3AA1
-	org	0x3AB1
-D_3AB1:
-Z_3AB1:
-	db	0x88, 0xD8, 0x7D, 0xCD, 0xB4, 0xD8, 0x18, 0x1B, 0x11, 0xF0, 0xD8, 0xCD, 0x79, 0xD8, 0x11, 0x18	; 3AB1
-	org	0x3AC1
-D_3AC1:
-Z_3AC1:
-	db	0xFC, 0xCD, 0x79, 0xD8, 0x11, 0x9C, 0xFF, 0xCD, 0x79, 0xD8, 0x11, 0xF6, 0xFF, 0xCD, 0x79, 0xD8	; 3AC1
-	org	0x3AD1
-D_3AD1:
-Z_3AD1:
-	db	0x7D, 0xC6, 0x30, 0xDF, 0x3A, 0x1E, 0x41, 0xB7, 0xC0, 0x3A, 0x22, 0x41, 0xB7, 0xC8, 0xDF, 0xC9	; 3AD1
-	org	0x3AE1
-D_3AE1:
-Z_3AE1:
-	db	0x0E, 0x2F, 0x0C, 0x19, 0x38, 0xFC, 0xEB, 0x7A, 0xCD, 0x0A, 0xD7, 0x2F, 0x19, 0x57, 0x79, 0xE5	; 3AE1
-	org	0x3AF1
-D_3AF1:
-Z_3AF1:
-	db	0x2A, 0x1C, 0x41, 0xE9, 0xE1, 0xFE, 0x30, 0xC8, 0x01, 0x9A, 0xD8, 0xED, 0x43, 0x1C, 0x41, 0xDF	; 3AF1
-	org	0x3B01
-D_3B01:
-Z_3B01:
-	db	0xC9, 0xE1, 0xDF, 0xC9, 0xE1, 0xFE, 0x30, 0x20, 0xEF, 0x3E, 0x20, 0xDF, 0xC9, 0xE6, 0xF0, 0x1F	; 3B01
-	org	0x3B11
-D_3B11:
-Z_3B11:
-	db	0x1F, 0x1F, 0x1F, 0xC6, 0x30, 0xFE, 0x3A, 0xD8, 0xC6, 0x07, 0xC9, 0xE6, 0x0F, 0x18, 0xF4, 0xE1	; 3B11
-	org	0x3B21
-D_3B21:
-Z_3B21:
-	db	0x7E, 0x23, 0xE5, 0xB7, 0xC8, 0xDF, 0x18, 0xF7, 0xC9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; 3B21
-	org	0x3B31
-Z_9100:
-	rst 0x30	; 9100 DD CB 00 9E
-	db 0x00, 0xF7
-Z_9104:
-	rst 0x30	; 9104 DD CB 00 96
-	db 0x00, 0xFB
-Z_9108:
-	call Z_9391	; 9108 CD 91 93
-Z_910B:
-	rst 0x10	; 910B DD 7E FD
-	db 0xFD
-Z_910E:
-	ld (D_944D),a	; 910E 32 4D 94
-Z_9111:
-	rst 0x10	; 9111 DD 7E 0A
-	db 0x0A
-Z_9114:
-	ld (D_944E),a	; 9114 32 4E 94
-	jp	Z_9117	; мост в следующий кусок
-	org	0x3B47
-D_3B47:
-Z_3B47:
-	db	0xC5, 0xD5, 0xE5, 0xCD, 0xEB, 0xD8, 0xE1, 0xD1, 0xC1, 0xF1, 0xF1, 0xC9	; 3B47
-	org	0x3B53
-Z_9117:
-	ld hl,D_943A	; 9117 21 3A 94
-Z_911A:
-	ld d,0x00	; 911A 16 00
-Z_911C:
-	call il_ix_lde	; 911C DD 5E FC
-	db 0xFC
-Z_911F:
-	dec e	; 911F 1D
-Z_9120:
-	add hl,de	; 9120 19
-Z_9121:
-	ld a,(hl)	; 9121 7E
-Z_9122:
-	ld (D_9450),a	; 9122 32 50 94
-Z_9125:
-	rst 0x10	; 9125 DD 7E 02
-	db 0x02
-Z_9128:
-	sub 0x58	; 9128 D6 58
-Z_912A:
-	jp nc,Z_912E	; 912A 30 02
-Z_912C:
-	cpl	; 912C ED 44
-	inc a
-Z_912E:
-	ld c,a	; 912E 4F
-Z_912F:
-	rst 0x10	; 912F DD 7E 03
-	db 0x03
-Z_9132:
-	rst 0x08	; 9132 DD CB 01 46
-	db 0x01, 0x01
-Z_9136:
-	jp z,Z_913C	; 9136 28 04
-Z_9138:
-	cpl	; 9138 ED 44
-	inc a
-Z_913A:
-	add a,0x74	; 913A C6 74
-Z_913C:
-	add a,c	; 913C 81
-Z_913D:
-	or a	; 913D CB 3F
-	rra
-Z_913F:
-	ld (D_944F),a	; 913F 32 4F 94
-Z_9142:
-	rst 0x10	; 9142 DD 7E 04
-	db 0x04
-Z_9145:
-	call il_ix_ldh	; 9145 DD 66 05
-	db 0x05
-Z_9148:
-	sub 0x1A	; 9148 D6 1A
-Z_914A:
-	ld l,a	; 914A 6F
-Z_914B:
-	rst 0x08	; 914B DD CB 01 46
-	db 0x01, 0x01
-Z_914F:
-	jp z,Z_915E	; 914F 28 0D
-Z_9151:
-	inc h	; 9151 24
-Z_9152:
-	rst 0x08	; 9152 DD CB FF 46
-	db 0xFF, 0x01
-Z_9156:
-	jp nz,Z_9165	; 9156 20 0D
-Z_9158:
-	ld a,h	; 9158 7C
-Z_9159:
-	add a,0x08	; 9159 C6 08
-Z_915B:
-	ld h,a	; 915B 67
-Z_915C:
-	jp Z_9167	; 915C 18 09
-Z_915E:
-	dec h	; 915E 25
-Z_915F:
-	rst 0x08	; 915F DD CB FF 46
-	db 0xFF, 0x01
-Z_9163:
-	jp z,Z_9167	; 9163 28 02
-Z_9165:
-	inc h	; 9165 24
-Z_9166:
-	inc h	; 9166 24
-Z_9167:
-	ld (D_93F1),hl	; 9167 22 F1 93
-Z_916A:
-	call il_ix_ldl	; 916A DD 6E 02
-	db 0x02
-Z_916D:
-	ld (D_93F3),hl	; 916D 22 F3 93
-Z_9170:
-	rst 0x28	; 9170 DD CB FE F6
-	db 0xFE, 0x40
-Z_9174:
-	rst 0x28	; 9174 DD CB 01 E6
-	db 0x01, 0x10
-Z_9178:
-	ret	; 9178 C9
-Z_9179:
-	call il_ix_ldl	; 9179 DD 6E 04
-	db 0x04
-Z_917C:
-	call il_ix_ldh	; 917C DD 66 05
-	db 0x05
-Z_917F:
-	call Z_9009	; 917F CD 09 90
-Z_9182:
-	rst 0x10	; 9182 DD 7E 04
-	db 0x04
-Z_9185:
-	add a,0x04	; 9185 C6 04
-Z_9187:
-	rst 0x20	; 9187 DD 77 04
-	db 0x04
-Z_918A:
-	call il_ix_cp	; 918A DD BE 02
-	db 0x02
-Z_918D:
-	ret c	; 918D D8
-Z_918E:
-	rst 0x10	; 918E DD 7E 00
-	db 0x00
-Z_9191:
-	and 0x18	; 9191 E6 18
-Z_9193:
-	rst 0x20	; 9193 DD 77 00
-	db 0x00
-Z_9196:
-	rst 0x10	; 9196 DD 7E 01
-	db 0x01
-Z_9199:
-	and 0x71	; 9199 E6 71
-Z_919B:
-	rst 0x20	; 919B DD 77 01
-	db 0x01
-Z_919E:
-	rst 0x00	; 919E DD 36 06 00
-	db 0x06, 0x00
-Z_91A2:
-	rst 0x08	; 91A2 DD CB 00 5E
-	db 0x00, 0x08
-Z_91A6:
-	rst 0x30	; 91A6 DD CB 00 9E
-	db 0x00, 0xF7
-Z_91AA:
-	ret z	; 91AA C8
-Z_91AB:
-	ld a,(D_93D6)	; 91AB 3A D6 93
-Z_91AE:
-	and a	; 91AE A7
-Z_91AF:
-	ret nz	; 91AF C0
-Z_91B0:
-	ld e,0x01	; 91B0 1E 01
-Z_91B2:
-	jp Z_93B2	; 91B2 C3 B2 93
-Z_91B5:
-	xor a	; 91B5 AF
-Z_91B6:
-	ld (D_93D6),a	; 91B6 32 D6 93
-Z_91B9:
-	ld (D_93F5),a	; 91B9 32 F5 93
-Z_91BC:
-	ld (D_9426),a	; 91BC 32 26 94
-Z_91BF:
-	inc a	; 91BF 3C
-Z_91C0:
-	ld (D_940C),a	; 91C0 32 0C 94
-Z_91C3:
-	ld hl,0x0C00	; 91C3 21 00 0C
-Z_91C6:
-	ld (D_9409),hl	; 91C6 22 09 94
-Z_91C9:
-	ld hl,0x0400	; 91C9 21 00 04
-Z_91CC:
-	ld (D_9423),hl	; 91CC 22 23 94
-Z_91CF:
-	ld a,(D_9400)	; 91CF 3A 00 94
-Z_91D2:
-	and a	; 91D2 A7
-Z_91D3:
-	jp nz,Z_91FE	; 91D3 20 29
-Z_91D5:
-	ld hl,0x1054	; 91D5 21 54 10
-Z_91D8:
-	ld (D_940D),hl	; 91D8 22 0D 94
-Z_91DB:
-	ld h,0x64	; 91DB 26 64
-Z_91DD:
-	ld (D_9427),hl	; 91DD 22 27 94
-Z_91E0:
-	ld h,0x3E	; 91E0 26 3E
-	jp	Z_91E2	; мост в следующий кусок
 	org	0x3C1E
 D_3C1E:
 Z_3C1E:
@@ -3208,6 +2868,350 @@ D_3F7E:
 Z_3F7E:
 	db	0x42, 0x3C	; 3F7E
 	org	0x3FB2
+Z_909D:
+	rst 0x00	; 909D DD 36 FF 0C
+	db 0xFF, 0x0C
+Z_90A1:
+	jp Z_93BE	; 90A1 C3 BE 93
+Z_90A4:
+	ld (il_a),a	; 90A4 CB 51
+	ld a,c
+	and 0x04
+	ld a,(il_a)
+Z_90A6:
+	jp z,Z_909D	; 90A6 28 F5
+Z_90A8:
+	ld (il_a),a	; 90A8 CB 59
+	ld a,c
+	and 0x08
+	ld a,(il_a)
+Z_90AA:
+	jp nz,Z_90EF	; 90AA 20 43
+Z_90AC:
+	rst 0x00	; 90AC DD 36 FF 01
+	db 0xFF, 0x01
+Z_90B0:
+	jp Z_93BE	; 90B0 C3 BE 93
+Z_90B3:
+	rst 0x28	; 90B3 DD CB 01 CE
+	db 0x01, 0x02
+Z_90B7:
+	call il_ix_ldc	; 90B7 DD 4E FF
+	db 0xFF
+Z_90BA:
+	rst 0x10	; 90BA DD 7E 02
+	db 0x02
+Z_90BD:
+	cp 0x55	; 90BD FE 55
+Z_90BF:
+	jp nc,Z_90E7	; 90BF 30 26
+Z_90C1:
+	ld (il_a),a	; 90C1 CB 41
+	ld a,c
+	and 0x01
+	ld a,(il_a)
+Z_90C3:
+	jp z,Z_90D9	; 90C3 28 14
+Z_90C5:
+	ld (il_a),a	; 90C5 CB 49
+	ld a,c
+	and 0x02
+	ld a,(il_a)
+Z_90C7:
+	jp nz,Z_90EF	; 90C7 20 26
+	jp	Z_90C9	; мост в следующий кусок
+	org	0x6618
+Z_90C9:
+	ld a,0x04	; 90C9 3E 04
+Z_90CB:
+	rst 0x08	; 90CB DD CB 01 46
+	db 0x01, 0x01
+Z_90CF:
+	jp z,Z_90D3	; 90CF 28 02
+Z_90D1:
+	ld a,0x0C	; 90D1 3E 0C
+Z_90D3:
+	rst 0x20	; 90D3 DD 77 FF
+	db 0xFF
+Z_90D6:
+	jp Z_93BE	; 90D6 C3 BE 93
+Z_90D9:
+	rst 0x00	; 90D9 DD 36 FF 03
+	db 0xFF, 0x03
+Z_90DD:
+	jp Z_93BE	; 90DD C3 BE 93
+Z_90E0:
+	rst 0x00	; 90E0 DD 36 FF 01
+	db 0xFF, 0x01
+Z_90E4:
+	jp Z_93BE	; 90E4 C3 BE 93
+Z_90E7:
+	jp c,il_KC5	; 90E7 CB 41
+	ld (il_a),a
+	ld a,c
+	and 0x01
+	ld a,(il_a)
+	jp il_KD6
+il_KC5:
+	ld (il_a),a
+	ld a,c
+	and 0x01
+	scf
+	ld a,(il_a)
+il_KD6:
+Z_90E9:
+	jp z,Z_90E0	; 90E9 28 F5
+Z_90EB:
+	jp c,il_KC7	; 90EB CB 49
+	ld (il_a),a
+	ld a,c
+	and 0x02
+	ld a,(il_a)
+	jp il_KD8
+il_KC7:
+	ld (il_a),a
+	ld a,c
+	and 0x02
+	scf
+	ld a,(il_a)
+il_KD8:
+Z_90ED:
+	jp nz,Z_90C9	; 90ED 20 DA
+Z_90EF:
+	ld a,0x02	; 90EF 3E 02
+Z_90F1:
+	rst 0x08	; 90F1 DD CB 01 46
+	db 0x01, 0x01
+Z_90F5:
+	jp z,Z_90F9	; 90F5 28 02
+Z_90F7:
+	push af	; 90F7 CB FF
+	or 0x80
+	ld (il_a),a
+	pop af
+	ld a,(il_a)
+Z_90F9:
+	ld (D_93EB),a	; 90F9 32 EB 93
+Z_90FC:
+	rst 0x30	; 90FC DD CB 00 A6
+	db 0x00, 0xEF
+Z_9100:
+	rst 0x30	; 9100 DD CB 00 9E
+	db 0x00, 0xF7
+Z_9104:
+	rst 0x30	; 9104 DD CB 00 96
+	db 0x00, 0xFB
+Z_9108:
+	call Z_9391	; 9108 CD 91 93
+Z_910B:
+	rst 0x10	; 910B DD 7E FD
+	db 0xFD
+Z_910E:
+	ld (D_944D),a	; 910E 32 4D 94
+Z_9111:
+	rst 0x10	; 9111 DD 7E 0A
+	db 0x0A
+Z_9114:
+	ld (D_944E),a	; 9114 32 4E 94
+Z_9117:
+	ld hl,D_943A	; 9117 21 3A 94
+Z_911A:
+	ld d,0x00	; 911A 16 00
+Z_911C:
+	call il_ix_lde	; 911C DD 5E FC
+	db 0xFC
+Z_911F:
+	dec e	; 911F 1D
+Z_9120:
+	add hl,de	; 9120 19
+Z_9121:
+	ld a,(hl)	; 9121 7E
+Z_9122:
+	ld (D_9450),a	; 9122 32 50 94
+Z_9125:
+	rst 0x10	; 9125 DD 7E 02
+	db 0x02
+Z_9128:
+	sub 0x58	; 9128 D6 58
+Z_912A:
+	jp nc,Z_912E	; 912A 30 02
+Z_912C:
+	cpl	; 912C ED 44
+	inc a
+Z_912E:
+	ld c,a	; 912E 4F
+Z_912F:
+	rst 0x10	; 912F DD 7E 03
+	db 0x03
+Z_9132:
+	rst 0x08	; 9132 DD CB 01 46
+	db 0x01, 0x01
+Z_9136:
+	jp z,Z_913C	; 9136 28 04
+Z_9138:
+	cpl	; 9138 ED 44
+	inc a
+Z_913A:
+	add a,0x74	; 913A C6 74
+Z_913C:
+	add a,c	; 913C 81
+Z_913D:
+	or a	; 913D CB 3F
+	rra
+Z_913F:
+	ld (D_944F),a	; 913F 32 4F 94
+Z_9142:
+	rst 0x10	; 9142 DD 7E 04
+	db 0x04
+Z_9145:
+	call il_ix_ldh	; 9145 DD 66 05
+	db 0x05
+Z_9148:
+	sub 0x1A	; 9148 D6 1A
+Z_914A:
+	ld l,a	; 914A 6F
+Z_914B:
+	rst 0x08	; 914B DD CB 01 46
+	db 0x01, 0x01
+Z_914F:
+	jp z,Z_915E	; 914F 28 0D
+Z_9151:
+	inc h	; 9151 24
+Z_9152:
+	rst 0x08	; 9152 DD CB FF 46
+	db 0xFF, 0x01
+Z_9156:
+	jp nz,Z_9165	; 9156 20 0D
+Z_9158:
+	ld a,h	; 9158 7C
+Z_9159:
+	add a,0x08	; 9159 C6 08
+Z_915B:
+	ld h,a	; 915B 67
+Z_915C:
+	jp Z_9167	; 915C 18 09
+Z_915E:
+	dec h	; 915E 25
+Z_915F:
+	rst 0x08	; 915F DD CB FF 46
+	db 0xFF, 0x01
+Z_9163:
+	jp z,Z_9167	; 9163 28 02
+Z_9165:
+	inc h	; 9165 24
+Z_9166:
+	inc h	; 9166 24
+Z_9167:
+	ld (D_93F1),hl	; 9167 22 F1 93
+Z_916A:
+	call il_ix_ldl	; 916A DD 6E 02
+	db 0x02
+Z_916D:
+	ld (D_93F3),hl	; 916D 22 F3 93
+Z_9170:
+	rst 0x28	; 9170 DD CB FE F6
+	db 0xFE, 0x40
+Z_9174:
+	rst 0x28	; 9174 DD CB 01 E6
+	db 0x01, 0x10
+Z_9178:
+	ret	; 9178 C9
+Z_9179:
+	call il_ix_ldl	; 9179 DD 6E 04
+	db 0x04
+	jp	Z_917C	; мост в следующий кусок
+	org	0x754A
+Z_917C:
+	call il_ix_ldh	; 917C DD 66 05
+	db 0x05
+Z_917F:
+	call Z_9009	; 917F CD 09 90
+Z_9182:
+	rst 0x10	; 9182 DD 7E 04
+	db 0x04
+Z_9185:
+	add a,0x04	; 9185 C6 04
+Z_9187:
+	rst 0x20	; 9187 DD 77 04
+	db 0x04
+Z_918A:
+	call il_ix_cp	; 918A DD BE 02
+	db 0x02
+Z_918D:
+	ret c	; 918D D8
+Z_918E:
+	rst 0x10	; 918E DD 7E 00
+	db 0x00
+Z_9191:
+	and 0x18	; 9191 E6 18
+Z_9193:
+	rst 0x20	; 9193 DD 77 00
+	db 0x00
+Z_9196:
+	rst 0x10	; 9196 DD 7E 01
+	db 0x01
+Z_9199:
+	and 0x71	; 9199 E6 71
+Z_919B:
+	rst 0x20	; 919B DD 77 01
+	db 0x01
+Z_919E:
+	rst 0x00	; 919E DD 36 06 00
+	db 0x06, 0x00
+Z_91A2:
+	rst 0x08	; 91A2 DD CB 00 5E
+	db 0x00, 0x08
+Z_91A6:
+	rst 0x30	; 91A6 DD CB 00 9E
+	db 0x00, 0xF7
+Z_91AA:
+	ret z	; 91AA C8
+Z_91AB:
+	ld a,(D_93D6)	; 91AB 3A D6 93
+Z_91AE:
+	and a	; 91AE A7
+Z_91AF:
+	ret nz	; 91AF C0
+Z_91B0:
+	ld e,0x01	; 91B0 1E 01
+Z_91B2:
+	jp Z_93B2	; 91B2 C3 B2 93
+Z_91B5:
+	xor a	; 91B5 AF
+Z_91B6:
+	ld (D_93D6),a	; 91B6 32 D6 93
+Z_91B9:
+	ld (D_93F5),a	; 91B9 32 F5 93
+Z_91BC:
+	ld (D_9426),a	; 91BC 32 26 94
+Z_91BF:
+	inc a	; 91BF 3C
+Z_91C0:
+	ld (D_940C),a	; 91C0 32 0C 94
+Z_91C3:
+	ld hl,0x0C00	; 91C3 21 00 0C
+Z_91C6:
+	ld (D_9409),hl	; 91C6 22 09 94
+Z_91C9:
+	ld hl,0x0400	; 91C9 21 00 04
+Z_91CC:
+	ld (D_9423),hl	; 91CC 22 23 94
+Z_91CF:
+	ld a,(D_9400)	; 91CF 3A 00 94
+Z_91D2:
+	and a	; 91D2 A7
+Z_91D3:
+	jp nz,Z_91FE	; 91D3 20 29
+Z_91D5:
+	ld hl,0x1054	; 91D5 21 54 10
+Z_91D8:
+	ld (D_940D),hl	; 91D8 22 0D 94
+Z_91DB:
+	ld h,0x64	; 91DB 26 64
+Z_91DD:
+	ld (D_9427),hl	; 91DD 22 27 94
+Z_91E0:
+	ld h,0x3E	; 91E0 26 3E
 Z_91E2:
 	ld (D_93F3),hl	; 91E2 22 F3 93
 Z_91E5:
@@ -3265,8 +3269,6 @@ Z_921D:
 	jp Z_9235	; 921D 18 16
 Z_921F:
 	ld hl,0x5C54	; 921F 21 54 5C
-	jp	Z_9222	; мост в следующий кусок
-	org	0x6618
 Z_9222:
 	ld (D_940D),hl	; 9222 22 0D 94
 Z_9225:
@@ -3436,8 +3438,6 @@ Z_92E9:
 	nop	; 92E9 00
 Z_92EA:
 	nop	; 92EA 00
-	jp	Z_92EB	; мост в следующий кусок
-	org	0x7586
 Z_92EB:
 	nop	; 92EB 00
 Z_92EC:
@@ -3546,6 +3546,8 @@ Z_94B8:
 	call Z_953C	; 94B8 CD 3C 95
 Z_94BB:
 	ld a,(D_93EB)	; 94BB 3A EB 93
+	jp	Z_94BE	; мост в следующий кусок
+	org	0x7A57
 Z_94BE:
 	jp c,il_KC9	; 94BE CB 47
 	ld (il_a),a
@@ -3632,6 +3634,8 @@ Z_94F7:
 	inc hl
 	ld a,(hl)
 	ld hl,(il_tmp2)
+	jp	Z_94FA	; мост в следующий кусок
+	org	0x7B51
 Z_94FA:
 	and a	; 94FA A7
 Z_94FB:
@@ -3682,6 +3686,8 @@ Z_951F:
 	inc hl
 	ld (z80_ix),hl
 	ld hl,(il_tmp)
+	jp	Z_9521	; мост в следующий кусок
+	org	0x8496
 Z_9521:
 	ld (il_tmp),hl	; 9521 DD 23
 	ld hl,(z80_ix)
@@ -3795,8 +3801,6 @@ Z_956E:
 	ld a,c
 	and 0x80
 	ld a,(il_a)
-	jp	Z_9570	; мост в следующий кусок
-	org	0x7A57
 Z_9570:
 	push af	; 9570 CB FF
 	or 0x80
@@ -3875,8 +3879,6 @@ Z_95A8:
 	and 0x20
 	ld hl,(il_tmp2)
 	ld a,(il_a)
-	jp	Z_95AC	; мост в следующий кусок
-	org	0x7B51
 Z_95AC:
 	jp nz,Z_978A	; 95AC C2 8A 97
 Z_95AF:
@@ -3913,17 +3915,11 @@ Z_95C1:
 	jp nz,Z_9705	; 95C1 C2 05 97
 Z_95C4:
 	ld e,0x01	; 95C4 1E 01
-	jp	Z_95C6	; мост в следующий кусок
-	org	0x84D0
 Z_95C6:
 	ld hl,D_9442	; 95C6 21 42 94
 Z_95C9:
-	ld (il_tmp2),hl	; 95C9 DD 7E FE
-	ld hl,(z80_ix)
-	dec hl
-	dec hl
-	ld a,(hl)
-	ld hl,(il_tmp2)
+	rst 0x10	; 95C9 DD 7E FE
+	db 0xFE
 Z_95CC:
 	and 0x1F	; 95CC E6 1F
 Z_95CE:
@@ -3969,16 +3965,8 @@ Z_95F3:
 Z_95F4:
 	and 0x03	; 95F4 E6 03
 Z_95F6:
-	ld (il_tmp2),hl	; 95F6 DD 77 06
-	ld hl,(z80_ix)
-	inc hl
-	inc hl
-	inc hl
-	inc hl
-	inc hl
-	inc hl
-	ld (hl),a
-	ld hl,(il_tmp2)
+	rst 0x20	; 95F6 DD 77 06
+	db 0x06
 Z_95F9:
 	ld b,0x00	; 95F9 06 00
 Z_95FB:
@@ -3988,20 +3976,8 @@ Z_95FC:
 Z_95FD:
 	ld a,(hl)	; 95FD 7E
 Z_95FE:
-	push af	; 95FE DD 77 07
-	ld (il_a),a
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,l
-	add a,7
-	ld l,a
-	ld a,h
-	adc a,0
-	ld h,a
-	ld a,(il_a)
-	ld (hl),a
-	ld hl,(il_tmp2)
-	pop af
+	rst 0x20	; 95FE DD 77 07
+	db 0x07
 Z_9601:
 	ld c,a	; 9601 4F
 Z_9602:
@@ -4011,26 +3987,11 @@ Z_9605:
 Z_9606:
 	ld a,(hl)	; 9606 7E
 Z_9607:
-	ld (il_a),a	; 9607 DD 6E 02
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	inc hl
-	inc hl
-	ld a,(hl)
-	ld (il_tmp2),a
-	ld hl,(il_tmp2)
-	ld a,(il_a)
+	call il_ix_ldl	; 9607 DD 6E 02
+	db 0x02
 Z_960A:
-	ld (il_a),a	; 960A DD 66 03
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	inc hl
-	inc hl
-	inc hl
-	ld a,(hl)
-	ld (il_tmp2+1),a
-	ld hl,(il_tmp2)
-	ld a,(il_a)
+	call il_ix_ldh	; 960A DD 66 03
+	db 0x03
 Z_960D:
 	dec e	; 960D 1D
 Z_960E:
@@ -4070,14 +4031,8 @@ Z_9620:
 Z_9621:
 	ld a,0x0A	; 9621 3E 0A
 Z_9623:
-	ld (il_a),a	; 9623 DD CB FF 56
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	dec hl
-	ld a,(hl)
-	and 0x04
-	ld hl,(il_tmp2)
-	ld a,(il_a)
+	rst 0x08	; 9623 DD CB FF 56
+	db 0xFF, 0x04
 Z_9627:
 	jp nz,Z_9633	; 9627 20 0A
 Z_9629:
@@ -4097,110 +4052,9 @@ Z_9637:
 Z_9639:
 	add a,0x0C	; 9639 C6 0C
 Z_963B:
-	jp c,il_KC13	; 963B DD CB 01 46
-	ld (il_a),a
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	inc hl
-	ld a,(hl)
-	and 0x01
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-	jp il_KD14
-il_KC13:
-	ld (il_a),a
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	inc hl
-	ld a,(hl)
-	and 0x01
-	scf
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-il_KD14:
-Z_963F:
-	jp z,Z_9642	; 963F 28 01
-Z_9641:
-	inc a	; 9641 3C
-Z_9642:
-	jp c,il_KC15	; 9642 DD CB 00 66
-	ld (il_a),a
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,(hl)
-	and 0x10
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-	jp il_KD16
-il_KC15:
-	ld (il_a),a
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,(hl)
-	and 0x10
-	scf
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-il_KD16:
-Z_9646:
-	call nz,Z_96BC	; 9646 C4 BC 96
-Z_9649:
-	ld (BLIT_Y),hl	; 9649 22 00 33
-Z_964C:
-	call Z_9E6F	; 964C CD 6F 9E
-Z_964F:
-	jp Z_B01C	; 964F C3 1C B0
-Z_9652:
-	ld (il_a),a	; 9652 DD 6E 02
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	inc hl
-	inc hl
-	ld a,(hl)
-	ld (il_tmp2),a
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-Z_9655:
-	ld (il_a),a	; 9655 DD 66 03
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	inc hl
-	inc hl
-	inc hl
-	ld a,(hl)
-	ld (il_tmp2+1),a
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-Z_9658:
-	ld a,l	; 9658 7D
-Z_9659:
-	sub 0x1C	; 9659 D6 1C
-Z_965B:
-	ld l,a	; 965B 6F
-Z_965C:
-	ld (il_a),a	; 965C DD CB 00 66
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,(hl)
-	and 0x10
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-Z_9660:
-	push af	; 9660 DD 7E 07
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,l
-	add a,7
-	ld l,a
-	ld a,h
-	adc a,0
-	ld h,a
-	ld a,(hl)
-	ld (il_a),a
-	ld hl,(il_tmp2)
-	pop af
-	ld a,(il_a)
-	jp	Z_9663	; мост в следующий кусок
+	rst 0x08	; 963B DD CB 01 46
+	db 0x01, 0x01
+	jp	Z_963F	; мост в следующий кусок
 	org	0x8696
 D_8696:
 Z_8696:
@@ -4239,13 +4093,13 @@ il_pro_ix:
 	                push    hl              ; возврат в тело
 	                ld      hl,(z80_ix)
 	                or      a
-	                jp      m,il_ADRN25
+	                jp      m,il_ADRN21
 	                add     a,l
 	                ld      l,a
 	                ret     nc
 	                inc     h
 	                ret
-il_ADRN25:
+il_ADRN21:
 	                add     a,l
 	                ld      l,a
 	                ret     c
@@ -4269,13 +4123,13 @@ il_pro2_ix:
 	                push    hl              ; возврат в тело
 	                ld      hl,(z80_ix)
 	                or      a
-	                jp      m,il_ADRN26
+	                jp      m,il_ADRN22
 	                add     a,l
 	                ld      l,a
 	                ret     nc
 	                inc     h
 	                ret
-il_ADRN26:
+il_ADRN22:
 	                add     a,l
 	                ld      l,a
 	                ret     c
@@ -4294,13 +4148,13 @@ il_pro_iy:
 	                push    hl              ; возврат в тело
 	                ld      hl,(z80_iy)
 	                or      a
-	                jp      m,il_ADRN27
+	                jp      m,il_ADRN23
 	                add     a,l
 	                ld      l,a
 	                ret     nc
 	                inc     h
 	                ret
-il_ADRN27:
+il_ADRN23:
 	                add     a,l
 	                ld      l,a
 	                ret     c
@@ -4324,13 +4178,13 @@ il_pro2_iy:
 	                push    hl              ; возврат в тело
 	                ld      hl,(z80_iy)
 	                or      a
-	                jp      m,il_ADRN28
+	                jp      m,il_ADRN24
 	                add     a,l
 	                ld      l,a
 	                ret     nc
 	                inc     h
 	                ret
-il_ADRN28:
+il_ADRN24:
 	                add     a,l
 	                ld      l,a
 	                ret     c
@@ -4362,11 +4216,11 @@ il_ix_bit_b:
 	                ld a,(il_f)
 	                rra
 	                ld a,(il_d)
-	                jp c,il_BITC29
+	                jp c,il_BITC25
 	                and (hl)
 	                ld a,(il_f+1)
 	                jp il_ret_hl
-il_BITC29:
+il_BITC25:
 	                and (hl)
 	                scf
 	                ld a,(il_f+1)
@@ -4475,11 +4329,11 @@ il_iy_bit:
 	                ld a,(il_f)
 	                rra
 	                ld a,(il_d)
-	                jp c,il_BITC30
+	                jp c,il_BITC26
 	                and (hl)
 	                ld a,(il_f+1)
 	                jp il_ret_hl
-il_BITC30:
+il_BITC26:
 	                and (hl)
 	                scf
 	                ld a,(il_f+1)
@@ -4898,7 +4752,7 @@ Z_3723:
 Z_3724:
 	jp Z_A186	; 3724 C3 86 A1
 Z_372C:
-	call 0x061D	; 372C CD 1D 06
+	call 0x063F	; 372C CD 3F 06
 Z_372F:
 	jp Z_3811	; 372F C3 11 38
 Z_3732:
@@ -5036,7 +4890,7 @@ Z_37D0:
 Z_37D1:
 	ret	; 37D1 C9
 Z_37D2:
-	jp 0x061C	; 37D2 C3 1C 06
+	jp 0x063E	; 37D2 C3 3E 06
 Z_3811:
 	ld hl,0x4104	; 3811 21 04 41
 Z_3814:
@@ -6312,23 +6166,23 @@ Z_867C:
 Z_867F:
 	call Z_3A2F	; 867F CD 2F 3A
 Z_8682:
-	jp 0x062B	; 8682 C3 2B 06
+	jp 0x064D	; 8682 C3 4D 06
 Z_8685:
 	ld a,0x30	; 8685 3E 30
 Z_8687:
-	call 0x063E	; 8687 CD 3E 06
+	call 0x0660	; 8687 CD 60 06
 Z_868A:
 	ret nz	; 868A C0
 Z_868B:
 	ld a,0x31	; 868B 3E 31
 Z_868D:
-	call 0x0647	; 868D CD 47 06
+	call 0x0669	; 868D CD 69 06
 Z_8690:
 	ret nz	; 8690 C0
 Z_8691:
 	ld a,0x3A	; 8691 3E 3A
 Z_8693:
-	jp 0x0647	; 8693 C3 47 06
+	jp 0x0669	; 8693 C3 69 06
 Z_869C:
 	ld hl,0x00	; 869C 21 00 00
 Z_869F:
@@ -6799,29 +6653,40 @@ Z_886F:
 	ld a,0x10	; 886F 3E 10
 	jp	Z_8871	; мост в следующий кусок
 	org	0x9321
-Z_9663:
-	jp z,Z_9667	; 9663 28 02
-Z_9665:
-	add a,0x03	; 9665 C6 03
-Z_9667:
-	ld (il_a),a	; 9667 DD CB FF 56
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	dec hl
-	ld a,(hl)
-	and 0x04
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-Z_966B:
-	jp nz,Z_9677	; 966B 20 0A
-Z_966D:
-	add a,0x18	; 966D C6 18
-Z_966F:
-	rst 0x08	; 966F DD CB FF 4E
-	db 0xFF, 0x02
-Z_9673:
-	jp z,Z_967D	; 9673 28 08
-	jp	Z_9675	; мост в следующий кусок
+Z_963F:
+	jp z,Z_9642	; 963F 28 01
+Z_9641:
+	inc a	; 9641 3C
+Z_9642:
+	rst 0x08	; 9642 DD CB 00 66
+	db 0x00, 0x10
+Z_9646:
+	call nz,Z_96BC	; 9646 C4 BC 96
+Z_9649:
+	ld (BLIT_Y),hl	; 9649 22 00 33
+Z_964C:
+	call Z_9E6F	; 964C CD 6F 9E
+Z_964F:
+	jp Z_B01C	; 964F C3 1C B0
+Z_9652:
+	call il_ix_ldl	; 9652 DD 6E 02
+	db 0x02
+Z_9655:
+	call il_ix_ldh	; 9655 DD 66 03
+	db 0x03
+Z_9658:
+	ld a,l	; 9658 7D
+Z_9659:
+	sub 0x1C	; 9659 D6 1C
+Z_965B:
+	ld l,a	; 965B 6F
+Z_965C:
+	rst 0x08	; 965C DD CB 00 66
+	db 0x00, 0x10
+Z_9660:
+	rst 0x10	; 9660 DD 7E 07
+	db 0x07
+	jp	Z_9663	; мост в следующий кусок
 	org	0x9348
 D_9348:
 Z_9348:
@@ -6835,6 +6700,22 @@ D_9368:
 Z_9368:
 	db	0xC3, 0xED, 0x9F, 0xC3, 0xF3, 0x9E, 0xC3, 0x50, 0x9E, 0xC3, 0xA2, 0x9E, 0xC3, 0xD9	; 9368
 	org	0x9376
+Z_9663:
+	jp z,Z_9667	; 9663 28 02
+Z_9665:
+	add a,0x03	; 9665 C6 03
+Z_9667:
+	rst 0x08	; 9667 DD CB FF 56
+	db 0xFF, 0x04
+Z_966B:
+	jp nz,Z_9677	; 966B 20 0A
+Z_966D:
+	add a,0x18	; 966D C6 18
+Z_966F:
+	rst 0x08	; 966F DD CB FF 4E
+	db 0xFF, 0x02
+Z_9673:
+	jp z,Z_967D	; 9673 28 08
 Z_9675:
 	jp Z_967F	; 9675 18 08
 Z_9677:
@@ -6880,28 +6761,7 @@ Z_9696:
 	jp nz,Z_9691	; 9696 20 F9
 Z_9698:
 	ld a,(D_93EB)	; 9698 3A EB 93
-Z_969B:
-	push af	; 969B CB F7
-	or 0x40
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_969D:
-	ld (D_93EB),a	; 969D 32 EB 93
-Z_96A0:
-	rst 0x00	; 96A0 DD 36 FA 03
-	db 0xFA, 0x03
-Z_96A4:
-	ld a,(D_93D8)	; 96A4 3A D8 93
-Z_96A7:
-	and a	; 96A7 A7
-Z_96A8:
-	ret nz	; 96A8 C0
-Z_96A9:
-	inc a	; 96A9 3C
-Z_96AA:
-	ld (D_AA83),a	; 96AA 32 83 AA
-	jp	Z_96AD	; мост в следующий кусок
+	jp	Z_969B	; мост в следующий кусок
 	org	0x93CA
 D_93CA:
 Z_93CA:
@@ -7155,6 +7015,27 @@ D_94A7:
 Z_94A7:
 	db	0x03, 0x06, 0x0F, 0x12, 0x1B, 0x1E, 0x27, 0x2A, 0x00	; 94A7
 	org	0x94B0
+Z_969B:
+	push af	; 969B CB F7
+	or 0x40
+	ld (il_a),a
+	pop af
+	ld a,(il_a)
+Z_969D:
+	ld (D_93EB),a	; 969D 32 EB 93
+Z_96A0:
+	rst 0x00	; 96A0 DD 36 FA 03
+	db 0xFA, 0x03
+Z_96A4:
+	ld a,(D_93D8)	; 96A4 3A D8 93
+Z_96A7:
+	and a	; 96A7 A7
+Z_96A8:
+	ret nz	; 96A8 C0
+Z_96A9:
+	inc a	; 96A9 3C
+Z_96AA:
+	ld (D_AA83),a	; 96AA 32 83 AA
 Z_96AD:
 	ld hl,0x02	; 96AD 21 02 00
 Z_96B0:
@@ -8632,22 +8513,6 @@ Z_9C7C:
 	db 0x01, 0xDF
 Z_9C80:
 	jp Z_9E82	; 9C80 C3 82 9E
-Z_9C83:
-	push af	; 9C83 DD CB F9 86
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,l
-	add a,249
-	ld l,a
-	ld a,h
-	adc a,255
-	ld h,a
-	ld a,(hl)
-	and 0xFE
-	ld (hl),a
-	ld hl,(il_tmp2)
-	pop af
-	jp	Z_9C87	; мост в следующий кусок
 	org	0x9B69
 D_9B69:
 Z_9B69:
@@ -8689,6 +8554,21 @@ D_9BE7:
 Z_9BE7:
 	db	0x02, 0x04, 0x00, 0x01, 0x04, 0x00, 0x01, 0x04, 0x00, 0x01, 0x06, 0x00, 0x01, 0x06, 0xFF	; 9BE7
 	org	0x9BF6
+Z_9C83:
+	push af	; 9C83 DD CB F9 86
+	ld (il_tmp2),hl
+	ld hl,(z80_ix)
+	ld a,l
+	add a,249
+	ld l,a
+	ld a,h
+	adc a,255
+	ld h,a
+	ld a,(hl)
+	and 0xFE
+	ld (hl),a
+	ld hl,(il_tmp2)
+	pop af
 Z_9C87:
 	ld (il_a),a	; 9C87 DD CB 00 46
 	ld (il_tmp2),hl
@@ -9416,18 +9296,8 @@ Z_9EE3:
 Z_9EE5:
 	ld b,a	; 9EE5 47
 Z_9EE6:
-	push af	; 9EE6 DD 4E 09
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,l
-	add a,9
-	ld l,a
-	ld a,h
-	adc a,0
-	ld h,a
-	ld c,(hl)
-	ld hl,(il_tmp2)
-	pop af
+	call il_ix_ldc	; 9EE6 DD 4E 09
+	db 0x09
 Z_9EE9:
 	ld (il_a),a	; 9EE9 CB 79
 	ld a,c
@@ -9468,18 +9338,8 @@ Z_9EFC:
 	ld c,a
 	pop af
 Z_9EFE:
-	push af	; 9EFE DD 71 09
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,l
-	add a,9
-	ld l,a
-	ld a,h
-	adc a,0
-	ld h,a
-	ld (hl),c
-	ld hl,(il_tmp2)
-	pop af
+	call il_ix_stc	; 9EFE DD 71 09
+	db 0x09
 Z_9F01:
 	ret nc	; 9F01 D0
 Z_9F02:
@@ -9750,7 +9610,13 @@ Z_A010:
 	ld (D_3424),a	; A010 32 24 34
 Z_A013:
 	ld de,D_9452	; A013 11 52 94
-	jp	Z_A016	; мост в следующий кусок
+Z_A016:
+	ld hl,0x0114	; A016 21 14 01
+Z_A019:
+	call Z_A01F	; A019 CD 1F A0
+Z_A01C:
+	ld hl,0x1414	; A01C 21 14 14
+	jp	Z_A01F	; мост в следующий кусок
 	org	0xA06F
 D_A06F:
 Z_A06F:
@@ -9760,12 +9626,6 @@ D_A07F:
 Z_A07F:
 	db	0xD1, 0xC1, 0xF1, 0xC9, 0xBE, 0xA0, 0x18, 0xF6, 0xE5, 0xD5, 0x6F, 0x26, 0x00	; A07F
 	org	0xA08C
-Z_A016:
-	ld hl,0x0114	; A016 21 14 01
-Z_A019:
-	call Z_A01F	; A019 CD 1F A0
-Z_A01C:
-	ld hl,0x1414	; A01C 21 14 14
 Z_A01F:
 	ld (TEXT_ROW),hl	; A01F 22 02 41
 Z_A022:
@@ -9778,16 +9638,6 @@ Z_A026:
 	ret z	; A026 C8
 Z_A027:
 	call Z_A063	; A027 CD 63 A0
-	jp	Z_A02A	; мост в следующий кусок
-	org	0xA0A4
-D_A0A4:
-Z_A0A4:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A0A4
-	org	0xA0AD
-D_A0AD:
-Z_A0AD:
-	db	0xC3, 0x5F, 0xA7	; A0AD
-	org	0xA0B0
 Z_A02A:
 	jp Z_A022	; A02A 18 F6
 Z_A02C:
@@ -9800,6 +9650,16 @@ Z_A02F:
 	ld h,0x00	; A02F 26 00
 Z_A031:
 	ld b,0xFF	; A031 06 FF
+	jp	Z_A033	; мост в следующий кусок
+	org	0xA0A4
+D_A0A4:
+Z_A0A4:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A0A4
+	org	0xA0AD
+D_A0AD:
+Z_A0AD:
+	db	0xC3, 0x5F, 0xA7	; A0AD
+	org	0xA0B0
 Z_A033:
 	ld e,0x30	; A033 1E 30
 Z_A035:
@@ -9820,8 +9680,6 @@ Z_A040:
 	ld h,0x00	; A040 26 00
 Z_A042:
 	ld e,c	; A042 59
-	jp	Z_A043	; мост в следующий кусок
-	org	0xA133
 Z_A043:
 	ld bc,0xFF9C	; A043 01 9C FF
 Z_A046:
@@ -9830,6 +9688,8 @@ Z_A049:
 	ld c,0xF6	; A049 0E F6
 Z_A04B:
 	call Z_A055	; A04B CD 55 A0
+	jp	Z_A04E	; мост в следующий кусок
+	org	0xA133
 Z_A04E:
 	ld a,l	; A04E 7D
 Z_A04F:
@@ -9859,12 +9719,6 @@ Z_A05A:
 	ld a,(il_a)
 Z_A05C:
 	dec a	; A05C 3D
-	jp	Z_A05D	; мост в следующий кусок
-	org	0xA15C
-D_A15C:
-Z_A15C:
-	db	0x00, 0x00, 0x00, 0x00	; A15C
-	org	0xA160
 Z_A05D:
 	jp z,Z_A061	; A05D 28 02
 Z_A05F:
@@ -9881,6 +9735,12 @@ Z_A065:
 	push de	; A065 D5
 Z_A066:
 	push hl	; A066 E5
+	jp	Z_A067	; мост в следующий кусок
+	org	0xA15C
+D_A15C:
+Z_A15C:
+	db	0x00, 0x00, 0x00, 0x00	; A15C
+	org	0xA160
 Z_A067:
 	call Z_3B53	; A067 CD 53 3B
 Z_A06A:
@@ -9931,12 +9791,6 @@ Z_A0B8:
 	jp nc,Z_A0BC	; A0B8 30 02
 Z_A0BA:
 	add a,l	; A0BA 85
-	jp	Z_A0BB	; мост в следующий кусок
-	org	0xA1A4
-D_A1A4:
-Z_A1A4:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A1A4
-	org	0xA1AA
 Z_A0BB:
 	ret c	; A0BB D8
 Z_A0BC:
@@ -9944,6 +9798,11 @@ Z_A0BC:
 	jp nz,Z_A0B4
 Z_A0BE:
 	ret	; A0BE C9
+	org	0xA1A4
+D_A1A4:
+Z_A1A4:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A1A4
+	org	0xA1AA
 Z_A0BF:
 	ld (il_tmp),hl	; A0BF DD 21 14 33
 	ld hl,D_3314
@@ -10102,17 +9961,17 @@ Z_A1A1:
 Z_A1AA:
 	ld a,(D_93E5)	; A1AA 3A E5 93
 Z_A1AD:
-	jp c,il_KC17	; A1AD CB 7F
+	jp c,il_KC13	; A1AD CB 7F
 	ld (il_a),a
 	and 0x80
 	ld a,(il_a)
-	jp il_KD18
-il_KC17:
+	jp il_KD14
+il_KC13:
 	ld (il_a),a
 	and 0x80
 	scf
 	ld a,(il_a)
-il_KD18:
+il_KD14:
 Z_A1AF:
 	jp z,Z_A1BD	; A1AF 28 0C
 Z_A1B1:
@@ -10309,7 +10168,13 @@ Z_A28B:
 Z_A28E:
 	call il_ix_ldb	; A28E DD 46 0D
 	db 0x0D
-	jp	Z_A291	; мост в следующий кусок
+Z_A291:
+	call Z_A341	; A291 CD 41 A3
+Z_A294:
+	call Z_A472	; A294 CD 72 A4
+Z_A297:
+	inc l	; A297 2C
+	jp	Z_A298	; мост в следующий кусок
 	org	0xA362
 D_A362:
 Z_A362:
@@ -10367,12 +10232,6 @@ D_A413:
 Z_A413:
 	db	0x52, 0x45, 0x45, 0x53, 0x20, 0xFF	; A413
 	org	0xA419
-Z_A291:
-	call Z_A341	; A291 CD 41 A3
-Z_A294:
-	call Z_A472	; A294 CD 72 A4
-Z_A297:
-	inc l	; A297 2C
 Z_A298:
 	call Z_9397	; A298 CD 97 93
 Z_A29B:
@@ -10467,7 +10326,14 @@ Z_A305:
 	call Z_A32C	; A305 CD 2C A3
 Z_A308:
 	ld a,0xF1	; A308 3E F1
-	jp	Z_A30A	; мост в следующий кусок
+Z_A30A:
+	ld (D_3424),a	; A30A 32 24 34
+Z_A30D:
+	rst 0x10	; A30D DD 7E 12
+	db 0x12
+Z_A310:
+	call Z_93C1	; A310 CD C1 93
+	jp	Z_A313	; мост в следующий кусок
 	org	0xA494
 D_A494:
 Z_A494:
@@ -10477,13 +10343,6 @@ D_A49F:
 Z_A49F:
 	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A49F
 	org	0xA4A8
-Z_A30A:
-	ld (D_3424),a	; A30A 32 24 34
-Z_A30D:
-	rst 0x10	; A30D DD 7E 12
-	db 0x12
-Z_A310:
-	call Z_93C1	; A310 CD C1 93
 Z_A313:
 	ld a,0x2F	; A313 3E 2F
 Z_A315:
@@ -10519,18 +10378,18 @@ Z_A335:
 	jp Z_A339	; A335 18 02
 Z_A337:
 	ld a,0x20	; A337 3E 20
-	jp	Z_A339	; мост в следующий кусок
-	org	0xA4DB
-D_A4DB:
-Z_A4DB:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC9	; A4DB
-	org	0xA4E7
 Z_A339:
 	push af	; A339 F5
 Z_A33A:
 	call Z_9376	; A33A CD 76 93
 Z_A33D:
 	pop af	; A33D F1
+	jp	Z_A33E	; мост в следующий кусок
+	org	0xA4DB
+D_A4DB:
+Z_A4DB:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC9	; A4DB
+	org	0xA4E7
 Z_A33E:
 	dec b	; A33E 10 F9
 	jp nz,Z_A339
@@ -10584,16 +10443,16 @@ Z_A41C:
 	ld (D_940D),hl	; A41C 22 0D 94
 Z_A41F:
 	ld hl,0xF864	; A41F 21 64 F8
-	jp	Z_A422	; мост в следующий кусок
+Z_A422:
+	ld (D_9427),hl	; A422 22 27 94
+Z_A425:
+	ld a,0x10	; A425 3E 10
+	jp	Z_A427	; мост в следующий кусок
 	org	0xA535
 D_A535:
 Z_A535:
 	db	0x00, 0x00, 0x00, 0x00, 0x00	; A535
 	org	0xA53A
-Z_A422:
-	ld (D_9427),hl	; A422 22 27 94
-Z_A425:
-	ld a,0x10	; A425 3E 10
 Z_A427:
 	ld (D_940B),a	; A427 32 0B 94
 Z_A42A:
@@ -10727,7 +10586,7 @@ Z_A4FD:
 Z_A4FF:
 	jp Z_3A2C	; A4FF C3 2C 3A
 Z_A502:
-	call CROWD_TICK	; A502 CD F6 74
+	call CROWD_TICK	; A502 CD BA 74
 Z_A505:
 	and 0x0F	; A505 E6 0F
 Z_A507:
@@ -10737,17 +10596,17 @@ Z_A509:
 Z_A50A:
 	ld a,(D_9451)	; A50A 3A 51 94
 Z_A50D:
-	jp c,il_KC19	; A50D CB 47
+	jp c,il_KC15	; A50D CB 47
 	ld (il_a),a
 	and 0x01
 	ld a,(il_a)
-	jp il_KD20
-il_KC19:
+	jp il_KD16
+il_KC15:
 	ld (il_a),a
 	and 0x01
 	scf
 	ld a,(il_a)
-il_KD20:
+il_KD16:
 Z_A50F:
 	ret nz	; A50F C0
 Z_A510:
@@ -10823,7 +10682,7 @@ Z_A629:
 Z_A62B:
 	ld (D_3424),a	; A62B 32 24 34
 Z_A62E:
-	call Z_34AF	; A62E CD AF 34
+	call MENU_BOX_CLEAR	; A62E CD F6 18
 Z_A631:
 	ld hl,0x076E	; A631 21 6E 07
 Z_A634:
@@ -10905,7 +10764,7 @@ Z_A691:
 Z_A694:
 	call Z_A77F	; A694 CD 7F A7
 Z_A697:
-	ld a,(G_KEY_ASCII)	; A697 3A 10 41
+	call MENU_KEY	; A697 CD BB 06
 Z_A69A:
 	nop	; A69A 00
 Z_A69B:
@@ -10995,15 +10854,15 @@ Z_A6F2:
 Z_A6F4:
 	ld (D_3424),a	; A6F4 32 24 34
 Z_A6F7:
-	call Z_34AF	; A6F7 CD AF 34
+	call MENU_BOX_CLEAR	; A6F7 CD F6 18
 Z_A6FA:
-	ld hl,0x080E	; A6FA 21 0E 08
+	ld hl,0x0808	; A6FA 21 08 08
 Z_A6FD:
 	ld de,D_A808	; A6FD 11 08 A8
 Z_A700:
 	call Z_9397	; A700 CD 97 93
 Z_A703:
-	ld hl,0x0810	; A703 21 10 08
+	ld hl,0x080A	; A703 21 0A 08
 Z_A706:
 	ld (TEXT_ROW),hl	; A706 22 02 41
 Z_A709:
@@ -11017,21 +10876,21 @@ Z_A712:
 Z_A715:
 	call Z_A739	; A715 CD 39 A7
 Z_A718:
-	ld hl,0x0812	; A718 21 12 08
+	ld hl,0x080C	; A718 21 0C 08
 Z_A71B:
 	ld de,D_A81A	; A71B 11 1A A8
 Z_A71E:
 	call Z_9397	; A71E CD 97 93
 Z_A721:
-	ld hl,0x0814	; A721 21 14 08
-	jp	Z_A724	; мост в следующий кусок
+	ld hl,0x080E	; A721 21 0E 08
+Z_A724:
+	ld (TEXT_ROW),hl	; A724 22 02 41
+	jp	Z_A727	; мост в следующий кусок
 	org	0xA759
 D_A759:
 Z_A759:
 	db	0xCD, 0x47, 0xAC, 0xC3, 0x18, 0xA6	; A759
 	org	0xA75F
-Z_A724:
-	ld (TEXT_ROW),hl	; A724 22 02 41
 Z_A727:
 	ld hl,0x09	; A727 21 09 00
 Z_A72A:
@@ -11085,7 +10944,10 @@ Z_A754:
 	inc hl	; A754 23
 Z_A755:
 	dec a	; A755 3D
-	jp	Z_A756	; мост в следующий кусок
+Z_A756:
+	jp nz,Z_A752	; A756 20 FA
+Z_A758:
+	ret	; A758 C9
 	org	0xA797
 D_A797:
 Z_A797:
@@ -11143,10 +11005,6 @@ D_A82A:
 Z_A82A:
 	db	0x20, 0xFF	; A82A
 	org	0xA82C
-Z_A756:
-	jp nz,Z_A752	; A756 20 FA
-Z_A758:
-	ret	; A758 C9
 Z_A75F:
 	ld (D_3424),a	; A75F 32 24 34
 Z_A762:
@@ -11206,17 +11064,17 @@ Z_A83D:
 Z_A840:
 	ld a,(D_9400)	; A840 3A 00 94
 Z_A843:
-	jp c,il_KC21	; A843 CB 7F
+	jp c,il_KC17	; A843 CB 7F
 	ld (il_a),a
 	and 0x80
 	ld a,(il_a)
-	jp il_KD22
-il_KC21:
+	jp il_KD18
+il_KC17:
 	ld (il_a),a
 	and 0x80
 	scf
 	ld a,(il_a)
-il_KD22:
+il_KD18:
 Z_A845:
 	jp z,Z_A849	; A845 28 02
 Z_A847:
@@ -11234,7 +11092,7 @@ Z_A854:
 Z_A856:
 	call Z_A75F	; A856 CD 5F A7
 Z_A859:
-	call RING_REPLAY	; A859 CD 58 75
+	call RING_REPLAY	; A859 CD 1C 75
 Z_A85C:
 	nop	; A85C 00
 Z_A85D:
@@ -11259,7 +11117,9 @@ Z_A86F:
 	ld (D_93D1),a	; A86F 32 D1 93
 Z_A872:
 	ld a,(D_9400)	; A872 3A 00 94
-	jp	Z_A875	; мост в следующий кусок
+Z_A875:
+	ld (D_3333),a	; A875 32 33 33
+	jp	Z_A878	; мост в следующий кусок
 	org	0xA8CB
 D_A8CB:
 Z_A8CB:
@@ -11281,20 +11141,18 @@ D_A8F9:
 Z_A8F9:
 	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A8F9
 	org	0xA909
-Z_A875:
-	ld (D_3333),a	; A875 32 33 33
 Z_A878:
-	jp c,il_KC23	; A878 CB 7F
+	jp c,il_KC19	; A878 CB 7F
 	ld (il_a),a
 	and 0x80
 	ld a,(il_a)
-	jp il_KD24
-il_KC23:
+	jp il_KD20
+il_KC19:
 	ld (il_a),a
 	and 0x80
 	scf
 	ld a,(il_a)
-il_KD24:
+il_KD20:
 Z_A87A:
 	ld hl,0x00	; A87A 21 00 00
 Z_A87D:
@@ -11306,9 +11164,9 @@ Z_A881:
 Z_A884:
 	call Z_A991	; A884 CD 91 A9
 Z_A887:
-	call REPLAY_STATE_BEGIN	; A887 CD 48 14
+	call REPLAY_STATE_BEGIN	; A887 CD 4C 14
 Z_A88A:
-	call REPLAY_SCENE	; A88A CD 4B 14
+	call REPLAY_SCENE	; A88A CD 4F 14
 Z_A88D:
 	call Z_A8F4	; A88D CD F4 A8
 Z_A890:
@@ -11324,9 +11182,9 @@ Z_A899:
 Z_A89B:
 	call Z_A991	; A89B CD 91 A9
 Z_A89E:
-	call REPLAY_STATE_BEGIN	; A89E CD 48 14
+	call REPLAY_STATE_BEGIN	; A89E CD 4C 14
 Z_A8A1:
-	call REPLAY_SCENE	; A8A1 CD 4B 14
+	call REPLAY_SCENE	; A8A1 CD 4F 14
 Z_A8A4:
 	call Z_A8C8	; A8A4 CD C8 A8
 Z_A8A7:
@@ -11341,15 +11199,17 @@ Z_A8B1:
 	ld (D_93D3),a	; A8B1 32 D3 93
 Z_A8B4:
 	inc a	; A8B4 3C
-	jp	Z_A8B5	; мост в следующий кусок
+Z_A8B5:
+	ld hl,0x1B40	; A8B5 21 40 1B
+	jp	Z_A8B8	; мост в следующий кусок
 	org	0xA965
 D_A965:
 Z_A965:
 	db	0x00, 0x00, 0x00, 0x00	; A965
 	org	0xA969
-Z_A8B5:
-	ld hl,0x1B40	; A8B5 21 40 1B
-	jp	Z_A8B8	; мост в следующий кусок
+Z_A8B8:
+	ld de,D_93EB	; A8B8 11 EB 93
+	jp	Z_A8BB	; мост в следующий кусок
 	org	0xA971
 D_A971:
 Z_A971:
@@ -11367,14 +11227,12 @@ D_A9A4:
 Z_A9A4:
 	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A9A4
 	org	0xA9AD
-Z_A8B8:
-	ld de,D_93EB	; A8B8 11 EB 93
 Z_A8BB:
 	ld bc,0x4F	; A8BB 01 4F 00
 Z_A8BE:
 	call il_ldir	; A8BE ED B0
 Z_A8C0:
-	call 0x087B	; A8C0 CD 7B 08
+	call 0x08DE	; A8C0 CD DE 08
 Z_A8C3:
 	xor a	; A8C3 AF
 Z_A8C4:
@@ -11382,9 +11240,12 @@ Z_A8C4:
 Z_A8C7:
 	ret	; A8C7 C9
 Z_A8C8:
-	jp 0x08A0	; A8C8 C3 A0 08
+	jp 0x0903	; A8C8 C3 03 09
 Z_A8F4:
-	jp 0x0822	; A8F4 C3 22 08
+	jp 0x0885	; A8F4 C3 85 08
+Z_A95E:
+	xor a	; A95E AF
+	jp	Z_A95F	; мост в следующий кусок
 	org	0xA9C7
 D_A9C7:
 Z_A9C7:
@@ -11450,12 +11311,10 @@ D_AA84:
 Z_AA84:
 	db	0x00	; AA84
 	org	0xAA85
-Z_A95E:
-	xor a	; A95E AF
 Z_A95F:
 	ld (D_93D3),a	; A95F 32 D3 93
 Z_A962:
-	jp RING_RESET	; A962 C3 4D 75
+	jp RING_RESET	; A962 C3 11 75
 Z_A969:
 	ld a,(D_9400)	; A969 3A 00 94
 Z_A96C:
@@ -11463,9 +11322,9 @@ Z_A96C:
 Z_A96D:
 	ret nz	; A96D C0
 Z_A96E:
-	jp RING_PUSH	; A96E C3 24 75
+	jp RING_PUSH	; A96E C3 E8 74
 Z_A991:
-	jp RING_PULL	; A991 C3 69 75
+	jp RING_PULL	; A991 C3 2D 75
 Z_A9AD:
 	di	; A9AD F3
 Z_A9AE:
@@ -11586,14 +11445,14 @@ Z_AACA:
 	inc hl	; AACA 23
 Z_AACB:
 	ld (D_AC05),hl	; AACB 22 05 AC
-	jp	Z_AACE	; мост в следующий кусок
+Z_AACE:
+	ld hl,D_AC25	; AACE 21 25 AC
+	jp	Z_AAD1	; мост в следующий кусок
 	org	0xAB23
 D_AB23:
 Z_AB23:
 	db	0x0E, 0x00	; AB23
 	org	0xAB25
-Z_AACE:
-	ld hl,D_AC25	; AACE 21 25 AC
 Z_AAD1:
 	ex de,hl	; AAD1 EB
 Z_AAD2:
@@ -11677,7 +11536,7 @@ Z_AB22:
 Z_AB25:
 	jp Z_ABFF	; AB25 C3 FF AB
 Z_AB28:
-	call 0x06CA	; AB28 CD CA 06
+	call 0x0726	; AB28 CD 26 07
 Z_AB2B:
 	jp nz,Z_AB83	; AB2B 20 56
 Z_AB2D:
@@ -12369,7 +12228,7 @@ Z_AF05:
 Z_AF08:
 	call Z_3811	; AF08 CD 11 38
 Z_AF0B:
-	jp NATIVE_PADS	; AF0B C3 ED 6C
+	jp NATIVE_PADS	; AF0B C3 D0 6C
 Z_B01C:
 	jp 0x01E9	; B01C C3 E9 01
 Z_B1F2:

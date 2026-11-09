@@ -65,9 +65,9 @@ mdc_m:
         jp      mdc_ch
 mdc_str:
         db      3, 0xDF - 150, 0xFF, "1 PLAYER:", 0
-        db      13, 0xDF - 150, 0, "JOYSTICK OR KEYS", 0
-        db      3, 0xDF - 161, 0xFF, "2 PLAYERS:", 0
-        db      14, 0xDF - 161, 0, "P1 JOY, P2 KEYS", 0
+        db      13, 0xDF - 150, 0, "KEYS OR JOYSTICK", 0
+        db      1, 0xDF - 161, 0xFF, "2 PLAYERS:", 0
+        db      12, 0xDF - 161, 0, "KEYS+JOY B VS JOY A", 0
         db      4, 0xDF - 172, 0xFF, "KEYS:", 0
         db      10, 0xDF - 172, 0, "ARROWS, FIRE SPACE", 0
         db      1, 0xDF - 184, 0, "COPYRIGHT DINAMIC SOFTWARE 1987", 0
@@ -132,6 +132,13 @@ REPLAY_HELPERS_END:
 V_NOISE         equ     0x0F7C          ; former DBG_CALLER (unused)
 V_RND           equ     0x0F7E          ; former DBG_DE_ENTER: speaker LFSR
 SND_NOISE_SCAN:
+        ld      a,(V_MUTE)              ; УС: no speaker noise either
+        or      a
+        jp      z,sns_on
+        xor     a
+        ld      (V_NOISE),a
+        ret
+sns_on:
         ld      a,(0x0F47)              ; AY mixer R7
         rrca
         rrca

@@ -207,6 +207,9 @@ st_ch:
 
 ; C = channel 0..2
 snd_channel:
+        ld      a,(V_MUTE)              ; УС: sound off
+        or      a
+        jp      nz,snd_off
         ; tone enabled? (R7 bit c = 0)
         ld      a,(V_AYREG+7)
         ld      b,c

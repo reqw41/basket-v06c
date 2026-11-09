@@ -29,4 +29,21 @@ PLAYER_BACKGROUND_HIGH:
         ld a,(0x0F59)           ; high from last MENU_PLANE_PAIR / court fetch
         ret
 
+; Menu box rows 08..0E. The MSX cleared the box with a VDP fill (D247 =
+; 34AF, dead on the port) before the menu (A62E) and the name entry (A6F7),
+; so the name prompts and the shorter menu items left tails of the old text.
+MENU_BOX_CLEAR:
+        ld      hl,0x0808               ; column 8, rows 08, 0A, 0C, 0E
+mbc_row:
+        push    hl
+        ld      de,MENU_BLANK17
+        call    GAME_PRINT_STRING
+        pop     hl
+        inc     l
+        inc     l
+        ld      a,l
+        cp      0x10
+        jp      nz,mbc_row
+        ret
+
 PLAYER_SCENE_HELPERS_END:

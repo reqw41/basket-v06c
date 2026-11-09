@@ -401,15 +401,14 @@ COMPOSE_BOX:
         ld      a,(DP_RECT+3)
         ld      (DP_ROWS),a
         ld      a,(DP_RECT+2)           ; TILE_BAND_FILL: two columns a pass,
-        or      a                       ; an odd width enters at the second
-        rra
-        ld      l,tbf_first & 255
+        add     a,a                     ; table bytes; an odd width enters
+        ld      (TBF_WIDTH+1),a         ; at the second
+        rrca
+        rrca
+        ld      a,tbf_first & 255
         jp      nc,cb_even
-        inc     a
-        ld      l,tbf_second & 255      ; same page as tbf_first
+        ld      a,tbf_second & 255      ; same page as tbf_first
 cb_even:
-        ld      (TBF_WIDTH+1),a
-        ld      a,l
         ld      (TBF_ENTRY+1),a
         ld      hl,(DP_BASE)
         ex      de,hl                   ; DE = buffer row
@@ -461,7 +460,7 @@ cbr_fill:
         add     a,c
         ld      (TBF_END+1),a
         push    bc                      ; B = rows of this call
-        call    TILE_BAND_FILL          ; SP copier, IRQs on between rows
+        call    TILE_BAND_FILL          ; tile rows, IRQs stay on
         call    STAMP_ROW_FIX           ; returns at once off the stand
         pop     bc
         ld      hl,B1_ROW

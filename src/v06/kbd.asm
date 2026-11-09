@@ -78,7 +78,7 @@ vki_loop:
 V_VROW          equ     0x0F38          ; 8 raw Vector rows
 ; Last inputs the MSX rows were built from: rebuild only when one changes.
 V_KPORTC        equ     0x0F33          ; port C modifiers (bits 5, 6)
-V_KJOY          equ     0x0F34          ; joystick «П» port 6 (0 outside a match)
+V_KJOY          equ     0x0F34          ; joystick «П» port 6: both sticks (one player) / B (two)
 V_KMODE         equ     0x0F35          ; MATCH_MODE
 V_KFORCE        equ     0x0F36          ; 1 = rebuild on the next poll
 V_KONE          equ     0x0F37          ; ONE_PLAYER
@@ -88,7 +88,6 @@ V_KCHG          equ     0x0F20          ; <> 0: inputs changed since the last
 V_KANY          equ     0x0F21          ; <> 0: a key was down at the last scan
 PAUSE_EXIT      equ     0x0F22          ; key code that ended the last pause (3Ah: АР2 = leave)
 K_MATCH_MODE    equ     0x0FED
-K_JOY_READY     equ     0x0F62
 
 V_KBD_POLL:
         push    af
@@ -140,6 +139,17 @@ vkp_same:
 vkp_rows:
         in      a,(0x01)
         and     0x60                    ; СС, УС
+        ld      b,a
+        ld      a,(V_KPORTC)
+        cpl
+        or      b                       ; bit 6 = 0 only as УС goes down
+        and     0x40
+        jp      nz,vkp_snd
+        ld      a,(V_MUTE)              ; УС: sound off / on (as brucelee-v06c)
+        xor     1
+        ld      (V_MUTE),a
+vkp_snd:
+        ld      a,b
         ld      hl,V_KPORTC
         call    vkp_sig
         ld      a,(K_MATCH_MODE)
@@ -147,16 +157,26 @@ vkp_rows:
         inc     hl
         inc     hl                      ; V_KMODE
         call    vkp_sig
-        xor     a                       ; no joystick outside a match
-        dec     b
-        jp      nz,vkp_joy
-        ld      a,(K_JOY_READY)
+        ; Joysticks «П» (second 8255, set up by INIT_VECTOR), as in
+        ; brucelee-v06c: port 5 selects, port 6 reads (0 = pressed). One
+        ; player: both sticks are player 1; two: B is player 1, A player 2.
+        ld      a,(ONE_PLAYER)
         or      a
-        jp      z,vkp_joy               ; JOY_MERGE programs the port first
+        ld      a,0x9F                  ; both
+        jp      nz,vkp_j1
+        ld      a,0xDF                  ; B
+vkp_j1:
+        out     (0x05),a
         in      a,(0x06)
-vkp_joy:
         dec     hl                      ; V_KJOY
         call    vkp_sig
+        ld      a,0xBF                  ; A
+        out     (0x05),a
+        in      a,(0x06)
+        ld      hl,V_KJOY2
+        call    vkp_sig
+        ld      a,0x9F
+        out     (0x05),a
         ld      a,(ONE_PLAYER)
         ld      hl,V_KONE
         call    vkp_sig
@@ -254,7 +274,6 @@ vkp_letters:
         and     c
         ld      (V_MSXROW+8),a
         call    ks_stick                ; KEY_SNAP+9/+10, KEY_TRIG_NO
-        call    JOY_MERGE                  ; JOY_MERGE: joystick «П», cursor keys (joy_p.asm)
 
         ; --- Restore PPI state ---
 vkp_restore:
@@ -458,3 +477,46 @@ KM_ROW7A:
         db      0x40, 0xFE, 0x80, 0xFD, 0x04, 0xFB      ; F4 b0, F5 b1, АР2 → ESC b2
 KM_ROW7B:
         db      0x01, 0xF7, 0x08, 0xDF, 0x04, 0x7F      ; TAB b3, ЗБ → BS b5, ВК → RETURN b7
+
+; Menu key (A697, in place of LD A,(G_KEY_ASCII) + 5 NOPs): SPACE or a
+; joystick «П» fire count as "1" (one player), as in brucelee-v06c. Only
+; after both were up once, so the key that left the splash, or a fire still
+; held after a match, does not start a match at once. Keeps BC, DE, HL.
+MENU_KEY:
+        push    bc
+        ld      a,(V_KJOY)
+        cpl
+        ld      b,a
+        and     0x30
+        ld      a,0
+        jp      nz,mk_nojoy             ; no joystick on the port
+        ld      a,b
+        and     0xC0                    ; fire 1 / fire 2
+mk_nojoy:
+        ld      b,a
+        ld      a,(V_VROW+7)            ; SPACE: bit 7, 0 = down
+        cpl
+        and     0x80
+        or      b
+        ld      a,(mk_armed)
+        jp      nz,mk_down
+        ld      a,1                     ; all up: armed
+        ld      (mk_armed),a
+        jp      mk_key
+mk_down:
+        or      a
+        jp      z,mk_key
+        xor     a
+        ld      (mk_armed),a
+        pop     bc
+        ld      a,0x31                  ; "1"
+        ret
+mk_key:
+        pop     bc
+        ld      a,(G_KEY_ASCII)
+        ret
+mk_armed:       db      0
+
+; Adapter state kept with the code (no free 0Fxx cell needed).
+V_KJOY2:        db      0xFF            ; joystick «П» A as polled (player 2 of two)
+V_MUTE:         db      0               ; 1 = sound off (УС)

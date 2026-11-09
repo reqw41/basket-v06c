@@ -1,5 +1,6 @@
-; Fixed controls (06.11): player 1 = joystick «П», player 2 = Vector cursor
-; keys. With one player the cursor keys and SPACE steer player 1 as well.
+; Controls as in brucelee-v06c (09.11). One player: player 1 = cursor keys +
+; SPACE and both joysticks «П». Two players: player 1 = cursor keys + SPACE
+; and joystick «П» B, player 2 = joystick «П» A. ВК pauses (kbd.asm).
 ;
 ; The game's own reader (AF05) called D5DE once per control on the MSX
 ; snapshot: five redefinable player 1 codes (default 1 Q D F Z) and the MSX
@@ -7,95 +8,58 @@
 ; builds the same two bytes from the Vector inputs directly:
 ;   PAD_P1 (AC4D) / PAD_P2 (AC4E): b0 up, b0|b1 down, b2 left, b2|b3 right,
 ;   b4 fire; opposite directions cancel (as AF05 did).
-; Player 2 (two players only) fires with SPACE (ВК pauses, kbd.asm
-; PAUSE_WAIT); with one player its
-; byte stays 0 for the AI, as on the MSX. Letters
-; and digits no longer steer anyone; menu item 5 (SELECT CONTROL) is gone.
+; With one player PAD_P2 stays 0 for the AI, as on the MSX. Letters and
+; digits no longer steer anyone; menu item 5 (SELECT CONTROL) is gone.
 
 V_VROW          equ     0x0F38          ; raw Vector rows (frame IRQ poll)
-V_KJOY          equ     0x0F34          ; port 6 as polled (0 outside a match)
-JOY_IDLE        equ     0x0F61          ; port 6 value at rest
-JOY_READY       equ     0x0F62          ; 1 = second 8255 programmed
-MATCH_MODE      equ     0x0FED          ; 1 = live match
-
-; Called at the end of V_KBD_POLL when an input changed: programs the
-; second 8255 once per match so the poll can read port 6.
-JOY_MERGE:
-        ld      a,(MATCH_MODE)
-        dec     a
-        ret     nz
-        ld      a,(JOY_READY)
-        or      a
-        ret     nz
-        ld      a,0x83                  ; as ironclad/tankwars: both devices
-        out     (0x04),a
-        ld      a,0x9F
-        out     (0x05),a
-        in      a,(0x06)
-        ld      (JOY_IDLE),a
-        ld      a,1
-        ld      (JOY_READY),a
-        ret
+V_KJOY          equ     0x0F34          ; port 6 as polled: both sticks / B (kbd.asm)
 
 NATIVE_PADS:
-        ld      c,0                     ; b0 up b1 down b2 left b3 right b4 fire
-        ld      a,(MATCH_MODE)
-        dec     a
-        jp      nz,np_keys
-        ld      a,(JOY_READY)
-        or      a
-        jp      z,np_keys
         ld      a,(V_KJOY)
-        ld      hl,JOY_IDLE
-        xor     (hl)                    ; 1 = away from rest
-        cp      0x40                    ; b6 or b7: fire 1 / fire 2
-        jp      c,np_jdirs
-        ld      c,0x10
-np_jdirs:
-        ld      hl,JOY_DIRS
-        call    jm_map
-np_keys:
+        call    joy_bits                ; C = joystick of player 1
         ld      a,(V_VROW)              ; row 0: b2 ВК, b4 ← b5 ↑ b6 → b7 ↓
         cpl                             ; 1 = down
-        push    af
-        ld      a,(ONE_PLAYER)
-        or      a
-        jp      z,np_p1
+        ld      hl,CURSOR_DIRS
+        call    jm_map
         ld      a,(V_VROW+7)            ; SPACE, bit 7, 0 = down
         rlca
-        jp      c,np_p1cur
+        jp      c,np_p1
         ld      a,c
         or      0x10
         ld      c,a
-np_p1cur:
-        pop     af
-        push    af
-        ld      hl,CURSOR_DIRS
-        call    jm_map
 np_p1:
         ld      a,c
         call    np_code
         ld      (PAD_P1),a
-        pop     af
         ld      c,0
-        ld      b,a
         ld      a,(ONE_PLAYER)          ; one player: player 2 is the AI,
         or      a                       ; its keys stay up (as on the MSX
         jp      nz,np_p2                ; with only 1 Q D F Z pressed)
-        ld      a,(V_VROW+7)            ; SPACE fires (ВК is the pause)
-        rlca
-        jp      c,np_p2dirs
-np_p2fire:
-        ld      c,0x10
-np_p2dirs:
-        ld      a,b
-        ld      hl,CURSOR_DIRS
-        call    jm_map
+        ld      a,(V_KJOY2)             ; joystick A (kbd.asm)
+        call    joy_bits
 np_p2:
         ld      a,c
         call    np_code
         ld      (PAD_P2),a
         ret
+
+; A = port 6 (0 = pressed: b0 right, b1 left, b2 up, b3 down, b6/b7 fire;
+; b4 and b5 read 1 when a joystick is there) -> C = b0 up b1 down b2 left
+; b3 right b4 fire, 0 without a joystick.
+joy_bits:
+        ld      c,0
+        cpl
+        ld      b,a
+        and     0x30
+        ret     nz                      ; nothing on the port
+        ld      a,b
+        and     0xC0
+        jp      z,jb_dirs
+        ld      c,0x10
+jb_dirs:
+        ld      a,b
+        ld      hl,JOY_DIRS
+        jp      jm_map
 
 ; A = b0 up b1 down b2 left b3 right b4 fire -> the game's control byte.
 np_code:

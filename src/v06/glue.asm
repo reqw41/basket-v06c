@@ -307,6 +307,10 @@ INIT_VECTOR:
         ; Set up PPI
         ld      a,0x88                  ; Port A,B,C output mode
         out     (0x00),a
+        ld      a,0x83                  ; second 8255: joysticks «П» on port 6
+        out     (0x04),a
+        ld      a,0x9F                  ; both selected (kbd.asm V_KBD_POLL)
+        out     (0x05),a
         
         ; Scroll FF: top screen line = plane row FF (RENDER maps y→DF-y)
         ld      a,0xFF
@@ -442,6 +446,8 @@ BIOS_BEEP:
 #include "snd.asm"
 #include "rle.asm"
 #include "replay.asm"
+#include "stamp_row.asm"
+#include "tile_band.asm"
 GLUE_END:
         ds      0x0E00 - $, 0           ; free tail up to the page-0 image (zero, proven free)
 

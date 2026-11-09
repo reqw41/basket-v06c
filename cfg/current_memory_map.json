@@ -5,7 +5,7 @@
     "hi": "10000",
     "size": 65536
   },
-  "rom_sha256": "1dfd8b99f5e21db1a7afb42c8eb96b74ee420b304846bb8291c513a6389d1134",
+  "rom_sha256": "af826e2bdaf4ba630d6611deefd416aab45e22d359fa7143335f3ebaf91dc800",
   "policy": {
     "opaque_retained": "Occupied bytes whose finer semantics are not proven. They are never free or relocatable by default.",
     "reclaimable_padding": "Uniform image padding with no typed static memory/control reference, CFG byte, SMC target, or matching-ROM trace access.",
@@ -29,7 +29,7 @@
     {
       "id": "adapter",
       "lo": "0200",
-      "hi": "09F8",
+      "hi": "0B63",
       "class": "adapter_code_tables",
       "role": "glue.asm: page-0 runtime entries, IRQ, BIOS stubs, plane I/O, keyboard, sound, replay (entries linked by tools/link_labels.py)",
       "unit": "glue",
@@ -37,7 +37,7 @@
     },
     {
       "id": "adapter_free_tail",
-      "lo": "09F8",
+      "lo": "0B63",
       "hi": "0E00",
       "class": "reclaimable_padding",
       "role": "glue tail freed by moving the CPC sprite renderer to adapter_hi (05.11)",
@@ -209,14 +209,14 @@
     {
       "id": "menu_slot_gap",
       "lo": "137B",
-      "hi": "14E8",
+      "hi": "14F8",
       "class": "adapter_code_tables",
       "role": "menu_color_bg.asm: menu colour restore, prefix/skip/orphan restores, replay helpers, noise, X2 table, band snap, pad union (entries linked)",
       "unit": "menu_color_bg"
     },
     {
       "id": "dead_15a0",
-      "lo": "14E8",
+      "lo": "14F8",
       "hi": "1600",
       "class": "reclaimable_padding",
       "role": "tail of the menu_color_bg slot (05.11)",
@@ -348,14 +348,14 @@
     {
       "id": "player_scene_helpers",
       "lo": "18CA",
-      "hi": "18F6",
+      "hi": "190A",
       "class": "adapter_code_tables",
       "role": "menu_player_helpers.asm: scene setup (old-list guard), HUD text, background high, unchanged test",
       "unit": "menu_player_helpers"
     },
     {
       "id": "dead_1961",
-      "lo": "18F6",
+      "lo": "190A",
       "hi": "1B3E",
       "class": "reclaimable_padding",
       "role": "player compositor moved to adapter_hi (05.11)",
@@ -543,14 +543,14 @@
     {
       "id": "hi_adapter_unit",
       "lo": "6800",
-      "hi": "7586",
+      "hi": "754A",
       "class": "adapter_code_tables",
       "role": "adapter_hi.asm: CPC sprite renderer, joystick, aligned row stage, clipped player compositor (05.11)",
       "unit": "adapter_hi"
     },
     {
       "id": "sprite_free_tail",
-      "lo": "7586",
+      "lo": "754A",
       "hi": "7760",
       "class": "reclaimable_padding",
       "role": "freed by trimming and mirroring sprite rows (04-05.11), after adapter_hi; 7018/7750/7758 are false references (false_references)",
@@ -639,10 +639,20 @@
     {
       "id": "background_helpers",
       "lo": "8412",
-      "hi": "84D0",
+      "hi": "8496",
       "class": "adapter_code_tables",
-      "role": "menu/HUD streamers and the COMPOSE_BOX SP tile band copier (to the game entry)",
+      "role": "menu/HUD streamers (the tile band copier moved to glue tile_band.asm 09.11)",
       "unit": "win_840e"
+    },
+    {
+      "id": "win_840e_tail",
+      "lo": "8496",
+      "hi": "84D0",
+      "class": "reclaimable_padding",
+      "role": "freed when TILE_BAND_FILL moved to glue (09.11)",
+      "expected_fill": "00",
+      "prove_free": true,
+      "tail_of": "win_840e"
     },
     {
       "id": "game_overlay_0",
@@ -931,9 +941,18 @@
     {
       "id": "cpc_stamp_code",
       "lo": "B338",
-      "hi": "B455",
+      "hi": "B3F6",
       "class": "adapter_code_tables",
       "role": "BG_FETCH gate B338, CPC_STAMP_ON/OFF, STAMP_PAIR, STAMP_FILL_ROW (src/v06/cpc_stamp.asm)"
+    },
+    {
+      "id": "dead_b3f6",
+      "lo": "B3F6",
+      "hi": "B455",
+      "class": "reclaimable_padding",
+      "role": "cpc_stamp tail freed when STAMP_ROW_FIX moved to glue (09.11)",
+      "expected_fill": "00",
+      "prove_free": true
     },
     {
       "id": "hud_icon_code",
@@ -971,7 +990,7 @@
       "role": "active low colour-bit hardware video plane and initial splash image"
     }
   ],
-  "reclaimable_bytes": 4014,
+  "reclaimable_bytes": 3828,
   "false_references": [
     {
       "addr": "7018",

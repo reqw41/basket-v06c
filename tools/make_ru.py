@@ -14,7 +14,7 @@ is a patch of the finished image, not a second build:
   that no text uses. Latin letters stay: the name entry types Latin.
 - Each string keeps its length (padded with spaces): the code walks from
   string to string over the terminators.
-- The menu control records are re-laid in the same 133 bytes.
+- The menu control records are re-laid in the same bytes (137).
 
 Every English string is checked before it is replaced, so a moved string
 stops the script instead of patching the wrong bytes.
@@ -72,14 +72,14 @@ STRINGS = [
 
 # menu control records: column, plane Y, high-plane mask (FF pink), text, 0
 MDC_EN = [
-    (3, 0xDF - 150, 0xFF, "1 PLAYER:"), (13, 0xDF - 150, 0, "JOYSTICK OR KEYS"),
-    (3, 0xDF - 161, 0xFF, "2 PLAYERS:"), (14, 0xDF - 161, 0, "P1 JOY, P2 KEYS"),
+    (3, 0xDF - 150, 0xFF, "1 PLAYER:"), (13, 0xDF - 150, 0, "KEYS OR JOYSTICK"),
+    (1, 0xDF - 161, 0xFF, "2 PLAYERS:"), (12, 0xDF - 161, 0, "KEYS+JOY B VS JOY A"),
     (4, 0xDF - 172, 0xFF, "KEYS:"), (10, 0xDF - 172, 0, "ARROWS, FIRE SPACE"),
     (1, 0xDF - 184, 0, "COPYRIGHT DINAMIC SOFTWARE 1987"),
 ]
 MDC_RU = [
-    (3, 0xDF - 150, 0xFF, "1 ИГРОК:"), (12, 0xDF - 150, 0, "ДЖОЙСТИК, КЛАВИШИ"),
-    (2, 0xDF - 161, 0xFF, "2 ИГРОКА:"), (12, 0xDF - 161, 0, "ДЖОЙСТИК+КЛАВИШИ"),
+    (3, 0xDF - 150, 0xFF, "1 ИГРОК:"), (12, 0xDF - 150, 0, "КЛАВИШИ/ДЖОЙСТИК"),
+    (1, 0xDF - 161, 0xFF, "2 ИГРОКА:"), (11, 0xDF - 161, 0, "КЛАВ.+ДЖОЙ Б, ДЖОЙ А"),
     (4, 0xDF - 172, 0xFF, "КЛАВИШИ:"), (13, 0xDF - 172, 0, "СТРЕЛКИ, ПРОБЕЛ"),
     (1, 0xDF - 184, 0, "COPYRIGHT DINAMIC SOFTWARE 1987"),
 ]

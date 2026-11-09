@@ -159,8 +159,9 @@ for(let y=0;y<112;y++)for(let x=0;x<32;x++){
  assert.strictEqual(rd(0xe000+at),expectedCourt[i]);assert.strictEqual(rd(0xc000+at),expectedCourt[i+1]);
 }
 console.log('PASS physical court publication: every pixel in both hardware planes');
-// Band copier (TILE_BAND_FILL) borrows SP one row at a time: every row from
-// the first one to the band end, odd and even widths, both tile banks.
+// Band copier (TILE_BAND_FILL, tile_band.asm): every row from the first one to
+// the band end, odd and even widths, both tile banks; SP and the IRQ flag
+// stay as they were (no SP walk since 09.11).
 let fastRows=0;
 assert.strictEqual(sym("tbf_first")>>8,sym("tbf_second")>>8,"COMPOSE_BOX patches only the low byte of TBF_ENTRY");
 const w16=(a,v)=>{wr(a,v&255);wr(a+1,v>>8);};
@@ -170,17 +171,17 @@ for(let y=0;y<112;y++)for(const x of [0,3,7,15,26,27,31])for(const width of [1,2
  const st=emu.cpu.getState();Object.assign(st,{h:address>>8,l:address&255,b:0,c:x*2});emu.cpu.setState(st);
  const displacement=invoke(sym('COURT_TILE_ROW_POINTER'));const ptr=emu.cpu.getState();w16(0x0f69,(ptr.h<<8)|ptr.l);
  const rows=Math.min((16-displacement)>>1,112-y),bytes=rows*width*2;
- wr(sym('TBF_WIDTH')+1,(width+1)>>1);w16(sym('TBF_ENTRY')+1,width&1?sym('tbf_second'):sym('tbf_first'));
- wr(sym('TBF_END')+1,displacement+2*rows);w16(sym('tbf_sp')+1,0xbf00);
+ wr(sym('TBF_WIDTH')+1,2*width);w16(sym('TBF_ENTRY')+1,width&1?sym('tbf_second'):sym('tbf_first'));
+ wr(sym('TBF_END')+1,displacement+2*rows);
  const next=emu.cpu.getState();Object.assign(next,{d:0x20,e:0,c:displacement});emu.cpu.setState(next);
  wr(0x1fff,0xa5);wr(0x2000+bytes,0xa5);invoke(sym('TILE_BAND_FILL'));
  for(let r=0;r<rows;r++)assert.deepStrictEqual(Array.from({length:width*2},(_,i)=>rd(0x2000+r*width*2+i)),
   expectedCourt.slice(((y+r)*32+x)*2,((y+r)*32+x+width)*2),`y ${y} x ${x} w ${width} row ${r}`);
  const after=emu.cpu.getState();
  assert.strictEqual(rd(0x1fff),0xa5);assert.strictEqual(rd(0x2000+bytes),0xa5);assert.strictEqual(after.sp,0xbf02);
- assert.strictEqual((after.d<<8)|after.e,0x2000+bytes);assert.strictEqual(after.iff1?1:0,1);fastRows+=rows;
+ assert.strictEqual((after.d<<8)|after.e,0x2000+bytes);assert.strictEqual(after.iff1?1:0,0);fastRows+=rows;   // invoke runs with DI: no EI inside
 }
-console.log(`PASS SP band copier: ${fastRows} rows, odd/even widths, clipped columns, source banks and real stack restored`);
+console.log(`PASS band copier: ${fastRows} rows, odd/even widths, clipped columns, source banks; SP and IRQ flag kept`);
 // Damage boxes (damage_publish.asm): a rectangle merges into every box it
 // touches while the bounding box fits the 1280-byte buffer; boxes it grows
 // into are absorbed too. Boxes are c0,r0,c1,r1 (exclusive ends).

@@ -19,13 +19,13 @@ il_pro_ix:
                 push    hl              ; возврат в тело
                 ld      hl,(z80_ix)
                 or      a
-                jp      m,il_ADRN25
+                jp      m,il_ADRN21
                 add     a,l
                 ld      l,a
                 ret     nc
                 inc     h
                 ret
-il_ADRN25:
+il_ADRN21:
                 add     a,l
                 ld      l,a
                 ret     c
@@ -49,13 +49,13 @@ il_pro2_ix:
                 push    hl              ; возврат в тело
                 ld      hl,(z80_ix)
                 or      a
-                jp      m,il_ADRN26
+                jp      m,il_ADRN22
                 add     a,l
                 ld      l,a
                 ret     nc
                 inc     h
                 ret
-il_ADRN26:
+il_ADRN22:
                 add     a,l
                 ld      l,a
                 ret     c
@@ -74,13 +74,13 @@ il_pro_iy:
                 push    hl              ; возврат в тело
                 ld      hl,(z80_iy)
                 or      a
-                jp      m,il_ADRN27
+                jp      m,il_ADRN23
                 add     a,l
                 ld      l,a
                 ret     nc
                 inc     h
                 ret
-il_ADRN27:
+il_ADRN23:
                 add     a,l
                 ld      l,a
                 ret     c
@@ -104,13 +104,13 @@ il_pro2_iy:
                 push    hl              ; возврат в тело
                 ld      hl,(z80_iy)
                 or      a
-                jp      m,il_ADRN28
+                jp      m,il_ADRN24
                 add     a,l
                 ld      l,a
                 ret     nc
                 inc     h
                 ret
-il_ADRN28:
+il_ADRN24:
                 add     a,l
                 ld      l,a
                 ret     c
@@ -142,11 +142,11 @@ il_ix_bit_b:
                 ld a,(il_f)
                 rra
                 ld a,(il_d)
-                jp c,il_BITC29
+                jp c,il_BITC25
                 and (hl)
                 ld a,(il_f+1)
                 jp il_ret_hl
-il_BITC29:
+il_BITC25:
                 and (hl)
                 scf
                 ld a,(il_f+1)
@@ -255,11 +255,11 @@ il_iy_bit:
                 ld a,(il_f)
                 rra
                 ld a,(il_d)
-                jp c,il_BITC30
+                jp c,il_BITC26
                 and (hl)
                 ld a,(il_f+1)
                 jp il_ret_hl
-il_BITC30:
+il_BITC26:
                 and (hl)
                 scf
                 ld a,(il_f+1)

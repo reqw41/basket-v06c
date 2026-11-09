@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 /**
- * Fixed controls (joy_p.asm NATIVE_PADS), headless:
- *   1 PLAYER:  joystick «П», cursor keys and SPACE steer player 1;
- *   2 PLAYERS: joystick «П» = player 1, cursor keys + SPACE = player 2;
+ * Controls as in brucelee-v06c (joy_p.asm NATIVE_PADS), headless:
+ *   1 PLAYER:  cursor keys + SPACE and both joysticks «П» steer player 1;
+ *   2 PLAYERS: cursor keys + SPACE and joystick «П» B = player 1,
+ *              joystick «П» A = player 2;
  *   ВК pauses (match clock stands), a key resumes, АР2 in the pause leaves;
- *   the old letter keys (1 Q D F Z) steer nobody.
+ *   УС toggles the sound (V_MUTE); the old letter keys steer nobody.
+ * The second 8255 is modelled: port 5 = 9F both sticks, DF B, BF A; port 6
+ * reads the selected sticks (0 = pressed).
  * Checks the control bytes PAD_P1/PAD_P2 (AC4D/AC4E: up 01, down 03,
  * left 04, right 0C, fire 10) and that player 1 really walks.
  *   node tools/test_joy_p.js [path/to.rom]     JOYDEAD=1: port 6 silent (negative control)
@@ -80,13 +83,20 @@ function boot() {
   return { memory, keyboard, cpu, v06c, exec, io };
 }
 
-let emu, rd, joy = 0;
+let emu, rd, joyA = 0, joyB = 0, sel = 0x9f;
 function start(players) {
   emu = boot();
   rd = a => emu.memory.read(a & 0xffff, false);
-  joy = 0;
+  joyA = joyB = 0;
   const ioIn = emu.io.input.bind(emu.io);
-  emu.io.input = p => ((p & 0xff) === 6 ? (process.env.JOYDEAD === '1' ? 0xff : (~joy) & 0xff) : ioIn(p));
+  const ioOut = emu.io.output.bind(emu.io);
+  emu.io.output = (p, v) => { if ((p & 0xff) === 5) sel = v & 0xff; return ioOut(p, v); };
+  const port6 = () => {
+    if (process.env.JOYDEAD === '1') return 0xff;
+    const j = sel === 0xdf ? joyB : sel === 0xbf ? joyA : (joyA | joyB);
+    return (~j) & 0xff;
+  };
+  emu.io.input = p => ((p & 0xff) === 6 ? port6() : ioIn(p));
   let phase = 'title';
   for (let frame = 0; frame < 2000 && phase !== 'match'; frame++) {
     clear();
@@ -100,7 +110,7 @@ function start(players) {
   if ((rd(0x93ea) !== 0) !== (players === 1)) { console.log(`FAIL: menu did not choose ${players}P`); process.exit(1); }
   clear(); for (let i = 0; i < 150; i++) emu.v06c.oneFrame();
 }
-const clear = () => { for (let i = 0; i < 8; i++) emu.keyboard.matrix[i] = 0; joy = 0; };
+const clear = () => { for (let i = 0; i < 8; i++) emu.keyboard.matrix[i] = 0; joyA = joyB = 0; };
 const PAD = [0xac4d, 0xac4e];
 const hex = v => v.toString(16).padStart(2, '0');
 const match = (got, want) => want.every((w, i) => w === null || got[i] === w);
@@ -116,7 +126,8 @@ function pads(name, press, want) {
   console.log(`${ok ? 'ok  ' : 'FAIL'} ${name}: P1 ${hex(got[0])} P2 ${hex(got[1])} (want ${want.map(w => w === null ? '--' : hex(w)).join(' ')})`);
   if (!ok) fail++;
 }
-const J = v => () => { joy = v; };
+const J = v => () => { joyB = v; };          // stick B
+const JA = v => () => { joyA = v; };         // stick A
 const K = (row, m) => () => { emu.keyboard.matrix[row] = m; };
 const LETTERS = [['1', 2, 0x02], ['Q', 6, 0x02], ['D', 4, 0x10], ['F', 4, 0x40], ['Z', 7, 0x04]];
 
@@ -125,6 +136,7 @@ start(1);
 for (const [name, press, v] of [
   ['joy up', J(0x04), 0x01], ['joy down', J(0x08), 0x03], ['joy left', J(0x02), 0x04], ['joy right', J(0x01), 0x0c],
   ['joy fire 1', J(0x40), 0x10], ['joy fire 2', J(0x80), 0x10], ['joy up+down', J(0x0c), 0x00],
+  ['joy A up', JA(0x04), 0x01], ['joy A right', JA(0x01), 0x0c], ['joy A fire', JA(0x40), 0x10],
   ['cursor up', K(0, 0x20), 0x01], ['cursor down', K(0, 0x80), 0x03], ['cursor left', K(0, 0x10), 0x04],
   ['cursor right', K(0, 0x40), 0x0c], ['space', K(7, 0x80), 0x10],
 ]) pads(`1P ${name}`, press, [v, null]);
@@ -136,7 +148,7 @@ function walk(press, n) { const x0 = rd(0x940e); for (let i = 0; i < n; i++) { c
   let ready = false;                         // tip-off / after a score: steering ignored
   for (let i = 0; i < 600 && !ready; i += 20) {
     const x0 = rd(0x940e);
-    for (let k = 0; k < 20; k++) { clear(); joy = (i / 20) & 1 ? 0x02 : 0x01; emu.v06c.oneFrame(); }
+    for (let k = 0; k < 20; k++) { clear(); joyB = (i / 20) & 1 ? 0x02 : 0x01; emu.v06c.oneFrame(); }
     ready = rd(0x940e) !== x0;
   }
   if (!ready) { console.log('FAIL warm-up: player 1 never moved'); process.exit(1); }
@@ -154,12 +166,29 @@ for (const [name, press, sign] of [
 // --- two players ---
 start(2);
 for (const [name, press, want] of [
-  ['joy up', J(0x04), [0x01, 0x00]], ['joy right', J(0x01), [0x0c, 0x00]], ['joy fire', J(0x40), [0x10, 0x00]],
-  ['cursor up', K(0, 0x20), [0x00, 0x01]], ['cursor down', K(0, 0x80), [0x00, 0x03]],
-  ['cursor left', K(0, 0x10), [0x00, 0x04]], ['cursor right', K(0, 0x40), [0x00, 0x0c]],
-  ['space', K(7, 0x80), [0x00, 0x10]],
+  ['joy B up', J(0x04), [0x01, 0x00]], ['joy B right', J(0x01), [0x0c, 0x00]], ['joy B fire', J(0x40), [0x10, 0x00]],
+  ['joy A up', JA(0x04), [0x00, 0x01]], ['joy A down', JA(0x08), [0x00, 0x03]],
+  ['joy A left', JA(0x02), [0x00, 0x04]], ['joy A right', JA(0x01), [0x00, 0x0c]], ['joy A fire', JA(0x80), [0x00, 0x10]],
+  ['cursor up', K(0, 0x20), [0x01, 0x00]], ['cursor down', K(0, 0x80), [0x03, 0x00]],
+  ['cursor left', K(0, 0x10), [0x04, 0x00]], ['cursor right', K(0, 0x40), [0x0c, 0x00]],
+  ['space', K(7, 0x80), [0x10, 0x00]],
 ]) pads(`2P ${name}`, press, want);
 for (const [k, row, m] of LETTERS) pads(`2P letter ${k} steers nobody`, K(row, m), [0x00, 0x00]);
+
+// --- УС: sound off and on again (V_MUTE, kbd.asm) ---
+{
+  const MUTE = parseInt(JSON.parse(fs.readFileSync(path.join(ROOT, 'cfg/labels.json'), 'utf8')).labels.V_MUTE.addr, 16);
+  const m0 = rd(MUTE);
+  for (let i = 0; i < 4; i++) { clear(); emu.keyboard.ss = false; emu.keyboard.us = true; emu.v06c.oneFrame(); }
+  for (let i = 0; i < 4; i++) { clear(); emu.keyboard.us = false; emu.v06c.oneFrame(); }
+  const m1 = rd(MUTE);
+  for (let i = 0; i < 4; i++) { clear(); emu.keyboard.us = true; emu.v06c.oneFrame(); }
+  for (let i = 0; i < 4; i++) { clear(); emu.keyboard.us = false; emu.v06c.oneFrame(); }
+  const m2 = rd(MUTE);
+  const ok = m0 === 0 && m1 === 1 && m2 === 0;
+  console.log(`${ok ? 'ok  ' : 'FAIL'} УС toggles the sound: ${m0} -> ${m1} -> ${m2}`);
+  if (!ok) fail++;
+}
 
 // --- pause: ВК pauses (match clock 4111 stops), a key resumes, ВК + АР2 leaves ---
 function frames(n, press) { for (let i = 0; i < n; i++) { clear(); if (press) press(); emu.v06c.oneFrame(); } }

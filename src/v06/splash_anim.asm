@@ -82,9 +82,18 @@ sa_wait:
 sa_frame:
         halt
         call    sa_music
-        ld      a,(KEY_SNAP+8)          ; MSX row 8 bit 0 = Space, active low
-        rrca
-        jp      nc,sa_exit
+        ld      a,(0x0F21)              ; V_KANY: any key down (as brucelee-v06c)
+        or      a
+        jp      nz,sa_exit
+        ld      a,(0x0F34)              ; V_KJOY: joysticks «П», 0 = pressed
+        cpl
+        ld      c,a
+        and     0x30
+        jp      nz,sa_nojoy             ; no joystick on the port
+        ld      a,c
+        and     0xC0                    ; fire
+        jp      nz,sa_exit
+sa_nojoy:
         dec     b
         jp      nz,sa_frame
         ld      a,(sa_index)

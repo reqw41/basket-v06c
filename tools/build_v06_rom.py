@@ -1202,6 +1202,21 @@ def build_rom() -> None:
     rom[0xB01F:0xB1DC] = bytes(0xB1DC - 0xB01F)   # former menu pair buffer code
     install_splash_planes(rom)
     install_splash_anim(rom)
+    # Name entry (menu 4) printed at MSX rows 0E/10/12/14; the CPC panel ends
+    # at row 0E, so the lower rows overwrote the controls under it. The
+    # entry goes into the item rows 08/0A/0C/0E instead.
+    for at, row_old, row_new in ((0xA6FA, 0x0E, 0x08), (0xA703, 0x10, 0x0A),
+                                 (0xA718, 0x12, 0x0C), (0xA721, 0x14, 0x0E)):
+        p.put(at, bytes((0x21, row_old, 0x08)), bytes((0x21, row_new, 0x08)),
+              f"name entry row {row_old:02X} -> {row_new:02X}")
+    menu_key = int(json.loads((ROOT / "cfg/labels.json").read_text())["labels"]["MENU_KEY"]["addr"], 16)
+    p.put(0xA697, bytes.fromhex("3a10410000000000"),
+          bytes((0xCD, menu_key & 0xFF, menu_key >> 8, 0, 0, 0, 0, 0)),
+          "menu key: SPACE / joystick fire = 1 (MENU_KEY)")
+    box_clear = int(json.loads((ROOT / "cfg/labels.json").read_text())["labels"]["MENU_BOX_CLEAR"]["addr"], 16)
+    for at in (0xA62E, 0xA6F7):
+        p.put(at, bytes.fromhex("cdaf34"), bytes((0xCD, box_clear & 0xFF, box_clear >> 8)),
+              "dead VDP box fill -> MENU_BOX_CLEAR (blank menu rows 08..0E)")
     p.put(0x8502, bytes.fromhex("cd7caa"), bytes.fromhex("c31585"),
           "boot: the menu tune plays on from the splash (no restart at 8502/8512)")
     p.put(0xB01C, bytes.fromhex("2a0233"),

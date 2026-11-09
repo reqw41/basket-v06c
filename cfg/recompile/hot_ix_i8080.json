@@ -1,6 +1,6 @@
 {
- "note": "(ix+d)/(iy+d) helper calls per match iteration by Z80 site on the i8080 image (prof8080 CALLERS, WARM=400, 06.11). recompile_i8080 expands sites at or above \"min\" in place.",
- "min": 2.0,
+ "note": "(ix+d)/(iy+d) helper calls per match iteration by Z80 site on the i8080 image (prof8080 CALLERS, WARM=400, 06.11). recompile_i8080 expands sites at or above \"min\" in place. 09.11: min 2.0 -> 2.1 (15 sites at 2.0 fold back) to make room for MENU_BOX_CLEAR.",
+ "min": 2.1,
  "sites": {
   "873E": 0.2,
   "8742": 0.2,

@@ -101,10 +101,15 @@ def main():
     def save():
         (out / "report.json").write_text(json.dumps(report, indent=2) + "\n")
 
+    # Checks that need longer than --timeout (seconds). msx_lockstep: openMSX
+    # plus two 400-iteration port runs through the animated splash, ~165 s
+    # alone (09.11); under the load of the other checks it went past 180.
+    slow = {"msx_lockstep": 3 * args.timeout}
+
     def check(name, category, command, cwd):
         print(f"RUN {name}", flush=True)
         r = {"name": name, "category": category,
-             **execute(command, cwd, out / "logs" / (name + ".log"), args.timeout)}
+             **execute(command, cwd, out / "logs" / (name + ".log"), slow.get(name, args.timeout))}
         report["checks"].append(r)
         print(f"{r['status']} {name} ({r['seconds']}s)", flush=True)
         save()

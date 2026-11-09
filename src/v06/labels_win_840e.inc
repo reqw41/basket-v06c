@@ -3,21 +3,31 @@
 ; Modules use these names, never the numbers (tools/test_labels.py).
 ; Unit win_840e.asm: its own labels are left out (tools/link_labels.py).
 
-PAL_TAB                     equ     0x0235  ; adapter_data: glue.asm: 16 palette bytes PAL_WRITE latches from the IRQ
+PAL_TAB                     equ     0x023D  ; adapter_data: glue.asm: 16 palette bytes PAL_WRITE latches from the IRQ
 FRAME_RESET                 equ     0x0345  ; adapter_code: softvdp: frame reset
 FRAME_BEGIN                 equ     0x0355  ; adapter_code: fixed cross-module entry
 COLOR_MATCH_PREP            equ     0x0358  ; adapter_code: softvdp: match-frame preparation
 DIRTY_ADD                   equ     0x03C1  ; adapter_code: cross-unit entry (glue <-> color_sprite)
 COLOR_MENU_PREP             equ     0x03F6  ; adapter_code: softvdp: menu-frame preparation
 CLEAR_OFFCOURT              equ     0x041B  ; adapter_code: softvdp: clear the off-court rows (CPC_STAMP_OFF tail)
+MENU_KEY                    equ     0x06BB  ; adapter_code: kbd.asm: menu key at A697 (SPACE / fire = "1")
+V_KJOY2                     equ     0x06F3  ; adapter_data: kbd.asm: joystick «П» A as polled (player 2 of two)
+V_MUTE                      equ     0x06F4  ; adapter_data: kbd.asm: 1 = sound off (УС)
+STAMP_ROW_FIX               equ     0x0A5B  ; adapter_code: cpc_stamp.asm: stand cells after a tile row
+TILE_BAND_FILL              equ     0x0B1F  ; adapter_code: tile_band.asm (glue): COMPOSE_BOX tile band copier, IRQs on
+TBF_WIDTH                   equ     0x0B23  ; adapter_code: tile_band.asm: add a,n table bytes (2 x width), patched per box
+TBF_ENTRY                   equ     0x0B32  ; adapter_code: tile_band.asm: jp tbf_first/tbf_second, patched per box
+tbf_first                   equ     0x0B35  ; adapter_code: tile_band.asm: even-width entry
+tbf_second                  equ     0x0B43  ; adapter_code: tile_band.asm: odd-width entry
+TBF_END                     equ     0x0B5C  ; adapter_code: tile_band.asm: cp n end offset, patched per call
 MENU_LZ_BODY                equ     0x1320  ; adapter_code: menu_lz: dual-plane LZ expander (unit org 1320)
-REPLAY_STATE_BEGIN          equ     0x1448  ; adapter_code: menu_color_bg: replay state start (A887/A89E)
-REPLAY_SCENE                equ     0x144B  ; adapter_code: menu_color_bg: replay scene stage (A88A/A8A1)
-REPLAY_TILE_ROW             equ     0x144E  ; adapter_code: menu_color_bg: replay court row fill
-NOISE_WAIT                  equ     0x1465  ; adapter_code: fixed cross-module entry
-SND_NOISE_SCAN              equ     0x147B  ; adapter_code: menu_color_bg: AY noise scan per IRQ
-REPLAY_X2_TABLE             equ     0x14D0  ; adapter_data: menu_color_bg: 16-aligned 4->8 bit doubling table
-MENU_CHROME_DONE            equ     0x14E0  ; adapter_code: fixed cross-module entry
+REPLAY_STATE_BEGIN          equ     0x144C  ; adapter_code: menu_color_bg: replay state start (A887/A89E)
+REPLAY_SCENE                equ     0x144F  ; adapter_code: menu_color_bg: replay scene stage (A88A/A8A1)
+REPLAY_TILE_ROW             equ     0x1452  ; adapter_code: menu_color_bg: replay court row fill
+NOISE_WAIT                  equ     0x1469  ; adapter_code: fixed cross-module entry
+SND_NOISE_SCAN              equ     0x147F  ; adapter_code: menu_color_bg: AY noise scan per IRQ
+REPLAY_X2_TABLE             equ     0x14E0  ; adapter_data: menu_color_bg: 16-aligned 4->8 bit doubling table
+MENU_CHROME_DONE            equ     0x14F0  ; adapter_code: fixed cross-module entry
 RESTORE_BACKGROUND_PAIR     equ     0x1710  ; adapter_code: fixed cross-module entry
 PAIR_BUFFER_OK              equ     0x1721  ; adapter_code: fixed cross-module entry
 COURT_TILE_PAIR             equ     0x1800  ; adapter_code: fixed cross-module entry
@@ -25,6 +35,7 @@ COURT_TILE_CACHE            equ     0x1851  ; adapter_code: fixed cross-module e
 TEXT_GLYPH_PAIR             equ     0x189D  ; adapter_code: fixed cross-module entry
 HUD_TEXT_REFRESH            equ     0x18CA  ; adapter_code: menu_player_helpers: reprint HUD text after HUD_DECOR
 PLAYER_BACKGROUND_HIGH      equ     0x18EB  ; adapter_code: menu_player_helpers: high background byte (menu/match)
+MENU_BOX_CLEAR              equ     0x18F6  ; adapter_code: menu_player_helpers.asm: blanks menu rows 08..0E (the dead VDP fill D247/34AF at A62E/A6F7)
 SPLASH_ANIM                 equ     0x1B40  ; adapter_code: splash_anim.asm: CPC title animation until Space, lives in the replay ring/DP_BUF (cleared after)
 BLIT_Y                      equ     0x3300  ; sys_data: MSX D098: blitter/sprite Y (relocated D-block)
 BLIT_X                      equ     0x3301  ; sys_data: MSX D099: blitter/sprite X
@@ -58,20 +69,19 @@ COLOR_SPRITE                equ     0x6816  ; adapter_code: color_sprite: staged
 COURT_TILE_ROW_POINTER      equ     0x6B8E  ; adapter_code: fixed cross-module entry
 PLAYER_BYTE_PROTECTED       equ     0x6BC3  ; adapter_code: color_sprite.asm: restore protection (DIRTY_COURT_HIGH_BYTE)
 PROTECT_SELF_OP             equ     0x6BDD  ; adapter_code: color_sprite: CP n whose operand is PROTECT_SELF (menu_color_bg writes +1)
-JOY_MERGE                   equ     0x6CD0  ; adapter_code: fixed cross-module entry
-NATIVE_PADS                 equ     0x6CED  ; adapter_code: joy_p: control reader (AF0B jumps here)
-STAGE_ALIGNED_ROW           equ     0x6D97  ; adapter_code: aligned_sprite_row.asm
-PLAYER_COMPOSE_CLIPPED      equ     0x6DD2  ; adapter_code: fixed cross-module entry
-PLAYER_BACKGROUND_ROW       equ     0x6F08  ; adapter_code: fixed cross-module entry
-MEM_COPY                    equ     0x6F15  ; adapter_code: clipped_player_object: i8080 ldir (BC bytes HL->DE, none when 0)
-STAGE_SLOTS                 equ     0x7237  ; adapter_code: damage_publish.asm: stage the recorded objects a damage box touches (replay: all)
-DP_SYNC                     equ     0x7339  ; adapter_code: damage_publish: wait until the frame IRQ has copied the posted last batch (07.11 async publish)
-DP_ISR_COPY                 equ     0x734E  ; adapter_code: damage_publish.asm: frame IRQ copies the ready batch of damage boxes (glue IRQ_HANDLER)
-CROWD_TICK                  equ     0x74F6  ; adapter_code: damage_publish: jumping fans after a basket (A502 calls it)
-RING_PUSH                   equ     0x7524  ; adapter_code: ring.asm: replay ring in a circle
-RING_RESET                  equ     0x754D  ; adapter_code: ring.asm: replay ring in a circle
-RING_REPLAY                 equ     0x7558  ; adapter_code: ring.asm: replay ring in a circle
-RING_PULL                   equ     0x7569  ; adapter_code: ring.asm: replay ring in a circle
+NATIVE_PADS                 equ     0x6CD0  ; adapter_code: joy_p: control reader (AF0B jumps here)
+STAGE_ALIGNED_ROW           equ     0x6D5C  ; adapter_code: aligned_sprite_row.asm
+PLAYER_COMPOSE_CLIPPED      equ     0x6D97  ; adapter_code: fixed cross-module entry
+PLAYER_BACKGROUND_ROW       equ     0x6ECD  ; adapter_code: fixed cross-module entry
+MEM_COPY                    equ     0x6EDA  ; adapter_code: clipped_player_object: i8080 ldir (BC bytes HL->DE, none when 0)
+STAGE_SLOTS                 equ     0x71FB  ; adapter_code: damage_publish.asm: stage the recorded objects a damage box touches (replay: all)
+DP_SYNC                     equ     0x72FD  ; adapter_code: damage_publish: wait until the frame IRQ has copied the posted last batch (07.11 async publish)
+DP_ISR_COPY                 equ     0x7312  ; adapter_code: damage_publish.asm: frame IRQ copies the ready batch of damage boxes (glue IRQ_HANDLER)
+CROWD_TICK                  equ     0x74BA  ; adapter_code: damage_publish: jumping fans after a basket (A502 calls it)
+RING_PUSH                   equ     0x74E8  ; adapter_code: ring.asm: replay ring in a circle
+RING_RESET                  equ     0x7511  ; adapter_code: ring.asm: replay ring in a circle
+RING_REPLAY                 equ     0x751C  ; adapter_code: ring.asm: replay ring in a circle
+RING_PULL                   equ     0x752D  ; adapter_code: ring.asm: replay ring in a circle
 COURT_COLORIZE              equ     0x7AE8  ; adapter_code: win_7ae8: CPC-style court high plane (unit org)
 COURT_HIGH_BYTE             equ     0x7B0F  ; adapter_code: fixed cross-module entry
 MENU_BUFFER_ROW             equ     0x7B32  ; adapter_code: fixed cross-module entry
@@ -92,6 +102,7 @@ GAME_PRINT_FOULS            equ     0x9FC0  ; game_code: L_9FC0: print 12345 fou
 GAME_PRINT_SCORES           equ     0x9FF2  ; game_code: L_9FF2: print scores
 GAME_PRINT_NAMES            equ     0xA00E  ; game_code: L_A00E: print team names
 BIOS_CLICK                  equ     0xA52C  ; adapter_code: CHGSND body (win_a524.asm)
+MENU_BLANK17                equ     0xA7C8  ; game_data: 17 spaces + FF (menu row 10 blank)
 REPLAY_HALF_SELECT          equ     0xA8F9  ; game_data: old LD DE immediate kept as the replay half selector
 MUSIC_START                 equ     0xAA7C  ; game_code: start the tune at (BLIT_Y); MUSIC_LOOP 0 = repeat
 MUSIC_LOOP                  equ     0xAA82  ; game_data: 0: the tune repeats after its last pattern (AAAA)
@@ -112,6 +123,5 @@ BG_FETCH                    equ     0xB338  ; adapter_code: cpc_stamp.asm: match
 CPC_STAMP_ON                equ     0xB33B  ; adapter_code: cpc_stamp.asm
 CPC_STAMP_OFF               equ     0xB357  ; adapter_code: cpc_stamp.asm
 STAMP_PAIR                  equ     0xB364  ; adapter_code: cpc_stamp.asm: stamped background pair fetch
-STAMP_ROW_FIX               equ     0xB3F6  ; adapter_code: cpc_stamp.asm: stand cells after a tile row
 HUD_ICON                    equ     0xB455  ; adapter_code: hud_icon: possession icon (8AC2 jp; fixed org)
 TIME_TEXT                   equ     0xB48C  ; adapter_data: hud_icon.asm: 'TIME',FF
