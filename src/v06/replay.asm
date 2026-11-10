@@ -31,7 +31,8 @@ R_SP            equ     0x0F16          ; blit source pointer (word)
 R_ARMED         equ     0x0F18          ; 0 = first state: show at once
 R_PAGE          equ     0x0F10          ; blit: first low-plane column page
 REPLAY_X2       equ     REPLAY_X2_TABLE ; menu_color_bg.asm, 16-aligned
-REPLAY_BUF      equ     0x2000          ; shared pair buffer; 8 * 60 * 2 = 960
+REPLAY_BUF      equ     0x2000          ; shared pair buffer; 8 * 48 * 2 = 768
+RB_TAB          equ     0x2300          ; blit tables, two pages (RB_TABLES)
 REPLAY_ROWS     equ     48              ; half of the 96-row MSX window
 RQ_RECT         equ     0x0F1A          ; col,row,width,height (1950 reads it)
 RQ_BUF_BASE     equ     0x0F6D          ; 1950 destination base
@@ -47,6 +48,7 @@ REPLAY_ZOOM:
         push    de
         push    hl
         call    DP_SYNC                 ; the last match batch reads B498.., 2000
+        call    RB_TABLES
         ld      hl,0xB498               ; every object of the state
         ld      a,1
         call    STAGE_SLOTS
@@ -149,28 +151,88 @@ REPLAY_COMPOSE:
         ld      hl,REPLAY_BUF
         ld      (RQ_BUF_BASE),hl
         ld      (RQ_CUR),hl
+; Court tiles, tile by tile (6 tile rows x 8 columns, rows 8 apart): the tile
+; pointer once (26C0 + 16 * index, tiles from 3300 at COURT_TAIL 1600, as
+; COURT_TILE_CACHE), then 8 (low, high) rows into the buffer, 16 bytes apart.
+; ~45 cycles a byte (the row-by-row REPLAY_TILE_ROW path took ~120).
 rq_bg:
-        ld      hl,(RQ_SRC)
-        ld      a,l
-        and     31
+        ld      a,(RQ_RECT+1)
+        and     0xF8
         add     a,a
-        ld      c,a
-        ld      b,0
-        call    COURT_TILE_ROW_POINTER                 ; COURT_TILE_ROW_POINTER
-        push    hl
-        ld      hl,(RQ_CUR)
+        add     a,a                    ; tile row * 32
+        ld      hl,RQ_RECT
+        add     a,(hl)
+        ld      l,a
+        ld      h,0x25                 ; 2500 + tile row * 32 + col: tile indices
+        ld      (rqt_idx+1),hl
+        ld      hl,REPLAY_BUF
+        ld      (rqt_dst+1),hl
+        ld      a,REPLAY_ROWS / 8
+        ld      (rqt_rows+1),a
+rqt_row:
+        ld      a,8
+        ld      (rqt_cols+1),a
+rqt_idx:
+        ld      hl,0                   ; patched: tile index
+        ld      a,(hl)
+        inc     hl
+        ld      (rqt_idx+1),hl
+        ld      l,a
+        ld      h,0
+        add     hl,hl
+        add     hl,hl
+        add     hl,hl
+        add     hl,hl
+        ld      de,0x26C0
+        add     hl,de
+        ld      a,h
+        cp      0x33
+        jp      c,rqt_dst
+        sub     0x33-0x16              ; COURT_TAIL
+        ld      h,a
+rqt_dst:
+        ld      de,0                   ; patched: buffer pair of the tile's top row
+        ld      bc,15
+        REPT    8
+        ld      a,(hl)
+        ld      (de),a
+        inc     l                      ; tiles are 16-aligned
+        inc     de
+        ld      a,(hl)
+        ld      (de),a
+        inc     l
         ex      de,hl
-        pop     hl
-        call    REPLAY_TILE_ROW        ; 8 pairs, IRQs on
+        add     hl,bc
         ex      de,hl
+        ENDM
+        ld      hl,(rqt_dst+1)
+        inc     hl
+        inc     hl
+        ld      (rqt_dst+1),hl
+rqt_cols:
+        ld      a,0                    ; patched: tiles left in the row
+        dec     a
+        ld      (rqt_cols+1),a
+        jp      nz,rqt_idx
+        ld      de,8*16-16             ; next tile row: buffer 8 rows down,
+        add     hl,de
+        ld      (rqt_dst+1),hl
+        ld      hl,(rqt_idx+1)
+        ld      de,32-8                ; indices one court tile row down
+        add     hl,de
+        ld      (rqt_idx+1),hl
+rqt_rows:
+        ld      a,0                    ; patched: tile rows left
+        dec     a
+        ld      (rqt_rows+1),a
+        jp      nz,rqt_row
+        ld      (RQ_ROWS),a            ; as the row loop left them
+        ld      hl,REPLAY_BUF+16*REPLAY_ROWS
         ld      (RQ_CUR),hl
         ld      hl,(RQ_SRC)
-        ld      de,32
+        ld      de,32*REPLAY_ROWS
         add     hl,de
         ld      (RQ_SRC),hl
-        ld      hl,RQ_ROWS
-        dec     (hl)
-        jp      nz,rq_bg
 
         ld      a,(DIRTY_COUNT)
         or      a
@@ -230,72 +292,92 @@ rq_glyph:
         ret
 
 ; 64x48 composed pairs → 128x96 at low-plane page D (E0 or F0), from plane
-; row E down.
-; Each nibble doubles via REPLAY_X2 into two bytes on two scanlines.
-; IRQs stay enabled: Vector drops a vblank that arrives under DI.
+; row E down. Row by row: each plane byte indexes RB_TAB (its high nibble
+; doubled) and RB_TAB+100 (low nibble), each result goes on two scanlines.
+; ~32 cycles a screen byte (was ~75). IRQs stay enabled.
 REPLAY_BLIT:
+        ld      a,d
+        ld      (rb_page+1),a
+        add     a,0x10
+        ld      (rb_pend+1),a           ; page after the last column
         ld      a,e
         sub     2*REPLAY_ROWS
         ld      (rb_end+1),a
-        ld      a,d
-        ld      (R_PAGE),a
+        ld      c,e
         ld      hl,REPLAY_BUF
-        ld      (R_SP),hl              ; source pointer
-rb_row:
-        ld      a,(R_PAGE)
-        ld      d,a
-rb_col:
-        ld      hl,(R_SP)
-        ld      c,(hl)                 ; low plane
+        ld      d,RB_TAB >> 8
+rb_page:
+        ld      b,0                     ; patched: first low-plane column
+rb_pair:
+        ld      e,(hl)                  ; low plane
         inc     hl
-        ld      b,(hl)                 ; high plane
-        inc     hl
-        ld      (R_SP),hl
-        ld      h,REPLAY_X2 >> 8
-        ld      a,c
-        call    rb_byte
-        ld      a,d
-        sub     0x21                   ; high plane, same column
-        ld      d,a
+        ld      a,(de)
+        ld      (bc),a
+        dec     c
+        ld      (bc),a
+        inc     d
+        ld      a,(de)
+        dec     d
+        inc     b
+        ld      (bc),a
+        inc     c
+        ld      (bc),a
         ld      a,b
-        call    rb_byte
-        ld      a,d
-        add     a,0x21                 ; next low-plane column pair
-        ld      d,a
-        and     0x0F
-        jp      nz,rb_col
-        ld      a,e
-        sub     2
-        ld      e,a
+        sub     0x21                    ; high plane, the pair's first column
+        ld      b,a
+        ld      e,(hl)                  ; high plane
+        inc     hl
+        ld      a,(de)
+        ld      (bc),a
+        dec     c
+        ld      (bc),a
+        inc     d
+        ld      a,(de)
+        dec     d
+        inc     b
+        ld      (bc),a
+        inc     c
+        ld      (bc),a
+        ld      a,b
+        add     a,0x21                  ; next low-plane column pair
+        ld      b,a
+rb_pend:
+        cp      0                       ; patched
+        jp      nz,rb_pair
+        dec     c
+        dec     c
+        ld      a,c
 rb_end:
-        cp      0                      ; patched: first plane row below
-        jp      nz,rb_row
+        cp      0                       ; patched: first plane row below
+        jp      nz,rb_page
         ret
 
-; A = one plane byte → (D,E),(D,E-1) high nibble, (D+1,E),(D+1,E-1) low.
-; Leaves D+1, E unchanged. Clobbers C, L (H = table page).
-rb_byte:
-        ld      c,a
+; RB_TAB[v] = REPLAY_X2[v >> 4], RB_TAB[100 + v] = REPLAY_X2[v & 0F]. Built
+; per state: 2300..24FF is idle shared work (the composed quarter ends 22FF).
+RB_TABLES:
+        ld      hl,RB_TAB
+        ld      d,REPLAY_X2 >> 8
+rt_loop:
+        ld      a,l
         rrca
         rrca
         rrca
         rrca
         and     0x0F
         add     a,REPLAY_X2 & 0xFF
-        ld      l,a
-        ld      a,(hl)
-        ld      (de),a
-        dec     e
-        ld      (de),a
-        inc     d
-        ld      a,c
+        ld      e,a
+        ld      a,(de)
+        ld      (hl),a
+        inc     h
+        ld      a,l
         and     0x0F
         add     a,REPLAY_X2 & 0xFF
-        ld      l,a
-        ld      a,(hl)
-        ld      (de),a
-        inc     e
-        ld      (de),a
+        ld      e,a
+        ld      a,(de)
+        ld      (hl),a
+        dec     h
+        inc     l
+        jp      nz,rt_loop
         ret
 
 ; How many 50 Hz IRQs one displayed state occupies, composition included.

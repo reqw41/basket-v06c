@@ -52,7 +52,7 @@ RX_ADDR = re.compile(r"^;\s*([0-9A-F]{4})(?:\s+((?:[0-9A-F]{2} )*[0-9A-F]{2}))?"
 
 class Item:
     __slots__ = ("kind", "addr", "mn", "ops", "raw", "cmt", "nbytes", "labels",
-                 "file", "line", "lines", "size")
+                 "file", "line", "lines", "size", "native")
 
     def __init__(self, **kw):
         for k in self.__slots__:
@@ -1231,6 +1231,32 @@ HOT_I8080 = {int(k, 16) for k, n in _hot_d["sites"].items() if n >= _hot_d["min"
 HOT_W = {int(k, 16): n for k, n in _hot_d["sites"].items()}
 
 
+NATIVE_EQU = []
+
+
+def load_native():
+    """cfg/native_modules.json: {имя: {src, ranges: [[lo, hi]], entries: [..]}}
+    (адреса Z80, hex).  NATIVE=0 — без ручных модулей, NATIVE=a,b — только эти."""
+    p = ROOT / "cfg/native_modules.json"
+    if not p.exists() or os.environ.get("NATIVE") == "0":
+        return []
+    out = []
+    only = os.environ.get("NATIVE")
+    only = set(only.split(",")) if only else None
+    for name, m in json.loads(p.read_text()).items():
+        if name.startswith("_") or (only is not None and name not in only):
+            continue
+        lines = [ln.rstrip() for ln in (ROOT / m["src"]).read_text(encoding="utf-8").splitlines()]
+        lines = [ln.split(";")[0].strip() for ln in lines]
+        lines = [ln for ln in lines if ln]
+        NATIVE_EQU.extend(re.sub(r"\s+", "\t", ln, 2) for ln in lines if re.match(r"^\w+\s+equ\s", ln))
+        lines = [ln for ln in lines if not re.match(r"^\w+\s+equ\s", ln)]
+        out.append({"name": name, "src": m["src"], "lines": lines,
+                    "ranges": [(int(a, 16), int(b, 16)) for a, b in m["ranges"]],
+                    "entries": [int(e, 16) for e in m["entries"]]})
+    return out
+
+
 def main():
     global SRC, OUT_ASM, OUTDIR
     ap = argparse.ArgumentParser()
@@ -1342,6 +1368,15 @@ def main():
         for f, c in sorted(_ix_cnt.items(), key=lambda x: -x[1])[:12]:
             print("форма", f, c, "rst %02X" % _ix_rst[f] if f in _ix_rst else "")
 
+    # --- РУЧНЫЕ МОДУЛИ i8080 (docs/NATIVE_PLAN.md, A2): команды Z80 из их
+    # участков не переводятся; вместо них — текст src/native/<модуль>.asm,
+    # который сам определяет метки Z_<вход> для всех входов участка.
+    native = load_native()
+    nat_cut = [(lo, hi) for m in native for lo, hi in m["ranges"]]
+
+    def nat(addr):
+        return addr is not None and any(lo <= addr <= hi for lo, hi in nat_cut)
+
     # --- перевод
     code_addrs = {it.addr for it in items if it.kind == "code" and it.addr is not None}
     audit = []
@@ -1360,6 +1395,8 @@ def main():
         if it.addr is not None and in_zone(it.addr):
             continue
         if it.addr is not None and cut(it.addr, it.nbytes):
+            continue
+        if it.kind == "code" and nat(it.addr):
             continue
         if it.kind == "data":
             if it.addr is not None and in_proven(it):
@@ -1462,6 +1499,22 @@ def main():
                           raw="db\t" + ",".join(["0"] * n), cmt="; ЗОНА ВРЕЗКИ",
                           nbytes=n, labels=[], file="zone", line=0, lines=None))
     units.sort(key=lambda x: x.addr if x.addr is not None else 0)
+    for m in native:                     # в поток — на место первого входа
+        # по команде на единицу (как у переведённого кода): раскладка кладёт
+        # единицы в свободные куски образа, на стыках ставит мост `jp`
+        parts, pend = [], []
+        for k, ln in enumerate(m["lines"]):
+            if ln.endswith(":"):
+                pend.append(ln[:-1])
+                continue
+            mn, _, o = ln.partition(" ")
+            parts.append(Item(kind="code", addr=None, mn=mn.lower(), ops=split_ops(o.strip()), raw=ln,
+                              cmt="", nbytes=0, labels=pend + ["NAT_%s_%d" % (m["name"], k)],
+                              file=m["src"], line=k, lines=[ln]))
+            pend = []
+        parts[0].native = m
+        at = next((i for i, x in enumerate(units) if x.addr is not None and x.addr > m["ranges"][0][0]), len(units))
+        units[at:at] = parts
     if UNSUPPORTED:
         print("НЕ ПЕРЕВЕДЕНО (%d):" % len(UNSUPPORTED))
         for x in UNSUPPORTED:
@@ -1491,6 +1544,7 @@ def layout_and_emit(items, units, fixed, lab, equs, audit, args):
     for n, v in sorted(equs.items()):
         if n not in lab:
             head.append(f"{n}:\tequ\t{v}")
+    head += NATIVE_EQU
     head.append("RT_VARS:\tequ\t0x%04X\t; ячейки рантайма (мёртвая зона 92FF..9329)" % RT_VARS_ADDR)
     for i, n in enumerate(CELLS):
         head.append(f"{n}:\tequ\tRT_VARS+{i * 2}")
@@ -1666,6 +1720,13 @@ def layout_and_emit(items, units, fixed, lab, equs, audit, args):
         if u.lines is None:
             for k in range(1, u.nbytes):
                 amap[u.addr + k] = new + k
+    for u in units:                      # входы ручных модулей
+        m = getattr(u, "native", None) if hasattr(u, "native") else None
+        if m:
+            for e in m["entries"]:
+                if "Z_%04X" % e not in S2:
+                    sys.exit("%s: нет метки Z_%04X (вход модуля)" % (m["src"], e))
+                amap[e] = S2["Z_%04X" % e]
     # ПРИКОЛОЧЕННЫЕ КУСКИ В КАРТУ НЕ ПОПАДАЮТ.  Байты по их адресам —
     # инертная копия под графику логотипа; исполняемая копия тех же команд
     # уехала вместе со всем кодом, и G_xxxx обязан указывать на НЕЁ.

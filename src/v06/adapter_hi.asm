@@ -10,4 +10,5 @@
         include "clipped_player_object.asm"
         include "damage_publish.asm"
         include "ring.asm"
+        include "court_fill.asm"
 ADAPTER_HI_END:

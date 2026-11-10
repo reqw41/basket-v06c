@@ -124,7 +124,7 @@ for (let frame = 0; frame < +(process.env.NF || 3000); frame++) {
     if (hold-- <= 0) { hold = 5 + Math.floor(rand() * 30); cur = Math.floor(rand() * 7); }
     if (cur < 3) { if (x > 0x5a) keys(0, 0x10); else if (x < 0x50) keys(0, 0x40); else if (y > 0x0c) keys(0, 0x20); else keys(7, 0x80); }
     else { const m = [[0, 0x10], [0, 0x40], [0, 0x20], [7, 0x80]][cur - 3]; keys(m[0], m[1]); } }
-  emu.v06c.oneFrame();
+  emu.v06c.oneInterrupt(false);   // one TV frame (oneFrame skips frames by wall-clock time: not deterministic)
   if (phase === 'title' && rd(0x940d) === 0x6e && rd(0x9427) === 0x6e && rd(0x940b) === 0x10) { phase = 'menu'; phases.menu = frame; }
   else if (phase === 'menu' && rd(0x0fed) === 1) { phase = 'match'; phases.match = frame; global.PROF.match = true; }
   if (process.env.DUMP && process.env.DUMP.split(',').map(Number).includes(frame)) {

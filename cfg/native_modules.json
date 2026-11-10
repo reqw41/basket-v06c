@@ -1,0 +1,228 @@
+{
+ "_": "A2 hand i8080 modules (docs/NATIVE_PLAN.md): Z80 code in ranges is not translated; src defines Z_<entry> for entries",
+ "contact": {
+  "src": "src/native/contact.asm",
+  "ranges": [
+   [
+    "8CF7",
+    "8E59"
+   ]
+  ],
+  "entries": [
+   "8CF7"
+  ],
+  "out": [
+   "cf"
+  ]
+ },
+ "walk": {
+  "src": "src/native/walk.asm",
+  "ranges": [
+   [
+    "9C7C",
+    "9E6E"
+   ]
+  ],
+  "entries": [
+   "9C83",
+   "9DC2"
+  ],
+  "out": []
+ },
+ "stamina": {
+  "src": "src/native/stamina.asm",
+  "ranges": [
+   [
+    "9E82",
+    "9F47"
+   ],
+   [
+    "9F60",
+    "9F99"
+   ]
+  ],
+  "entries": [
+   "9E82",
+   "9ED4",
+   "9F25",
+   "9F36",
+   "9F60",
+   "9F67",
+   "9F6D",
+   "9F6E"
+  ],
+  "out": []
+ },
+ "pdraw": {
+  "src": "src/native/pdraw.asm",
+  "ranges": [
+   [
+    "958F",
+    "98B2"
+   ],
+   [
+    "9E6F",
+    "9E81"
+   ]
+  ],
+  "entries": [
+   "958F",
+   "9599",
+   "95A1",
+   "9E6F"
+  ],
+  "out": []
+ },
+ "sched": {
+  "src": "src/native/sched.asm",
+  "ranges": [
+   [
+    "94B0",
+    "958E"
+   ]
+  ],
+  "entries": [
+   "94B0",
+   "9543"
+  ],
+  "out": []
+ },
+ "action": {
+  "src": "src/native/action.asm",
+  "ranges": [
+   [
+    "8E5A",
+    "91B4"
+   ]
+  ],
+  "entries": [
+   "8E5A",
+   "8E73",
+   "8F76",
+   "9009",
+   "90EF"
+  ],
+  "out": [],
+  "from": [
+   "9C83"
+  ]
+ },
+ "ai": {
+  "src": "src/native/ai.asm",
+  "ranges": [
+   [
+    "869C",
+    "8A22"
+   ]
+  ],
+  "entries": [
+   "869C",
+   "86D0",
+   "870E"
+  ],
+  "out": [],
+  "from": [
+   "84DF"
+  ],
+  "cells": {
+   "88D7": "ai_lvl"
+  }
+ },
+ "ball": {
+  "src": "src/native/ball.asm",
+  "ranges": [
+   [
+    "8A23",
+    "8CF6"
+   ]
+  ],
+  "entries": [
+   "8A23",
+   "8ADD",
+   "8B26",
+   "8BFE",
+   "8C16",
+   "8C60"
+  ],
+  "out": [],
+  "from": [
+   "84D3",
+   "84D6"
+  ]
+ },
+ "isr": {
+  "src": "src/native/isr.asm",
+  "ranges": [
+   [
+    "36F3",
+    "3727"
+   ],
+   [
+    "372C",
+    "3731"
+   ],
+   [
+    "3811",
+    "3845"
+   ],
+   [
+    "A186",
+    "A192"
+   ]
+  ],
+  "entries": [
+   "36F3",
+   "3702",
+   "3705",
+   "3714",
+   "3715",
+   "372C",
+   "3811",
+   "A186"
+  ],
+  "out": [],
+  "smcw": {
+   "3703": "Z_3702+1",
+   "3706": "Z_3705+1"
+  },
+  "mutate": false
+ },
+ "move": {
+  "src": "src/native/move.asm",
+  "ranges": [
+   [
+    "98B3",
+    "9A1A"
+   ]
+  ],
+  "entries": [
+   "98B3",
+   "98D9",
+   "98F7",
+   "9919",
+   "994A",
+   "99BC"
+  ],
+  "out": [],
+  "from": [
+   "9C83"
+  ]
+ },
+ "flight": {
+  "src": "src/native/flight.asm",
+  "ranges": [
+   [
+    "9A1B",
+    "9C7B"
+   ]
+  ],
+  "entries": [
+   "9A1B",
+   "9BF6"
+  ],
+  "out": [],
+  "from": [
+   "8A23"
+  ]
+ }
+}

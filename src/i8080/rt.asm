@@ -19,13 +19,13 @@ il_pro_ix:
                 push    hl              ; возврат в тело
                 ld      hl,(z80_ix)
                 or      a
-                jp      m,il_ADRN21
+                jp      m,il_ADRN13
                 add     a,l
                 ld      l,a
                 ret     nc
                 inc     h
                 ret
-il_ADRN21:
+il_ADRN13:
                 add     a,l
                 ld      l,a
                 ret     c
@@ -49,13 +49,13 @@ il_pro2_ix:
                 push    hl              ; возврат в тело
                 ld      hl,(z80_ix)
                 or      a
-                jp      m,il_ADRN22
+                jp      m,il_ADRN14
                 add     a,l
                 ld      l,a
                 ret     nc
                 inc     h
                 ret
-il_ADRN22:
+il_ADRN14:
                 add     a,l
                 ld      l,a
                 ret     c
@@ -74,13 +74,13 @@ il_pro_iy:
                 push    hl              ; возврат в тело
                 ld      hl,(z80_iy)
                 or      a
-                jp      m,il_ADRN23
+                jp      m,il_ADRN15
                 add     a,l
                 ld      l,a
                 ret     nc
                 inc     h
                 ret
-il_ADRN23:
+il_ADRN15:
                 add     a,l
                 ld      l,a
                 ret     c
@@ -104,13 +104,13 @@ il_pro2_iy:
                 push    hl              ; возврат в тело
                 ld      hl,(z80_iy)
                 or      a
-                jp      m,il_ADRN24
+                jp      m,il_ADRN16
                 add     a,l
                 ld      l,a
                 ret     nc
                 inc     h
                 ret
-il_ADRN24:
+il_ADRN16:
                 add     a,l
                 ld      l,a
                 ret     c
@@ -132,38 +132,18 @@ il_epi_a:                               ; флаги и HL вызывателя,
                 ld      a,(il_a)
                 ld      hl,(il_tmp2)
                 ret
-il_ix_add:
-                call    il_pro_ix
-                ld a,(il_f+1)
-                add a,(hl)
-                jp il_ret_hl
 il_ix_bit_b:
                 call    il_pro2_ix
                 ld a,(il_f)
                 rra
                 ld a,(il_d)
-                jp c,il_BITC25
+                jp c,il_BITC17
                 and (hl)
                 ld a,(il_f+1)
                 jp il_ret_hl
-il_BITC25:
+il_BITC17:
                 and (hl)
                 scf
-                ld a,(il_f+1)
-                jp il_ret_hl
-il_ix_cp:
-                call    il_pro_ix
-                ld a,(il_f+1)
-                cp (hl)
-                jp il_ret_hl
-il_ix_dec:
-                call    il_pro_ix
-                dec (hl)
-                ld a,(il_f+1)
-                jp il_ret_hl
-il_ix_inc:
-                call    il_pro_ix
-                inc (hl)
                 ld a,(il_f+1)
                 jp il_ret_hl
 il_ix_lda_b:
@@ -187,126 +167,6 @@ il_ix_lde:
                 call    il_pro_ix
                 ld e,(hl)
                 jp il_epi
-il_ix_ldh:
-                call    il_pro_ix
-                ld a,(hl)
-                ld (il_tmp2+1),a
-                jp il_epi
-il_ix_ldl:
-                call    il_pro_ix
-                ld a,(hl)
-                ld (il_tmp2),a
-                jp il_epi
-il_ix_res_b:
-                call    il_pro2_ix
-                ld a,(il_d)
-                and (hl)
-                ld (hl),a
-                jp il_epi
-il_ix_set_b:
-                call    il_pro2_ix
-                ld a,(il_d)
-                or (hl)
-                ld (hl),a
-                jp il_epi
-il_ix_sta_b:
-                call    il_pro_ix
-                ld a,(il_f+1)
-                ld (hl),a
-                jp il_epi
-il_ix_stb:
-                call    il_pro_ix
-                ld (hl),b
-                jp il_epi
-il_ix_stc:
-                call    il_pro_ix
-                ld (hl),c
-                jp il_epi
-il_ix_std:
-                call    il_pro_ix
-                ld (hl),d
-                jp il_epi
-il_ix_ste:
-                call    il_pro_ix
-                ld (hl),e
-                jp il_epi
-il_ix_sth:
-                call    il_pro_ix
-                ld a,(il_tmp2+1)
-                ld (hl),a
-                jp il_epi
-il_ix_stl:
-                call    il_pro_ix
-                ld a,(il_tmp2)
-                ld (hl),a
-                jp il_epi
-il_ix_stn_b:
-                call    il_pro2_ix
-                ld a,(il_d)
-                ld (hl),a
-                jp il_epi
-il_iy_add:
-                call    il_pro_iy
-                ld a,(il_f+1)
-                add a,(hl)
-                jp il_ret_hl
-il_iy_bit:
-                call    il_pro2_iy
-                ld a,(il_f)
-                rra
-                ld a,(il_d)
-                jp c,il_BITC26
-                and (hl)
-                ld a,(il_f+1)
-                jp il_ret_hl
-il_BITC26:
-                and (hl)
-                scf
-                ld a,(il_f+1)
-                jp il_ret_hl
-il_iy_cp:
-                call    il_pro_iy
-                ld a,(il_f+1)
-                cp (hl)
-                jp il_ret_hl
-il_iy_dec:
-                call    il_pro_iy
-                dec (hl)
-                ld a,(il_f+1)
-                jp il_ret_hl
-il_iy_lda:
-                call    il_pro_iy
-                ld a,(hl)
-                ld (il_a),a
-                jp il_epi_a
-il_iy_ldb:
-                call    il_pro_iy
-                ld b,(hl)
-                jp il_epi
-il_iy_ldd:
-                call    il_pro_iy
-                ld d,(hl)
-                jp il_epi
-il_iy_lde:
-                call    il_pro_iy
-                ld e,(hl)
-                jp il_epi
-il_iy_ldl:
-                call    il_pro_iy
-                ld a,(hl)
-                ld (il_tmp2),a
-                jp il_epi
-il_iy_res:
-                call    il_pro2_iy
-                ld a,(il_d)
-                and (hl)
-                ld (hl),a
-                jp il_epi
-il_iy_sta:
-                call    il_pro_iy
-                ld a,(il_f+1)
-                ld (hl),a
-                jp il_epi
 il_iy_std:
                 call    il_pro_iy
                 ld (hl),d
@@ -320,11 +180,6 @@ il_iy_stn:
                 ld a,(il_d)
                 ld (hl),a
                 jp il_epi
-il_iy_sub:
-                call    il_pro_iy
-                ld a,(il_f+1)
-                sub (hl)
-                jp il_ret_hl
 il_rnd:                                 ; ЗАМЕНА `ld a,r` (docs/determinism.md)
                 ld      a,(z80_r)       ; у i8080 регистра R нет; ряд ведёт
                 add     a,0x9D          ; эта ячейка: +0x9D на чтение,

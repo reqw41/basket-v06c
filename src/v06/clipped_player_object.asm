@@ -64,10 +64,29 @@ pcc_right:
         sub b
         add a,a
         ld (pcc_spad+1),a
+        or a
+        ld hl,pcc_sx
+        jp nz,pcc_sset
+        ld hl,pcc_rdec          ; no source pad: skip its add
+pcc_sset:
+        ld (pcc_sj+1),hl
         ld a,(0x0F1C)
         sub b
         add a,a
         ld (pcc_dpad+1),a
+        ld hl,pcc_row_loop      ; wider than 4 pairs: the row loop
+        ld a,b
+        cp 5
+        jp nc,pcc_uset
+        ld hl,pu_b4             ; up to 4 pairs: (4 - width) blocks in
+        ld de,-PU_BLK
+pcc_uloop:
+        add hl,de
+        dec b
+        jp nz,pcc_uloop
+pcc_uset:
+        ld (pcc_row+1),hl
+        ld (pcc_rjump+1),hl
 
         ld a,(pcc_ry)
         ld b,a
@@ -92,7 +111,7 @@ pcc_bottom:
         sub c
         jp c,pcc_done
         jp z,pcc_done
-        ld (pcc_rows),a
+        ld (pcc_rdec+1),a
         ld a,c
         ld hl,0x0F1B
         sub (hl)
@@ -122,6 +141,8 @@ pcc_bottom:
         ex de,hl                ; DE source, HL destination
         ld hl,(pcc_dest)
 pcc_row:
+        jp pcc_row_loop         ; patched: pcc_row_loop or a pu_b block
+pcc_row_loop:
 pcc_w2:
         ld a,0                  ; patched: 2 * width; the row ends when L
         add a,l                 ; reaches the patched end
@@ -155,15 +176,20 @@ pcc_row_end:
 pcc_dpad:
         ld bc,0                 ; patched: destination pad
         add hl,bc
+pcc_sj:
+        jp pcc_sx               ; patched: pcc_rdec when the source pad is 0
+pcc_sx:
         ex de,hl
 pcc_spad:
         ld bc,0                 ; patched: source pad
         add hl,bc
         ex de,hl
-        ld a,(pcc_rows)
+pcc_rdec:
+        ld a,0                  ; patched: rows left
         dec a
-        ld (pcc_rows),a
-        jp nz,pcc_row
+        ld (pcc_rdec+1),a
+pcc_rjump:
+        jp nz,pcc_row           ; patched: the row entry itself
 pcc_done:
         pop hl
         ret
@@ -172,6 +198,113 @@ pcc_clear:
         inc hl
         inc hl
         jp pcc_next
+
+; Rows of up to 4 pairs (all the match sprites, <= 24 px): one block a pair,
+; entered (4 - width) blocks in, no end test per pair (10.11).
+pu_b0:
+        ld a,(de)
+        inc de
+        ld c,a
+        ld a,(de)
+        inc de
+        ld b,a
+        or c
+        jp z,pu_t0
+        cpl
+        and (hl)
+        or b
+        ld (hl),a
+        inc hl
+        ld a,b
+        or c
+        cpl
+        and (hl)
+        or c
+        ld (hl),a
+        inc hl
+pu_b1:
+        ld a,(de)
+        inc de
+        ld c,a
+        ld a,(de)
+        inc de
+        ld b,a
+        or c
+        jp z,pu_t1
+        cpl
+        and (hl)
+        or b
+        ld (hl),a
+        inc hl
+        ld a,b
+        or c
+        cpl
+        and (hl)
+        or c
+        ld (hl),a
+        inc hl
+pu_b2:
+        ld a,(de)
+        inc de
+        ld c,a
+        ld a,(de)
+        inc de
+        ld b,a
+        or c
+        jp z,pu_t2
+        cpl
+        and (hl)
+        or b
+        ld (hl),a
+        inc hl
+        ld a,b
+        or c
+        cpl
+        and (hl)
+        or c
+        ld (hl),a
+        inc hl
+pu_b3:
+        ld a,(de)
+        inc de
+        ld c,a
+        ld a,(de)
+        inc de
+        ld b,a
+        or c
+        jp z,pu_t3
+        cpl
+        and (hl)
+        or b
+        ld (hl),a
+        inc hl
+        ld a,b
+        or c
+        cpl
+        and (hl)
+        or c
+        ld (hl),a
+        inc hl
+pu_b4:
+        jp pcc_dpad
+pu_t0:
+        inc hl
+        inc hl
+        jp pu_b1
+pu_t1:
+        inc hl
+        inc hl
+        jp pu_b2
+pu_t2:
+        inc hl
+        inc hl
+        jp pu_b3
+pu_t3:
+        inc hl
+        inc hl
+        jp pu_b4
+PU_BLK  equ     pu_b1 - pu_b0
+#assert pu_b4 - pu_b0 == 4 * PU_BLK
 
 pcc_advance_rows:
         inc b
@@ -184,26 +317,22 @@ pcc_advance_loop:
         ret
 PLAYER_CLIPPED_CODE_END:
 
-; HL = DE * A by shifts (A = 0..255). Clobbers A, DE.
+; HL = DE * A (A = 0..255), unrolled from the top bit (10.11). Clobbers A;
+; keeps BC, DE.
 MUL_DE_A:
         ld hl,0
-mda_loop:
-        or a
-        ret z
-        rra                     ; CY = low bit (CY was 0: OR A)
-        jp nc,mda_skip
-        add hl,de
-mda_skip:
-        ex de,hl
+        REPT 8
         add hl,hl
-        ex de,hl
-        jp mda_loop
+        rla
+        jp nc,$+4
+        add hl,de
+        ENDM
+        ret
 pcc_source:     dw 0
 pcc_dest:       dw 0
 pcc_left_skip:  db 0
 pcc_top_skip:   db 0
 pcc_dest_x:     db 0
-pcc_rows:       db 0
 pcc_rx:         db 0
 pcc_ry:         db 0
 pcc_rw:         db 0

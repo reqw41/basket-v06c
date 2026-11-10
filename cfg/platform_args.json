@@ -1,0 +1,18 @@
+{
+ "_": "A2: registers a platform entry reads (tools/native/unit.js compares only these at the call; checked in the adapter code). Entries not listed: a bc de hl ix iy.",
+ "02CE": [
+  "hl",
+  "c"
+ ],
+ "01E9": [],
+ "0093": [
+  "a",
+  "e"
+ ],
+ "B455": [
+  "hl",
+  "de"
+ ],
+ "0726": [],
+ "063F": []
+}

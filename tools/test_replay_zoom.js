@@ -167,7 +167,7 @@ function call0(addr, regs, opts = {}) {
     const pc = cpu.pc & 0xffff;
     if (!stack && (a < pc || a > pc + 3)) {
       if (a >= 0xc398 && a < 0xc398 + 0xc00) reads.c398++;
-      if (a >= 0x2000 && a < 0x4000) reads.compose++;
+      if (a >= 0x2000 && a < 0x2000 + 16 * REPLAY_ROWS) reads.compose++;   // RB_TAB 2300..24FF: the blit's tables
       if (a >= 0x1e4f && a < 0x1e57) reads.bios++;
     }
     return orig(addr, stack);
@@ -341,6 +341,7 @@ function runPattern(name, fn, q) {
   putQuarter(fn);
   fill(0xe000, 0x10000, 0xa5);
   fill(0xc000, 0xe000, 0x5a);
+  call(SYM.RB_TABLES, {});   // REPLAY_ZOOM builds them once per state
   const t = call(BLIT, { d: q ? 0xf0 : 0xe0, e: 0xdf });
   const bad = expectQuarter(q, fn);
   const Y = 2 * REPLAY_ROWS;
@@ -629,6 +630,7 @@ function planesMatch(exp) {
 {
   const fn = (c, i) => [(c * 13 + i), (c * 7 + 3 * i)];
   putQuarter(fn);
+  call(SYM.RB_TABLES, {});
   fill(0xe000, 0x10000, 0);
   const RET = 0x0ff8; wr(RET, 0xc9);
   const st = cpu.getState();
@@ -678,6 +680,7 @@ function planesMatch(exp) {
   wr(PACE_N, 0);
 
   putQuarter(solid(0xaa, 0x55));
+  call(SYM.RB_TABLES, {});
   const blit = call(BLIT, { d: 0xe0, e: 0xdf });
   wr(0x0f80, 0); wr(0x0f15, 0); wr(0xa8f9, 0);
   const compose = call(COMPOSE, { a: 0, e: 8 }, { iff: 1 });

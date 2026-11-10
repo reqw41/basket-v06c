@@ -1,0 +1,1 @@
+{"name":"1p_amateur_shooter","seed":22,"clock":"030","frames":20000,"steps":[{"wait":"menu"},{"key":"3"},{"key":"1"},{"wait":"match"},{"bot":"shooter","until":"menu"},{"idle":200}]}

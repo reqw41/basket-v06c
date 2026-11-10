@@ -1,0 +1,1 @@
+{"name":"search_1004","seed":1004,"clock":"030","frames":16000,"steps":[{"wait":"menu"},{"key":"1"},{"wait":"match"},{"bot":"mix","until":"menu"},{"idle":100}]}

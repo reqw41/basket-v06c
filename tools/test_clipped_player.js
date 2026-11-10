@@ -107,9 +107,9 @@ console.log('PASS native text: changing glyphs remain white on black in both pla
 const menuLo=fs.readFileSync(path.join(ROOT,'build/v06/menu_text_lo.bin'));
 const menuHi=fs.readFileSync(path.join(ROOT,'build/v06/menu_text_hi.bin'));
 {const st=emu.cpu.getState();st.ix=0x1234;emu.cpu.setState(st);invoke(sym('MENU_BG_RELOAD'));
- // LZ chrome matches the packed planes; the controls (y150/161/172) and
- // the copyright (y184) are drawn afterwards by MENU_DRAW_COPYRIGHT.
- const textRow=(y)=>[150,161,172,184].some((t)=>y>=t&&y<t+8);
+ // LZ chrome matches the packed planes; the copyright (y184) is drawn
+ // afterwards by MENU_DRAW_COPYRIGHT (no control lines since 10.11).
+ const textRow=(y)=>[184].some((t)=>y>=t&&y<t+8);
  for(let col=0;col<32;col++)for(let y=0;y<256;y++){
   if(textRow(y)) continue;
   const at=col*256+((0xdf-y)&0xff);
@@ -125,17 +125,8 @@ const menuHi=fs.readFileSync(path.join(ROOT,'build/v06/menu_text_hi.bin'));
   if(rd(0xe000+at)) copyInk++;
  }
  assert.ok(copyInk>100,`copyright ink ${copyInk}`);
- // Controls: pink labels (both planes) and white text (low plane only).
- for(const y of [150,161,172]){
-  let pink=0,white=0;
-  for(let col=0;col<32;col++)for(let r=0;r<8;r++){
-   const at=col*256+((0xdf-y-r)&0xff),lo=rd(0xe000+at),hi=rd(0xc000+at);
-   pink+=lo&hi?1:0; white+=lo&~hi&255?1:0;
-  }
-  assert.ok(pink>10&&white>20,`controls y${y}: pink ${pink} white ${white}`);
- }
 }
-console.log('PASS text menu: both colour planes, controls, copyright footer, menu flag');
+console.log('PASS text menu: both colour planes, no control lines, copyright footer, menu flag');
 wr(0xfef,0); // match/court fetch must not see a leftover menu snap
 
 // Independent etalon: CPC court with VECTOR boards, written by the packer.
@@ -163,7 +154,6 @@ console.log('PASS physical court publication: every pixel in both hardware plane
 // the band end, odd and even widths, both tile banks; SP and the IRQ flag
 // stay as they were (no SP walk since 09.11).
 let fastRows=0;
-assert.strictEqual(sym("tbf_first")>>8,sym("tbf_second")>>8,"COMPOSE_BOX patches only the low byte of TBF_ENTRY");
 const w16=(a,v)=>{wr(a,v&255);wr(a+1,v>>8);};
 for(let y=0;y<112;y++)for(const x of [0,3,7,15,26,27,31])for(const width of [1,2,5,Math.min(6,32-x)]){
  if(x+width>32)continue;
@@ -171,7 +161,7 @@ for(let y=0;y<112;y++)for(const x of [0,3,7,15,26,27,31])for(const width of [1,2
  const st=emu.cpu.getState();Object.assign(st,{h:address>>8,l:address&255,b:0,c:x*2});emu.cpu.setState(st);
  const displacement=invoke(sym('COURT_TILE_ROW_POINTER'));const ptr=emu.cpu.getState();w16(0x0f69,(ptr.h<<8)|ptr.l);
  const rows=Math.min((16-displacement)>>1,112-y),bytes=rows*width*2;
- wr(sym('TBF_WIDTH')+1,2*width);w16(sym('TBF_ENTRY')+1,width&1?sym('tbf_second'):sym('tbf_first'));
+ wr(sym('TBF_WIDTH')+1,2*width);
  wr(sym('TBF_END')+1,displacement+2*rows);
  const next=emu.cpu.getState();Object.assign(next,{d:0x20,e:0,c:displacement});emu.cpu.setState(next);
  wr(0x1fff,0xa5);wr(0x2000+bytes,0xa5);invoke(sym('TILE_BAND_FILL'));

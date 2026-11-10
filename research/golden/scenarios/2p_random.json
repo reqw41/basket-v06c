@@ -1,0 +1,1 @@
+{"name":"2p_random","seed":44,"clock":"030","frames":20000,"steps":[{"wait":"menu"},{"key":"2"},{"wait":"match"},{"bot":"random","bot2":"random","until":"menu"},{"idle":200}]}

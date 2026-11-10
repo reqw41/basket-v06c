@@ -5,7 +5,7 @@
     "hi": "10000",
     "size": 65536
   },
-  "rom_sha256": "af826e2bdaf4ba630d6611deefd416aab45e22d359fa7143335f3ebaf91dc800",
+  "rom_sha256": "68edeb5b76a8c2395cc73e02a9ead337977463d80890aadbee1a349c10477b93",
   "policy": {
     "opaque_retained": "Occupied bytes whose finer semantics are not proven. They are never free or relocatable by default.",
     "reclaimable_padding": "Uniform image padding with no typed static memory/control reference, CFG byte, SMC target, or matching-ROM trace access.",
@@ -29,7 +29,7 @@
     {
       "id": "adapter",
       "lo": "0200",
-      "hi": "0B63",
+      "hi": "0C7E",
       "class": "adapter_code_tables",
       "role": "glue.asm: page-0 runtime entries, IRQ, BIOS stubs, plane I/O, keyboard, sound, replay (entries linked by tools/link_labels.py)",
       "unit": "glue",
@@ -37,7 +37,7 @@
     },
     {
       "id": "adapter_free_tail",
-      "lo": "0B63",
+      "lo": "0C7E",
       "hi": "0E00",
       "class": "reclaimable_padding",
       "role": "glue tail freed by moving the CPC sprite renderer to adapter_hi (05.11)",
@@ -209,14 +209,14 @@
     {
       "id": "menu_slot_gap",
       "lo": "137B",
-      "hi": "14F8",
+      "hi": "1548",
       "class": "adapter_code_tables",
       "role": "menu_color_bg.asm: menu colour restore, prefix/skip/orphan restores, replay helpers, noise, X2 table, band snap, pad union (entries linked)",
       "unit": "menu_color_bg"
     },
     {
       "id": "dead_15a0",
-      "lo": "14F8",
+      "lo": "1548",
       "hi": "1600",
       "class": "reclaimable_padding",
       "role": "tail of the menu_color_bg slot (05.11)",
@@ -543,14 +543,14 @@
     {
       "id": "hi_adapter_unit",
       "lo": "6800",
-      "hi": "754A",
+      "hi": "7739",
       "class": "adapter_code_tables",
       "role": "adapter_hi.asm: CPC sprite renderer, joystick, aligned row stage, clipped player compositor (05.11)",
       "unit": "adapter_hi"
     },
     {
       "id": "sprite_free_tail",
-      "lo": "754A",
+      "lo": "7739",
       "hi": "7760",
       "class": "reclaimable_padding",
       "role": "freed by trimming and mirroring sprite rows (04-05.11), after adapter_hi; 7018/7750/7758 are false references (false_references)",
@@ -584,14 +584,14 @@
     {
       "id": "court_colour_helpers",
       "lo": "7AE8",
-      "hi": "7B51",
+      "hi": "7B2D",
       "class": "adapter_code_tables",
       "role": "CPC-style court high-plane generator and priority non-player continuation",
       "unit": "win_7ae8"
     },
     {
       "id": "dead_7b7f",
-      "lo": "7B51",
+      "lo": "7B2D",
       "hi": "7B9C",
       "class": "reclaimable_padding",
       "role": "tail of the win_7ae8 slot (05.11)",
@@ -990,7 +990,7 @@
       "role": "active low colour-bit hardware video plane and initial splash image"
     }
   ],
-  "reclaimable_bytes": 3828,
+  "reclaimable_bytes": 3006,
   "false_references": [
     {
       "addr": "7018",

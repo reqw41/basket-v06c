@@ -58,7 +58,7 @@ COLOR_SPRITE:
 cs_entry:
         ld      (CS_STAGE),a
 
-        call    CS_HEADER               ; B1_HEIGHT = canvas, A = width
+        call    CS_HEADER               ; B1_HEIGHT = kept rows, A = width
         add     a,7
         rrca
         rrca
@@ -128,6 +128,8 @@ cs_clip_left:
 
 cs_clip_y:
         ld      a,(BLIT_Y)
+cs_top:
+        add     a,0                     ; CS_HEADER: empty canvas rows above the kept ones
         ; Menu (COURT_SYNCED=0): drop 7px so body/head sit in the CPC
         ; blue bar (skin ≈ y80..108), matching the original chrome.
         ld      b,a
@@ -206,6 +208,8 @@ csd_patch:
         ld      (crd_p1+1),hl
         ld      (crl_p0+1),hl
         ld      (crl_p1+1),hl
+        ld      (cx_p0+1),hl
+        ld      (cx_p1+1),hl
 csd_path:
         ; Unclipped columns (no left skip, full width): shifted rows go
         ; straight into the stream (cs_row_direct), else through the lane.
@@ -213,13 +217,16 @@ csd_path:
         ld      a,(B1_SKIP)
         or      a
         jp      nz,csd_set
+        ld      a,(CSPR_SHIFT)
+        or      a
         ld      a,(CSPR_STRIDE)
-        inc     a
+        jp      z,csd_full              ; aligned: full width = stride
+        inc     a                       ; shifted: stride + 1
+csd_full:
         ld      b,a
         ld      a,(B1_WIDTH)
         cp      b
-        jp      nz,csd_set
-        ld      hl,cs_row_direct
+        jp      z,CS_FAST               ; unclipped columns: the fast row loop
 csd_set:
         ld      (cs_row_shifted+1),hl
         ld      a,(B1_HEIGHT)
@@ -289,6 +296,137 @@ cs_done:
         pop     bc
         pop     af
         ret
+
+; Rows of an object with unclipped columns (B1_SKIP = 0, full width), 10.11:
+; the source and stream pointers stay in HL / DE over all rows and the row
+; count lives in the code. Shifted rows run the CP3 entry patched by cs_draw
+; for both planes; aligned rows run an unrolled interleave of the two planes
+; entered (3 - stride) blocks in. Mirror rows pass through MIR_FAST into
+; MIR_BUF first. Ends like the cs_row loop (hoop cache store, cs_done).
+CS_FAST:
+        ld      a,(B1_HEIGHT)
+        ld      (cx_rows+1),a
+        ld      a,(cs_mirror)           ; CS_HEADER: 0xCD = mirror rows
+        cp      0xCD
+        ld      a,0x01                  ; LD BC,nn: no mirror (BC is free there)
+        ld      b,a
+        jp      nz,cx_plain
+        ld      a,0xCD                  ; CALL MIR_FAST
+        ld      b,0x2A                  ; LD HL,(cx_mnext)
+cx_plain:
+        ld      (cx_mir),a
+        ld      a,b
+        ld      (cx_reload),a
+        ld      hl,cx_shift
+        ld      a,(CSPR_SHIFT)
+        or      a
+        jp      nz,cx_kind_set
+        ld      a,(CSPR_STRIDE)
+        ld      (cx_s1+1),a
+        ld      hl,cx_a3
+        ld      de,CX_ABLOCK
+        cpl
+        add     a,4                     ; 3 - stride
+        jp      z,cxa_set
+cxa_skip:
+        add     hl,de
+        dec     a
+        jp      nz,cxa_skip
+cxa_set:
+        ld      (cx_aj+1),hl
+        ld      hl,cx_align
+cx_kind_set:
+        ld      (cx_kind+1),hl
+        ld      hl,(CSPR_CACHE_PTR)
+        ex      de,hl                   ; DE = stream
+        ld      hl,(CSPR_SRC)           ; first stored row (after a top clip)
+cx_row:
+cx_mir:
+        call    MIR_FAST                ; patched: LD BC,nn without a mirror
+cx_kind:
+        jp      cx_shift                ; patched: cx_shift / cx_align
+cx_shift:
+        push    de
+        ld      c,0
+cx_p0:
+        call    CP3_FOUR                ; plane 0 -> DE, DE+2, ... (cs_draw)
+        pop     de
+        inc     de
+        ld      c,0
+cx_p1:
+        call    CP3_FOUR                ; plane 1 -> DE+1, DE+3, ... (cs_draw)
+        dec     de                      ; DE stepped past the last pair
+        jp      cx_next
+cx_align:
+        ld      a,l
+cx_s1:
+        add     a,0                     ; stride
+        ld      c,a
+        ld      a,h
+        adc     a,0
+        ld      b,a                     ; BC = plane 1
+cx_aj:
+        jp      cx_a3                   ; patched: (3 - stride) blocks in
+cx_a3:
+        REPT 3
+        ld      a,(hl)
+        ld      (de),a
+        inc     de
+        ld      a,(bc)
+        ld      (de),a
+        inc     de
+        inc     hl
+        inc     bc
+        ENDM
+        ld      h,b
+        ld      l,c                     ; next row: past plane 1
+cx_next:
+cx_reload:
+        ld      hl,(cx_mnext)           ; patched: LD BC,nn without a mirror
+cx_rows:
+        ld      a,0                     ; rows left
+        dec     a
+        ld      (cx_rows+1),a
+        jp      nz,cx_row
+        ex      de,hl
+        ld      (CSPR_CACHE_PTR),hl
+        call    CS_CACHE_STORE
+        jp      cs_done
+CX_ABLOCK       equ     8
+
+; Mirror row for CS_FAST: HL = stored row (two stride-3 planes); both planes
+; bit-reversed backwards into MIR_BUF. Returns HL = MIR_BUF, the next stored
+; row in cx_mnext. Keeps DE.
+MIR_FAST:
+        ld      b,MIR_REV >> 8
+        ld      c,(hl)
+        inc     hl
+        ld      a,(bc)
+        ld      (MIR_BUF+2),a
+        ld      c,(hl)
+        inc     hl
+        ld      a,(bc)
+        ld      (MIR_BUF+1),a
+        ld      c,(hl)
+        inc     hl
+        ld      a,(bc)
+        ld      (MIR_BUF+0),a
+        ld      c,(hl)
+        inc     hl
+        ld      a,(bc)
+        ld      (MIR_BUF+5),a
+        ld      c,(hl)
+        inc     hl
+        ld      a,(bc)
+        ld      (MIR_BUF+4),a
+        ld      c,(hl)
+        inc     hl
+        ld      a,(bc)
+        ld      (MIR_BUF+3),a
+        ld      (cx_mnext),hl
+        ld      hl,MIR_BUF
+        ret
+cx_mnext:       dw      0
 
 ; Stage the rows of the object in BLIT_Y, BLIT_X, BLIT_SRC into the stream
 ; at CSPR_CACHE_PTR (no meta, no rectangle). Keeps all registers.
@@ -500,9 +638,8 @@ CP3_FOUR_BLOCK  equ     CP3_FOUR_1 - CP3_FOUR
 ; frame after frame (~26k cycles each on the i8080). A hoop in the match
 ; keeps its staged rows in HOOP_CACHE (slot by X: left / right); the next
 ; call with the same record, X and Y copies them instead. The rectangle and
-; the meta are made as always (CSPR_META_STAGE ran before). When the
-; previous staging pass (HC_GEN - 1) left the same rows at the same stream
-; address, they are still there: nothing is copied.
+; the meta are made as always (CSPR_META_STAGE ran before). The rows are
+; always copied: the stream head may have held a box of DMG_ADD_RECT.
 HC_SLOT         equ     202             ; record 2, X, Y, size 2, at 2, gen 2, rows 192
 HC_ROWS         equ     192
 SPR_TABLE       equ     0x7760          ; sprite record offsets from SPR_BASE
@@ -579,35 +716,11 @@ CS_CACHE_FETCH:
         inc     hl
         ld      b,(hl)
         inc     hl                      ; HL = at, BC = size
-        ld      a,(CSPR_CACHE_PTR)
-        cp      (hl)
-        jp      nz,ccf_copy
-        inc     hl
-        ld      a,(CSPR_CACHE_PTR+1)
-        cp      (hl)
-        jp      nz,ccf_copy1
-        inc     hl                      ; same stream address: last pass?
-        push    hl
-        ld      hl,(HC_GEN)
-        dec     hl
-        ex      de,hl                   ; DE = HC_GEN - 1
-        pop     hl
-        ld      a,(hl)
-        cp      e
-        jp      nz,ccf_copy2
-        inc     hl
-        ld      a,(hl)
-        cp      d
-        jp      nz,ccf_copy3
-        inc     de
-        ld      (hl),d                  ; this pass keeps them
-        dec     hl
-        ld      (hl),e
-        ld      hl,(CSPR_CACHE_PTR)
-        add     hl,bc
-        ld      (CSPR_CACHE_PTR),hl
-        xor     a
-        ret
+        jp      ccf_copy                ; always copied (10.11): DMG_ADD_RECT
+                                        ; appends a box over the stream head
+                                        ; before a merge shrinks the list
+                                        ; again, so "same address, last pass"
+                                        ; did not mean the rows were intact
 ccf_copy:
         inc     hl
 ccf_copy1:
@@ -804,8 +917,9 @@ pbp_none:
         ret
 ; ============================================================================
 ;  Sprite records (tools/prepare_cpc_sprite_bank.py): canvas height, width,
-;  top, kept rows, then only the kept rows. COLOR_SPRITE keeps the canvas
-;  rectangle; ROW_SRC hands it a zero row above and below the kept ones.
+;  top, kept rows, then only the kept rows. Since 10.11 the rectangle is the
+;  kept rows only (Y + top, height = kept): the empty canvas rows are neither
+;  staged, composed nor published. CSPR_PRE stays 0.
 ; ============================================================================
 
 CS_HEADER:
@@ -824,11 +938,14 @@ CS_HEADER:
         and     0x7F                    ; bit 7: mirror of the rows at the pointer
         ld      b,0xCD                  ; CALL MIR_ROW
 csh_plain:
+        ld      (cs_top+1),a            ; empty rows above: the rectangle starts below them
+        xor     a
         ld      (CSPR_PRE),a
         ld      a,b
         ld      (cs_mirror),a
         ld      a,(hl)
         ld      (CSPR_KEEP),a
+        ld      (B1_HEIGHT),a           ; the rectangle is the kept rows only (10.11)
         inc     hl
         ld      a,b
         cp      0xCD

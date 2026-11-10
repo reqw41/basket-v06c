@@ -9,19 +9,19 @@ SA_PIECES:
         dw      0
 sa_runs0:
         db      11
-        dw      0xE2B7
+        dw      0xE2CA
         db      1
-        dw      0xE2C3
+        dw      0xE2D6
         db      25
-        dw      0xE3B2
+        dw      0xE3C5
         db      2
-        dw      0xE4B2
+        dw      0xE4C5
         db      23
-        dw      0xE4B5
+        dw      0xE4C8
         db      26
-        dw      0xE5B1
+        dw      0xE5C4
         db      11
-        dw      0xE6B8
+        dw      0xE6CB
         db      0
 sa_steps0:
         dw      sa_st0_0, sa_st0_1, sa_st0_2, sa_st0_0, sa_st0_1, sa_st0_2, sa_st0_0, sa_st0_1, sa_st0_2, sa_st0_0, sa_st0_1, sa_st0_2, sa_st0_0, sa_st0_1, sa_st0_2, sa_st0_0, sa_st0_1, sa_st0_2, sa_st0_0, sa_st0_1, sa_st0_2, sa_st0_0, sa_st0_1, sa_st0_2
@@ -51,21 +51,21 @@ sa_st0_2:
         db      0xC0,0xC0,0x80
 sa_runs1:
         db      9
-        dw      0xE793
+        dw      0xE7A6
         db      9
-        dw      0xE79D
+        dw      0xE7B0
         db      2
-        dw      0xE7A9
+        dw      0xE7BC
         db      26
-        dw      0xE893
+        dw      0xE8A6
         db      26
-        dw      0xE997
+        dw      0xE9AA
         db      5
-        dw      0xC795
+        dw      0xC7A8
         db      15
-        dw      0xC89E
+        dw      0xC8B1
         db      16
-        dw      0xC9A0
+        dw      0xC9B3
         db      0
 sa_steps1:
         dw      sa_st1_0, sa_st1_0, sa_st1_0, sa_st1_0, sa_st1_0, sa_st1_0, sa_st1_1, sa_st1_1, sa_st1_1, sa_st1_1, sa_st1_1, sa_st1_1, sa_st1_1, sa_st1_1, sa_st1_2, sa_st1_3, sa_st1_4, sa_st1_0, sa_st1_0, sa_st1_0, sa_st1_0, sa_st1_0, sa_st1_0, sa_st1_0
@@ -111,15 +111,15 @@ sa_st1_4:
         db      0xBF,0xFF,0x0F,0xFF,0xBF,0xBF,0xBF,0xFF,0xFF,0xFF,0xFF,0xFF
 sa_runs2:
         db      1
-        dw      0xE8B4
+        dw      0xE8C7
         db      1
-        dw      0xE8B6
+        dw      0xE8C9
         db      4
-        dw      0xE8B8
+        dw      0xE8CB
         db      1
-        dw      0xE9B5
+        dw      0xE9C8
         db      3
-        dw      0xE9B7
+        dw      0xE9CA
         db      0
 sa_steps2:
         dw      sa_st2_0, sa_st2_1, sa_st2_0, sa_st2_1, sa_st2_0, sa_st2_1, sa_st2_0, sa_st2_0, sa_st2_0, sa_st2_1, sa_st2_0, sa_st2_1, sa_st2_0, sa_st2_1, sa_st2_1, sa_st2_0, sa_st2_1, sa_st2_2, sa_st2_2, sa_st2_0, sa_st2_0, sa_st2_2, sa_st2_2, sa_st2_0
@@ -131,15 +131,15 @@ sa_st2_2:
         db      0x3D,0x1D,0x76,0x39,0xDF,0x30,0xFF,0xBC,0x68,0xC0
 sa_runs3:
         db      14
-        dw      0xE96C
+        dw      0xE97F
         db      8
-        dw      0xEA6E
+        dw      0xEA81
         db      3
-        dw      0xEB6F
+        dw      0xEB82
         db      13
-        dw      0xC96C
+        dw      0xC97F
         db      3
-        dw      0xCA6E
+        dw      0xCA81
         db      0
 sa_steps3:
         dw      sa_st3_0, sa_st3_1, sa_st3_1, sa_st3_2, sa_st3_2, sa_st3_3, sa_st3_3, sa_st3_2, sa_st3_2, sa_st3_1, sa_st3_1, sa_st3_0, sa_st3_0, sa_st3_1, sa_st3_1, sa_st3_2, sa_st3_2, sa_st3_3, sa_st3_3, sa_st3_2, sa_st3_2, sa_st3_1, sa_st3_1, sa_st3_0

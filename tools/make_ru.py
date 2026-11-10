@@ -72,15 +72,9 @@ STRINGS = [
 
 # menu control records: column, plane Y, high-plane mask (FF pink), text, 0
 MDC_EN = [
-    (3, 0xDF - 150, 0xFF, "1 PLAYER:"), (13, 0xDF - 150, 0, "KEYS OR JOYSTICK"),
-    (1, 0xDF - 161, 0xFF, "2 PLAYERS:"), (12, 0xDF - 161, 0, "KEYS+JOY B VS JOY A"),
-    (4, 0xDF - 172, 0xFF, "KEYS:"), (10, 0xDF - 172, 0, "ARROWS, FIRE SPACE"),
     (1, 0xDF - 184, 0, "COPYRIGHT DINAMIC SOFTWARE 1987"),
 ]
-MDC_RU = [
-    (3, 0xDF - 150, 0xFF, "1 ИГРОК:"), (12, 0xDF - 150, 0, "КЛАВИШИ/ДЖОЙСТИК"),
-    (1, 0xDF - 161, 0xFF, "2 ИГРОКА:"), (11, 0xDF - 161, 0, "КЛАВ.+ДЖОЙ Б, ДЖОЙ А"),
-    (4, 0xDF - 172, 0xFF, "КЛАВИШИ:"), (13, 0xDF - 172, 0, "СТРЕЛКИ, ПРОБЕЛ"),
+MDC_RU = [   # the control lines were dropped 10.11: the footer is the copyright only
     (1, 0xDF - 184, 0, "COPYRIGHT DINAMIC SOFTWARE 1987"),
 ]
 

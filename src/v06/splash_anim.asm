@@ -139,11 +139,12 @@ sa_c:
         ret
 
 ; Colour index = E000 bit | C000 bit << 1; the border is entry 0.
-; Byte = BB GGG RRR: blue border (as in the menu), white, black background,
-; orange (ball, outlines and skin).
+; Byte = BB GGG RRR: the game palette (PAL_TAB) since 10.11 (owner): blue
+; border, white, black background, the game's skin pen for the ball,
+; outlines and skin (was orange 27).
 sa_pal:
-        db      0xC0,0xFF,0x00,0x27,0xC0,0xFF,0x00,0x27
-        db      0xC0,0xFF,0x00,0x27,0xC0,0xFF,0x00,0x27
+        db      0xC0,0xFF,0x00,0x5F,0xC0,0xFF,0x00,0x5F
+        db      0xC0,0xFF,0x00,0x5F,0xC0,0xFF,0x00,0x5F
 sa_game_pal:
         ds      16
 sa_index:

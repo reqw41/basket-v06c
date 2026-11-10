@@ -188,6 +188,7 @@ function i8080Mem(snap) {
   return m;
 }
 function run(c, mem, entry, st) {
+  c.stuck = undefined;
   c.mem.set(mem);
   const sp = st.sp; c.mem[sp] = RET & 0xff; c.mem[sp + 1] = RET >> 8;
   const cpu = c.cpu;
@@ -205,10 +206,11 @@ function run(c, mem, entry, st) {
     const pc0 = cpu.pc & 0xffff;
     if (c.z80 && c.mem[pc0] === 0xED && c.mem[(pc0 + 1) & 0xffff] === 0x5F) { cpu.instruction(); rseries.push(cpu.getState().a); continue; }
     if (!c.z80 && pc0 === IL_RND && rpos < rseries.length) c.mem[Z80_R] = (rseries[rpos++] - 0x9D) & 0xff;
+    if (!c.z80 && natI[pc0]) sawNative = true;
     if (!c.z80 && global.TRACEI > 0) { global.TRACEI--; console.log('  i', (cpu.pc & 0xffff).toString(16), 'a', cpu.regs[7].toString(16), 'hl', (cpu.regs[4] << 8 | cpu.regs[5]).toString(16), 'sp', (cpu.sp & 0xffff).toString(16)); }
     cpu.instruction();
   }
-  if (n >= LIMIT) return null;
+  if (n >= LIMIT) { c.stuck = cpu.pc & 0xffff; return null; }
   if (c.z80) { const s = cpu.getState(); return { a: s.a, bc: s.b << 8 | s.c, de: s.d << 8 | s.e, hl: s.h << 8 | s.l, cf: +!!s.flags.C, zf: +!!s.flags.Z, ix: s.ix, iy: s.iy, n }; }
   const r = cpu.regs;
   return { a: r[7], bc: r[0] << 8 | r[1], de: r[2] << 8 | r[3], hl: r[4] << 8 | r[5], cf: +!!cpu.cf, zf: +!!cpu.zf,
@@ -261,21 +263,67 @@ const ACCEPT = {
   0xAA8F: 'same as AA7C (inner entry)',
   0x953B: 'JP (HL) trampoline: the snapshot holds a Z80 address in HL itself',
 };
-const res = { OK: 0, FLAGS: 0, DIFF: 0, ACCEPTED: 0, TIMEOUT: 0, ONE_TIMEOUT: 0 }; const bad = {};
+// Hand i8080 modules (cfg/native_modules.json, A2): their inner addresses have
+// no i8080 image; an entry is held to its contract (`out` registers/flags and
+// memory), the full check is tools/native/unit.js against the JS model.
+const NATIVE = (() => {
+  try { return Object.entries(JSON.parse(fs.readFileSync(path.join(ROOT, 'cfg/native_modules.json'), 'utf8'))).filter(([k]) => k[0] !== '_'); } catch (e) { return []; }
+})();
+// SMC operands a hand module keeps in its own cells ("cells": {Z80 addr: symbol})
+const LSTI = fs.readFileSync(path.join(ROOT, 'build/i8080/game.lst'), 'utf8');
+const NCELLS = [];
+for (const [, m] of NATIVE) for (const [z, n] of Object.entries(m.cells || {})) {
+  const x = new RegExp('^' + n + '\\s+= \\$([0-9A-F]{4})', 'm').exec(LSTI);
+  if (x) NCELLS.push([parseInt(z, 16), parseInt(x[1], 16)]);
+}
+const NSMCW = [];
+for (const [, m] of NATIVE) for (const [z, n] of Object.entries(m.smcw || {})) {
+  const [b, o] = n.split('+');
+  const x = new RegExp('^' + b + '\\s+= \\$([0-9A-F]{4})', 'm').exec(LSTI);
+  if (x) NSMCW.push([parseInt(z, 16), parseInt(x[1], 16) + (+o || 0)]);
+}
+const nativeOf = (p) => NATIVE.find(([, m]) => m.ranges.some(([lo, hi]) => p >= parseInt(lo, 16) && p <= parseInt(hi, 16)));
+// i8080 addresses of the hand code (NAT_<module>_<k>: one label per instruction)
+const natI = new Uint8Array(0x10000);
+for (const m of fs.readFileSync(path.join(ROOT, 'build/i8080/game.lst'), 'utf8').matchAll(/^NAT_\w+\s+= \$([0-9A-F]{4})/gm)) {
+  const a = parseInt(m[1], 16); for (let k = 0; k < 3; k++) natI[a + k] = 1;
+}
+let sawNative = false;
+// A side that stops in DP_SYNC with a posted batch waits for the frame IRQ,
+// which these runs do not have. Whether a publish needs that wait depends on
+// the beam timing of the copy (DP_TIMING differs between the Z80 and the
+// i8080 image by design), so it is counted as IRQ_WAIT, not failed.
+const ADP = fs.readFileSync(path.join(ROOT, 'build/v06/adapter_hi.lst'), 'utf8');
+const symA = (n) => { const m = new RegExp('^' + n + '\\s+= \\$([0-9A-F]{4})', 'm').exec(ADP); return m ? parseInt(m[1], 16) : -1; };
+const DS_LO = symA('DP_SYNC'), DS_HI = symA('DP_ISR_COPY'), NW_LO = symA('NOISE_WAIT'), DP_READY = 0x0FEA;
+const irqWait = (c) => c.stuck !== undefined && c.mem[DP_READY] &&
+  ((c.stuck >= DS_LO && c.stuck < DS_HI) || (c.stuck >= NW_LO && c.stuck < NW_LO + 0x80));
+const res = { OK: 0, FLAGS: 0, DIFF: 0, ACCEPTED: 0, TIMEOUT: 0, ONE_TIMEOUT: 0, IRQ_WAIT: 0, NATIVE_INNER: 0, NATIVE_REGS: 0 }; const bad = {};
 for (const s of snaps) {
+  const nat = nativeOf(s.p);
+  if (nat && !nat[1].entries.map((h) => parseInt(h, 16)).includes(s.p)) { res.NATIVE_INNER++; continue; }
   const iEntry = MAPI[s.p];
   if (process.env.DEBUG && parseInt(process.env.DEBUG, 16) === s.p) {
     const im = i8080Mem(s.mem); const ix = s.st.ix;
     console.log('ix', ix.toString(16), 'z(ix+a)', s.mem[(ix + 10) & 0xffff].toString(16), 'i(ix+a)', im[(ix + 10) & 0xffff].toString(16), 'sp', s.st.sp.toString(16));
     global.TRACEI = 60;
   }
-  const zr = run(Z, s.mem, s.p, s.st), ir = run(I, i8080Mem(s.mem), iEntry, s.st);
+  sawNative = false;
+  const im = i8080Mem(s.mem);
+  for (const [z, i] of NCELLS) im[i] = s.mem[z];
+  for (const [z, i] of NSMCW) {
+    const w = s.mem[z] | s.mem[z + 1] << 8, v = MAPI[w] !== undefined ? MAPI[w] : w;
+    im[i] = v & 0xff; im[i + 1] = v >> 8;
+  }
+  const zr = run(Z, s.mem, s.p, s.st), ir = run(I, im, iEntry, s.st);
   let status;
   const diff = [];
-  if (!zr || !ir) status = (!zr && !ir) ? 'TIMEOUT' : 'ONE_TIMEOUT';
+  if (!zr || !ir) status = (!zr && !ir) ? 'TIMEOUT' : irqWait(zr ? I : Z) ? 'IRQ_WAIT' : 'ONE_TIMEOUT';
   else {
-    if (zr.a !== ir.a) diff.push(`a ${zr.a.toString(16)}/${ir.a.toString(16)}`);
-    for (const k of ['bc', 'de', 'hl', 'ix', 'iy']) if (!eqw(zr[k], ir[k])) diff.push(`${k} ${zr[k].toString(16)}/${ir[k].toString(16)}`);
+    const outs = nat ? (nat[1].out || []) : null;
+    const want = (k) => !outs || outs.includes(k) || (k.length === 2 && outs.includes(k[0]));
+    if (want('a') && zr.a !== ir.a) diff.push(`a ${zr.a.toString(16)}/${ir.a.toString(16)}`);
+    for (const k of ['bc', 'de', 'hl', 'ix', 'iy']) if (want(k) && !eqw(zr[k], ir[k])) diff.push(`${k} ${zr[k].toString(16)}/${ir[k].toString(16)}`);
     for (let a = 0; a < 0x10000; a++) {
       if (codeZ[a] || usedI[a] || (a >= RT && a < RT + 0x20) || Z.mem[a] === I.mem[a]) continue;
       if (a >= 0xBC00 && a < s.st.sp + 2) continue;                       // scratch below the caller's stack
@@ -285,10 +333,15 @@ for (const s of snaps) {
       if (a > 0 && eqw(Z.mem[a - 1] | Z.mem[a] << 8, I.mem[a - 1] | I.mem[a] << 8)) continue;
       diff.push(`mem ${a.toString(16)} ${Z.mem[a].toString(16)}/${I.mem[a].toString(16)}`); if (diff.length > 10) break;
     }
-    status = diff.length ? 'DIFF' : (zr.cf !== ir.cf || zr.zf !== ir.zf) ? 'FLAGS' : 'OK';
+    const fl = nat ? (outs.includes('cf') && zr.cf !== ir.cf) || (outs.includes('zf') && zr.zf !== ir.zf)
+      : (zr.cf !== ir.cf || zr.zf !== ir.zf);
+    if (nat && fl) diff.push(`contract flags cf ${zr.cf}/${ir.cf} zf ${zr.zf}/${ir.zf}`);
+    status = diff.length ? 'DIFF' : fl ? 'FLAGS' : 'OK';
     if (status === 'FLAGS') diff.push(`cf ${zr.cf}/${ir.cf} zf ${zr.zf}/${ir.zf}`);
   }
   if ((status === 'DIFF' || status === 'ONE_TIMEOUT') && ACCEPT[s.p]) status = 'ACCEPTED';
+  // through hand code (A2): only memory is held, registers are each module's contract
+  if ((status === 'DIFF' || status === 'FLAGS') && sawNative && !nat && !diff.some((x) => x.startsWith('mem '))) status = 'NATIVE_REGS';
   res[status]++;
   if (status !== 'OK' && status !== 'TIMEOUT' && !bad[s.p + status]) {
     bad[s.p + status] = 1;

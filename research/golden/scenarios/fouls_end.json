@@ -1,0 +1,1 @@
+{"name":"fouls_end","seed":120,"clock":"130","frames":30000,"steps":[{"wait":"menu"},{"key":"1"},{"wait":"match"},{"idle":300},{"poke":{"9416":4,"9430":4,"4111":0,"4112":255}},{"bot":"mix","until":"menu"},{"idle":200}]}

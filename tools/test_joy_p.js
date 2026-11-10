@@ -157,9 +157,12 @@ for (const [name, press, sign] of [
   ['joy right', J(0x01), +1], ['joy left', J(0x02), -1],
   ['cursor right', K(0, 0x40), +1], ['cursor left', K(0, 0x10), -1],
 ]) {
-  const dx = walk(press, 60);
+  let dx = walk(press, 60), note = '';
+  if (Math.sign(dx) !== sign) {   // the opponent may stand in the way: step up out of his line, try again
+    walk(J(0x04), 30); dx = walk(press, 60); note = ' (again after stepping up: blocked)';
+  }
   const ok = Math.sign(dx) === sign;
-  console.log(`${ok ? 'ok  ' : 'FAIL'} 1P walk ${name}: dx=${dx}`);
+  console.log(`${ok ? 'ok  ' : 'FAIL'} 1P walk ${name}: dx=${dx}${note}`);
   if (!ok) fail++;
 }
 

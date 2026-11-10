@@ -25,3 +25,9 @@ src/v06/scheme.inc
 src/v06/cpu.inc
 src/v06/game_labels.inc
 build/cpcbox/
+
+# эталоны A0 пересобираются tools/native/golden_all.sh
+research/golden/*.json.gz
+ref/zx/**/*.tap
+ref/zx/**/*.tzx
+ref/zx/**/*.zip

@@ -19,7 +19,8 @@ waiting for the beam), finds the cycle and writes:
 Pens (CPC Mode 1 -> Vector bits, colour index = E000 bit | C000 bit << 1,
 palette sa_pal in splash_anim.asm). The border is entry 0 and is blue as in
 the menu, so the picture has three colours left: white -> 1, black -> 2,
-orange -> 3; the CPC salmon skin goes orange too (owner's choice 09.11).
+orange -> 3; the CPC salmon skin goes to pen 3 too (owner's choice 09.11).
+Since 10.11 sa_pal is the game palette, so pen 3 shows the game's skin colour.
 """
 from __future__ import annotations
 
@@ -37,7 +38,7 @@ DATA_INC = ROOT / "src/v06/splash_anim_data.inc"
 # CPCBox canvas 768x272: Mode 1 pixel = 2x1 canvas pixels, screen at (64, 36).
 PEN = {(0, 0, 0): "black", (255, 255, 255): "white", (255, 148, 0): "orange", (255, 148, 133): "salmon"}
 BITS = {"white": (1, 0), "black": (0, 1), "orange": (1, 1), "salmon": (1, 1)}
-DX, DY = -36, 44          # CPC x 55..271 -> Vector 19..235 (centred), y 8..195 -> 52..239
+DX, DY = -36, 25          # CPC x 55..271 -> Vector 19..235, y 8..195 -> 33..220 (centred)
 STEP_FRAMES = 5
 STEPS = 24
 

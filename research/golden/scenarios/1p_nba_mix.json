@@ -1,0 +1,1 @@
+{"name":"1p_nba_mix","seed":33,"clock":"030","frames":20000,"steps":[{"wait":"menu"},{"key":"3"},{"key":"3"},{"key":"1"},{"wait":"match"},{"bot":"random","frames":1200,"fire":0.6},{"bot":"shooter","frames":1500},{"bot":"random","until":"menu","fire":0.1},{"idle":200}]}

@@ -316,7 +316,7 @@ JUMP_OPS = {0xCD, 0xC3, 0xCA, 0xC2, 0xDA, 0xD2, 0xCC, 0xC4, 0xDC, 0xD4,
             0xF2, 0xFA, 0xE2, 0xEA, 0xF4, 0xFC, 0xE4, 0xEC,
             0x21, 0x11, 0x01, 0x31, 0x22, 0x2A, 0x32, 0x3A}
 # LD rr,nn immediates that only look like pointers (data bytes / coordinates)
-FALSE_REFS = {0x7A22}
+FALSE_REFS = {0x7A22, 0xA503}   # A503: low byte of the adapter address in CALL at A502 (fans step)
 # Adapter sites whose immediate + the next opcode read as such a pointer
 # (the scan is not instruction-aligned): (glue symbol, byte offset).
 FALSE_REF_SITES = (

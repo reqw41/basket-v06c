@@ -10,32 +10,9 @@ CH_COL          equ     0x0F5C          ; court column scratch (not B1_COL)
 CH_ROW          equ     0x0F5D          ; court row scratch (not B1_ROW)
 V_FILL_BYTE     equ     0x0F19
 
-; Rebuild the complete static high plane for court rows 8..119.
+; Rebuild both planes of court rows 8..119: court_fill.asm (adapter_hi).
 COURT_COLORIZE:
-        ld hl,COURT_SRC
-        ld de,0xE0D7
-        ld c,112
-cc_row:
-        ld b,32
-cc_col:
-        call COURT_TILE_PAIR
-        ld (de),a
-        ld a,d
-        sub 0x20
-        ld d,a
-        ld a,(0x0F59)
-        ld (de),a
-        ld a,d
-        add a,0x21
-        ld d,a
-        inc hl
-        dec b
-        jp nz,cc_col
-        ld d,0xE0
-        dec e
-        dec c
-        jp nz,cc_row
-        ret
+        jp COURT_FILL
 
 COURT_HIGH_BYTE:
         push bc

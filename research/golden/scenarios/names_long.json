@@ -1,0 +1,1 @@
+{"name":"names_long","seed":88,"frames":3000,"steps":[{"wait":"menu"},{"key":"4"},{"type":["A","B","C","D","E","F","G","H","I","J","K","L","vk"]},{"type":["zb","zb","left","X","Y","0","1","2","3","4","5","6","7","8","9","vk"]},{"idle":60},{"key":"4"},{"type":["vk"]},{"type":["vk"]},{"idle":60},{"key":"1"},{"wait":"match"},{"bot":"random","frames":300}]}

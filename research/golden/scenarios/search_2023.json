@@ -1,0 +1,1 @@
+{"name":"search_2023","seed":2023,"clock":"030","frames":16000,"steps":[{"wait":"menu"},{"key":"1"},{"wait":"match"},{"bot":"mix2","until":"menu"},{"idle":100}]}

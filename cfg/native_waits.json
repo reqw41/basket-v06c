@@ -1,0 +1,3 @@
+{
+  "3A4A-3A55": "delay loop B x 0362h (key poll 3A56, line input 38E8): spends real time while the frame IRQ runs; traced as a platform wait, the model calls it as one"
+}

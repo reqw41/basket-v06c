@@ -1,0 +1,1 @@
+{"name":"2p_shooter","seed":66,"clock":"030","frames":20000,"steps":[{"wait":"menu"},{"key":"3"},{"key":"2"},{"wait":"match"},{"bot":"shooter","bot2":"random","until":"menu"},{"idle":100}]}

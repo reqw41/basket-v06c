@@ -14,9 +14,9 @@
 ;   * silence = control word without a divisor (the counter stops);
 ;   * on stop, reset the cached divisor so the same note after a pause is
 ;     reloaded.
-;  Lost against AY: volume (threshold 6/15; 0x10 "envelope" counts as on),
-;  divisors < 64. Noise: the speaker (NOISE_WAIT, menu_color_bg.asm) while
-;  SND_NOISE_SCAN sees AY noise on a loud channel; the tone stays here.
+;  Lost against AY: volume (threshold 4/15; 0x10 "envelope" counts as on),
+;  divisors < 64. Noise (10.11, as brucelee-v06c): random bits on the
+;  counter of the noisy voice (menu_color_bg.asm SND_NOISE_SCAN/BURST).
 ;
 ;  Vector ВИ53 ports are swapped against the 8253 datasheet:
 ;    control word = 0x08, counter 0/1/2 = 0x0B/0x0A/0x09
@@ -26,6 +26,7 @@ V_AYREG         equ     0x0F40          ; 16 bytes, R0..R15 mirror
 V_AYREG_VOL     equ     0x48            ; low byte of V_AYREG+8
 V_SND_ON        equ     0x0F50          ; 3 bytes: counter running
 V_SND_DIV       equ     0x0F53          ; 3 words: divisor last loaded
+SND_THR         equ     4               ; AY level from which a voice sounds (menu_color_bg.asm too)
 
 ; ============================================================================
 ;  BIOS_GICINI - Initialize PSG (MSX BIOS 0090h replacement)
@@ -203,13 +204,17 @@ st_ch:
         ld      a,c
         cp      3
         jp      c,st_ch
-        ret
+        jp      SND_NOISE_BURST         ; the noisy voice: bits on its counter
 
 ; C = channel 0..2
 snd_channel:
         ld      a,(V_MUTE)              ; УС: sound off
         or      a
         jp      nz,snd_off
+        ld      a,(V_NOISE)             ; the noisy voice: its counter plays
+        dec     a                       ; the noise bits (SND_NOISE_BURST)
+        cp      c
+        jp      z,snd_off
         ; tone enabled? (R7 bit c = 0)
         ld      a,(V_AYREG+7)
         ld      b,c
@@ -229,7 +234,7 @@ sc_mix:
         jp      nz,sc_loud
         ld      a,(hl)
         and     0x0F
-        cp      6
+        cp      SND_THR                 ; 4, as brucelee-v06c (was 6)
         jp      c,snd_off
 sc_loud:
         ; D already a ВИ53 divisor (16-bit) in R(2c)/R(2c+1).
@@ -304,8 +309,8 @@ sl_c0:
         out     (0x0B),a
         ret
 
-; AY noise has no ВИ53 counterpart: SND_NOISE_SCAN / NOISE_WAIT in
-; menu_color_bg.asm play it on the speaker.
+; AY noise: SND_NOISE_SCAN / SND_NOISE_BURST / NOISE_WAIT in
+; menu_color_bg.asm play it as bits on the noisy voice's counter.
 ; C = channel: stop the counter (control word only) if it was running
 snd_off:
         ld      hl,V_SND_ON

@@ -7,22 +7,34 @@
 BLIT_PASS_FLAG:	equ	0x34DF
 BLIT_SRC:	equ	0x3302
 BLIT_Y:	equ	0x3300
-CROWD_TICK:	equ	0x74BA
+CROWD_TICK:	equ	0x761A
 GAME_ISR_HOOK:	equ	0x4141
 G_KEY_ASCII:	equ	0x4110
 G_KEY_CODE:	equ	0x410F
 HUD_ICON:	equ	0xB455
 MENU_BOX_CLEAR:	equ	0x18F6
 MENU_KEY:	equ	0x06BB
-NATIVE_PADS:	equ	0x6CD0
-REPLAY_SCENE:	equ	0x144F
-REPLAY_STATE_BEGIN:	equ	0x144C
-RING_PULL:	equ	0x752D
-RING_PUSH:	equ	0x74E8
-RING_REPLAY:	equ	0x751C
-RING_RESET:	equ	0x7511
+NATIVE_PADS:	equ	0x6D85
+REPLAY_SCENE:	equ	0x13EA
+REPLAY_STATE_BEGIN:	equ	0x13E7
+RING_PULL:	equ	0x768D
+RING_PUSH:	equ	0x7648
+RING_REPLAY:	equ	0x767C
+RING_RESET:	equ	0x7671
 TEXT_COL:	equ	0x4103
 TEXT_ROW:	equ	0x4102
+IX0	equ	0x9425
+IX1	equ	0x9426
+IX2	equ	0x9427
+IX3	equ	0x9428
+IXA	equ	0x942F
+IXM1	equ	0x9424
+IXM2	equ	0x9423
+IXM7	equ	0x941E
+IY0	equ	0x940B
+IY2	equ	0x940D
+IY3	equ	0x940E
+IYM1	equ	0x940A
 RT_VARS:	equ	0x9300	; ячейки рантайма (мёртвая зона 92FF..9329)
 z80_ix:	equ	RT_VARS+0
 z80_iy:	equ	RT_VARS+2
@@ -38,1250 +50,1306 @@ il_d:	equ	RT_VARS+19
 z80_r:	equ	RT_VARS+20
 RT_VARS_END:	equ	RT_VARS+21
 
-	org	0x0B63
-Z_8871:
-	jp Z_88C6	; 8871 18 53
-Z_8873:
-	ld hl,(D_93F3)	; 8873 2A F3 93
-Z_8876:
-	ld a,(D_93EB)	; 8876 3A EB 93
-Z_8879:
-	ld (il_a),a	; 8879 CB 57
-	and 0x04
-	ld a,(il_a)
-Z_887B:
-	ret nz	; 887B C0
-Z_887C:
-	ld (il_a),a	; 887C CB 67
-	and 0x10
-	ld a,(il_a)
-Z_887E:
-	jp nz,Z_889F	; 887E 20 1F
-Z_8880:
-	ld (il_a),a	; 8880 CB 5F
-	and 0x08
-	ld a,(il_a)
-Z_8882:
-	jp nz,Z_888C	; 8882 20 08
-Z_8884:
-	ld (il_a),a	; 8884 CB 4F
-	and 0x02
-	ld a,(il_a)
-Z_8886:
-	jp z,Z_889F	; 8886 28 17
-Z_8888:
-	ld (il_a),a	; 8888 CB 7F
-	and 0x80
-	ld a,(il_a)
-Z_888A:
-	jp z,Z_889F	; 888A 28 13
-Z_888C:
-	rst 0x10	; 888C DD 7E 03
-	db 0x03
-Z_888F:
-	sub h	; 888F 94
-Z_8890:
-	ld e,0x04	; 8890 1E 04
-Z_8892:
-	jp nc,Z_8896	; 8892 30 02
-Z_8894:
-	cpl	; 8894 ED 44
-	inc a
-Z_8896:
-	cp 0x04	; 8896 FE 04
-Z_8898:
-	jp nc,Z_889F	; 8898 30 05
-Z_889A:
-	ld a,0x10	; 889A 3E 10
-Z_889C:
-	or e	; 889C B3
-Z_889D:
-	jp Z_88C6	; 889D 18 27
-Z_889F:
-	call Z_A133	; 889F CD 33 A1
-Z_88A2:
-	nop	; 88A2 00
-Z_88A3:
-	nop	; 88A3 00
-Z_88A4:
-	nop	; 88A4 00
-Z_88A5:
-	jp nz,Z_88C6	; 88A5 20 1F
-Z_88A7:
-	call Z_8963	; 88A7 CD 63 89
-Z_88AA:
-	and a	; 88AA A7
-Z_88AB:
-	jp nz,Z_88BE	; 88AB 20 11
-Z_88AD:
-	rst 0x10	; 88AD DD 7E 03
-	db 0x03
-Z_88B0:
-	xor 0x01	; 88B0 EE 01
-Z_88B2:
-	rst 0x20	; 88B2 DD 77 03
-	db 0x03
-Z_88B5:
-	rst 0x10	; 88B5 DD 7E 02
-	db 0x02
-Z_88B8:
-	xor 0x01	; 88B8 EE 01
-Z_88BA:
-	rst 0x20	; 88BA DD 77 02
-	db 0x02
-Z_88BD:
-	xor a	; 88BD AF
-Z_88BE:
-	rst 0x08	; 88BE DD CB 01 76
-	db 0x01, 0x40
-Z_88C2:
-	jp z,Z_88C6	; 88C2 28 02
-Z_88C4:
-	or 0x10	; 88C4 F6 10
-Z_88C6:
-	ld c,a	; 88C6 4F
-Z_88C7:
-	and a	; 88C7 A7
-Z_88C8:
-	jp z,Z_88E5	; 88C8 28 1B
-Z_88CA:
-	ld a,(D_93EB)	; 88CA 3A EB 93
-Z_88CD:
-	ld (il_a),a	; 88CD CB 47
-	and 0x01
-	ld a,(il_a)
-Z_88CF:
-	ld a,c	; 88CF 79
-Z_88D0:
-	jp z,Z_88E5	; 88D0 28 13
-Z_88D2:
-	ld a,(D_8698)	; 88D2 3A 98 86
-Z_88D5:
-	inc a	; 88D5 3C
-Z_88D6:
-	cp 0x01	; 88D6 FE 01
-Z_88D8:
-	jp c,Z_88DB	; 88D8 38 01
-Z_88DA:
-	xor a	; 88DA AF
-Z_88DB:
-	ld (D_8698),a	; 88DB 32 98 86
-Z_88DE:
-	and a	; 88DE A7
-Z_88DF:
-	ld a,c	; 88DF 79
-Z_88E0:
-	jp z,Z_88E5	; 88E0 28 03
-Z_88E2:
-	ld a,(D_8696)	; 88E2 3A 96 86
-Z_88E5:
-	rst 0x08	; 88E5 DD CB FE 7E
-	db 0xFE, 0x80
-Z_88E9:
-	jp z,Z_88ED	; 88E9 28 02
-Z_88EB:
-	push af	; 88EB CB A7
-	and 0xEF
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_88ED:
-	ld (D_AC4E),a	; 88ED 32 4E AC
-Z_88F0:
-	ld (D_8696),a	; 88F0 32 96 86
-Z_88F3:
-	ret	; 88F3 C9
-Z_88F4:
-	ld c,0x0C	; 88F4 0E 0C
-Z_88F6:
-	rst 0x10	; 88F6 DD 7E 02
-	db 0x02
-Z_88F9:
-	cp 0x54	; 88F9 FE 54
-Z_88FB:
-	jp nc,Z_8906	; 88FB 30 09
-Z_88FD:
-	call il_iy_lda	; 88FD FD 7E 02
-	db 0x02
-Z_8900:
-	cp 0x51	; 8900 FE 51
-Z_8902:
-	jp nc,Z_8906	; 8902 30 02
-Z_8904:
-	ld c,0x10	; 8904 0E 10
-Z_8906:
-	ld a,h	; 8906 7C
-Z_8907:
-	sub 0x06	; 8907 D6 06
-Z_8909:
-	call il_iy_sub	; 8909 FD 96 03
-	db 0x03
-Z_890C:
-	jp nc,Z_8A01	; 890C D2 01 8A
-Z_890F:
-	cpl	; 890F ED 44
-	inc a
-Z_8911:
-	ld b,a	; 8911 47
-Z_8912:
-	rst 0x10	; 8912 DD 7E 03
-	db 0x03
-Z_8915:
-	add a,0x06	; 8915 C6 06
-Z_8917:
-	call il_iy_sub	; 8917 FD 96 03
-	db 0x03
-Z_891A:
-	jp c,Z_8A01	; 891A DA 01 8A
-Z_891D:
-	ld a,b	; 891D 78
-Z_891E:
-	cp c	; 891E B9
-Z_891F:
-	jp nc,Z_8944	; 891F D2 44 89
-Z_8922:
-	rst 0x10	; 8922 DD 7E 02
-	db 0x02
-Z_8925:
-	call il_iy_sub	; 8925 FD 96 02
-	db 0x02
-Z_8928:
-	ld e,0x01	; 8928 1E 01
-Z_892A:
-	jp nc,Z_892F	; 892A 30 03
-Z_892C:
-	dec e	; 892C 1D
-Z_892D:
-	cpl	; 892D ED 44
-	inc a
-Z_892F:
-	call il_iy_lda	; 892F FD 7E 02
-	db 0x02
-Z_8932:
-	cp l	; 8932 BD
-Z_8933:
-	ld a,0x01	; 8933 3E 01
-Z_8935:
-	jp nc,Z_8938	; 8935 30 01
-Z_8937:
-	dec a	; 8937 3D
-Z_8938:
-	add a,e	; 8938 83
-Z_8939:
-	cp 0x01	; 8939 FE 01
-Z_893B:
-	jp z,Z_8A01	; 893B CA 01 8A
-Z_893E:
-	ld a,0x0D	; 893E 3E 0D
-Z_8940:
-	ret nc	; 8940 D0
-Z_8941:
-	ld a,0x0F	; 8941 3E 0F
-Z_8943:
-	ret	; 8943 C9
-Z_8944:
-	ld e,0x01	; 8944 1E 01
-Z_8946:
-	ld a,l	; 8946 7D
-Z_8947:
-	call il_iy_sub	; 8947 FD 96 02
-	db 0x02
-Z_894A:
-	jp nc,Z_894F	; 894A 30 03
-Z_894C:
-	dec e	; 894C 1D
-Z_894D:
-	cpl	; 894D ED 44
-	inc a
-Z_894F:
-	inc a	; 894F 3C
-Z_8950:
-	push af	; 8950 CB 87
-	and 0xFE
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_8952:
-	cp 0x06	; 8952 FE 06
-Z_8954:
-	jp nc,Z_8A01	; 8954 D2 01 8A
-Z_8957:
-	add a,0x06	; 8957 C6 06
-Z_8959:
-	dec e	; 8959 1D
-Z_895A:
-	jp z,Z_895E	; 895A 28 02
-Z_895C:
-	cpl	; 895C ED 44
-	inc a
-Z_895E:
-	add a,l	; 895E 85
-Z_895F:
-	ld l,a	; 895F 6F
-Z_8960:
-	jp Z_8A01	; 8960 C3 01 8A
-Z_8963:
-	ld c,0x08	; 8963 0E 08
-Z_8965:
-	call il_iy_bit	; 8965 FD CB 00 66
-	db 0x00, 0x10
-Z_8969:
-	jp z,Z_896D	; 8969 28 02
-Z_896B:
-	ld c,0x0A	; 896B 0E 0A
-Z_896D:
-	rst 0x10	; 896D DD 7E 03
-	db 0x03
-Z_8970:
-	call il_iy_sub	; 8970 FD 96 03
-	db 0x03
-Z_8973:
-	jp nc,Z_8977	; 8973 30 02
-Z_8975:
-	cpl	; 8975 ED 44
-	inc a
-Z_8977:
-	cp c	; 8977 B9
-Z_8978:
-	ld d,a	; 8978 57
-Z_8979:
-	jp nc,Z_8A01	; 8979 D2 01 8A
-Z_897C:
-	call il_iy_ldb	; 897C FD 46 02
-	db 0x02
-Z_897F:
-	push af	; 897F CB A0
-	ld a,b
-	and 0xEF
-	ld b,a
-	pop af
-Z_8981:
-	ld (il_a),a	; 8981 CB 38
-	ld a,b
-	or a
-	rra
-	ld b,a
-	ld a,(il_a)
-Z_8983:
-	ld (il_a),a	; 8983 CB 38
-	ld a,b
-	or a
-	rra
-	ld b,a
-	ld a,(il_a)
-Z_8985:
-	ld (il_a),a	; 8985 CB 38
-	ld a,b
-	or a
-	rra
-	ld b,a
-	ld a,(il_a)
-Z_8987:
-	ld (il_a),a	; 8987 CB 38
-	ld a,b
-	or a
-	rra
-	ld b,a
-	ld a,(il_a)
-Z_8989:
-	call il_iy_bit	; 8989 FD CB 00 66
-	db 0x00, 0x10
-Z_898D:
-	jp z,Z_89CE	; 898D 28 3F
-Z_898F:
-	call il_iy_bit	; 898F FD CB FF 56
-	db 0xFF, 0x04
-Z_8993:
-	jp nz,Z_89CE	; 8993 20 39
-Z_8995:
-	rst 0x10	; 8995 DD 7E 02
-	db 0x02
-Z_8998:
-	cp l	; 8998 BD
-Z_8999:
-	call il_iy_bit	; 8999 FD CB FF 4E
-	db 0xFF, 0x02
-Z_899D:
-	jp z,Z_89B3	; 899D 28 14
-Z_899F:
-	inc l	; 899F 2C
-Z_89A0:
-	inc l	; 89A0 2C
-Z_89A1:
-	jp nc,Z_8A01	; 89A1 30 5E
-Z_89A3:
-	ld a,d	; 89A3 7A
-Z_89A4:
-	cp 0x06	; 89A4 FE 06
-Z_89A6:
-	jp nc,Z_8A01	; 89A6 30 59
-Z_89A8:
-	ld e,0x03	; 89A8 1E 03
-Z_89AA:
-	ld a,0x14	; 89AA 3E 14
-Z_89AC:
-	sub b	; 89AC 90
-Z_89AD:
-	ld b,a	; 89AD 47
-Z_89AE:
-	ld a,h	; 89AE 7C
-Z_89AF:
-	sub b	; 89AF 90
-Z_89B0:
-	ld h,a	; 89B0 67
-Z_89B1:
-	jp Z_8A0E	; 89B1 18 5B
-Z_89B3:
-	jp c,Z_8A01	; 89B3 38 4C
-Z_89B5:
-	ld a,d	; 89B5 7A
-Z_89B6:
-	cp 0x06	; 89B6 FE 06
-Z_89B8:
-	jp c,Z_89BE	; 89B8 38 04
-Z_89BA:
-	dec l	; 89BA 2D
-Z_89BB:
-	dec l	; 89BB 2D
-Z_89BC:
-	jp Z_8A01	; 89BC 18 43
-Z_89BE:
-	ld e,0x01	; 89BE 1E 01
-Z_89C0:
-	ld a,0x62	; 89C0 3E 62
-Z_89C2:
-	add a,b	; 89C2 80
-Z_89C3:
-	ld b,0x0F	; 89C3 06 0F
-Z_89C5:
-	call il_iy_cp	; 89C5 FD BE 03
-	db 0x03
-Z_89C8:
-	jp c,Z_89AE	; 89C8 38 E4
-Z_89CA:
-	inc h	; 89CA 24
-Z_89CB:
-	inc h	; 89CB 24
-Z_89CC:
-	jp Z_8A0E	; 89CC 18 40
-Z_89CE:
-	rst 0x10	; 89CE DD 7E 02
-	db 0x02
-Z_89D1:
-	call il_iy_sub	; 89D1 FD 96 02
-	db 0x02
-Z_89D4:
-	jp nc,Z_89D8	; 89D4 30 02
-Z_89D6:
-	cpl	; 89D6 ED 44
-	inc a
-Z_89D8:
-	inc a	; 89D8 3C
-Z_89D9:
-	push af	; 89D9 CB 87
-	and 0xFE
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_89DB:
-	cp 0x04	; 89DB FE 04
-Z_89DD:
-	jp nc,Z_8A01	; 89DD 30 22
-Z_89DF:
-	call il_iy_lda	; 89DF FD 7E 02
-	db 0x02
-Z_89E2:
-	sub l	; 89E2 95
-Z_89E3:
-	ld e,0x01	; 89E3 1E 01
-Z_89E5:
-	jp nc,Z_89EA	; 89E5 30 03
-Z_89E7:
-	dec e	; 89E7 1D
-Z_89E8:
-	cpl	; 89E8 ED 44
-	inc a
-Z_89EA:
-	inc a	; 89EA 3C
-Z_89EB:
-	push af	; 89EB CB 87
-	and 0xFE
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_89ED:
-	cp 0x04	; 89ED FE 04
-Z_89EF:
-	jp nc,Z_8A01	; 89EF 30 10
-Z_89F1:
-	and a	; 89F1 A7
-Z_89F2:
-	jp nz,Z_89F8	; 89F2 20 04
-Z_89F4:
-	ld e,0x03	; 89F4 1E 03
-Z_89F6:
-	jp Z_8A0E	; 89F6 18 16
-Z_89F8:
-	dec e	; 89F8 1D
-Z_89F9:
-	ld e,0x03	; 89F9 1E 03
-Z_89FB:
-	jp nz,Z_8A0E	; 89FB 20 11
-Z_89FD:
-	ld e,0x01	; 89FD 1E 01
-Z_89FF:
-	jp Z_8A0E	; 89FF 18 0D
-Z_8A01:
-	ld a,l	; 8A01 7D
-Z_8A02:
-	ld e,0x00	; 8A02 1E 00
-Z_8A04:
-	call il_ix_cp	; 8A04 DD BE 02
-	db 0x02
-Z_8A07:
-	jp z,Z_8A0E	; 8A07 28 05
-Z_8A09:
-	inc e	; 8A09 1C
-Z_8A0A:
-	jp c,Z_8A0E	; 8A0A 38 02
-Z_8A0C:
-	ld e,0x03	; 8A0C 1E 03
-Z_8A0E:
-	rst 0x10	; 8A0E DD 7E 03
-	db 0x03
-Z_8A11:
-	cp h	; 8A11 BC
-Z_8A12:
-	ld a,e	; 8A12 7B
-Z_8A13:
-	jp z,Z_8A1B	; 8A13 28 06
-Z_8A15:
-	ld a,0x0C	; 8A15 3E 0C
-Z_8A17:
-	jp c,Z_8A1B	; 8A17 38 02
-Z_8A19:
-	ld a,0x04	; 8A19 3E 04
-Z_8A1B:
-	or e	; 8A1B B3
-Z_8A1C:
-	rst 0x08	; 8A1C DD CB F9 46
-	db 0xF9, 0x01
-Z_8A20:
-	ret z	; 8A20 C8
-Z_8A21:
-	ld a,e	; 8A21 7B
-Z_8A22:
-	ret	; 8A22 C9
-Z_8A23:
-	ld a,(D_93EB)	; 8A23 3A EB 93
-Z_8A26:
-	ld (il_a),a	; 8A26 CB 47
-	and 0x01
-	ld a,(il_a)
-Z_8A28:
-	jp nz,Z_8A95	; 8A28 20 6B
-Z_8A2A:
-	ld (il_a),a	; 8A2A CB 57
-	and 0x04
-	ld a,(il_a)
-Z_8A2C:
-	jp nz,Z_8A95	; 8A2C 20 67
-Z_8A2E:
-	ld (il_a),a	; 8A2E CB 4F
-	and 0x02
-	ld a,(il_a)
-Z_8A30:
-	jp nz,Z_8A8E	; 8A30 20 5C
-Z_8A32:
-	ld (il_a),a	; 8A32 CB 5F
-	and 0x08
-	ld a,(il_a)
-Z_8A34:
-	jp nz,Z_8A89	; 8A34 20 53
-Z_8A36:
-	ld (il_a),a	; 8A36 CB 67
-	and 0x10
-	ld a,(il_a)
-Z_8A38:
-	jp z,Z_8A95	; 8A38 28 5B
-Z_8A3A:
-	ld (il_tmp),hl	; 8A3A DD 21 F1 93
-	ld hl,D_93F1
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_8A3E:
-	rst 0x08	; 8A3E DD CB FE 46
-	db 0xFE, 0x01
-Z_8A42:
-	jp nz,Z_8A67	; 8A42 20 23
-Z_8A44:
-	rst 0x10	; 8A44 DD 7E 00
-	db 0x00
-Z_8A47:
-	add a,0x06	; 8A47 C6 06
-	jp	Z_8A49	; мост в следующий кусок
-	org	0x14F8
-Z_8A49:
-	rst 0x20	; 8A49 DD 77 00
-	db 0x00
-Z_8A4C:
-	call il_ix_cp	; 8A4C DD BE 02
-	db 0x02
-Z_8A4F:
-	jp c,Z_8A95	; 8A4F 38 44
-Z_8A51:
-	rst 0x10	; 8A51 DD 7E 02
-	db 0x02
-Z_8A54:
-	rst 0x20	; 8A54 DD 77 00
-	db 0x00
-Z_8A57:
-	rst 0x28	; 8A57 DD CB FE C6
-	db 0xFE, 0x01
-Z_8A5B:
-	jp Z_8BFE	; 8A5B C3 FE 8B
-Z_8A5E:
-	xor a	; 8A5E AF
-Z_8A5F:
-	ld (D_93EB),a	; 8A5F 32 EB 93
-Z_8A62:
-	call Z_8BFE	; 8A62 CD FE 8B
-Z_8A65:
-	jp Z_8A95	; 8A65 18 2E
-Z_8A67:
-	rst 0x10	; 8A67 DD 7E 00
-	db 0x00
-Z_8A6A:
-	call il_ix_cp	; 8A6A DD BE FF
-	db 0xFF
-Z_8A6D:
-	jp c,Z_8A76	; 8A6D 38 07
-Z_8A6F:
-	sub 0x06	; 8A6F D6 06
-Z_8A71:
-	rst 0x20	; 8A71 DD 77 00
-	db 0x00
-Z_8A74:
-	jp Z_8A95	; 8A74 18 1F
-Z_8A76:
-	rst 0x10	; 8A76 DD 7E FF
-	db 0xFF
-Z_8A79:
-	add a,0x06	; 8A79 C6 06
-Z_8A7B:
-	call il_ix_cp	; 8A7B DD BE 02
-	db 0x02
-Z_8A7E:
-	jp nc,Z_8A5E	; 8A7E 30 DE
-Z_8A80:
-	rst 0x20	; 8A80 DD 77 FF
-	db 0xFF
-Z_8A83:
-	rst 0x30	; 8A83 DD CB FE 86
-	db 0xFE, 0xFE
-Z_8A87:
-	jp Z_8A95	; 8A87 18 0C
-Z_8A89:
-	call Z_93B5	; 8A89 CD B5 93
-Z_8A8C:
-	jp Z_8A95	; 8A8C 18 07
-Z_8A8E:
-	call il_exx	; 8A8E D9
-Z_8A8F:
-	push bc	; 8A8F C5
-Z_8A90:
-	call Z_9388	; 8A90 CD 88 93
-Z_8A93:
-	pop bc	; 8A93 C1
-Z_8A94:
-	call il_exx	; 8A94 D9
-Z_8A95:
-	ld (il_tmp),hl	; 8A95 DD 21 0B 94
-	ld hl,D_940B
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_8A99:
-	ld (il_tmp),hl	; 8A99 FD 21 25 94
-	ld hl,D_9425
-	ld (z80_iy),hl
-	ld hl,(il_tmp)
-Z_8A9D:
-	ld hl,0x0690	; 8A9D 21 90 06
-Z_8AA0:
-	call Z_8AAE	; 8AA0 CD AE 8A
-Z_8AA3:
-	ld (il_tmp),hl	; 8AA3 DD 21 25 94
-	ld hl,D_9425
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_8AA7:
-	ld (il_tmp),hl	; 8AA7 FD 21 0B 94
-	ld hl,D_940B
-	ld (z80_iy),hl
-	ld hl,(il_tmp)
-Z_8AAB:
-	ld hl,0x1990	; 8AAB 21 90 19
-Z_8AAE:
-	push hl	; 8AAE E5
-Z_8AAF:
-	call Z_8CF7	; 8AAF CD F7 8C
-Z_8AB2:
-	ld de,0x7750	; 8AB2 11 50 77
-Z_8AB5:
-	push af	; 8AB5 DD CB 01 F6
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	inc hl
+	org	0x0C7E
+NAT_action_220:
+	and 0x20
+NAT_action_221:
+	ret nz
+NAT_action_222:
 	ld a,(hl)
-	or 0x40
-	ld (hl),a
-	ld hl,(il_tmp2)
-	pop af
-Z_8AB9:
-	jp c,Z_8AC2	; 8AB9 38 07
-Z_8ABB:
-	rst 0x30	; 8ABB DD CB 01 B6
-	db 0x01, 0xBF
-Z_8ABF:
-	ld de,0x7758	; 8ABF 11 58 77
-Z_8AC2:
-	pop hl	; 8AC2 E1
-Z_8AC3:
-	jp HUD_ICON	; 8AC3 C3 55 B4
-Z_8ADD:
-	ld hl,(D_93F3)	; 8ADD 2A F3 93
-Z_8AE0:
-	ld a,l	; 8AE0 7D
-Z_8AE1:
-	sub 0x04	; 8AE1 D6 04
-Z_8AE3:
-	ld l,a	; 8AE3 6F
-Z_8AE4:
-	ld (BLIT_Y),hl	; 8AE4 22 00 33
-Z_8AE7:
-	ld a,0x49	; 8AE7 3E 49
-Z_8AE9:
-	call Z_9394	; 8AE9 CD 94 93
-Z_8AEC:
-	call Z_B01C	; 8AEC CD 1C B0
-Z_8AEF:
-	ld hl,(D_93F3)	; 8AEF 2A F3 93
-Z_8AF2:
-	ld a,(D_93EB)	; 8AF2 3A EB 93
-Z_8AF5:
-	and 0x1A	; 8AF5 E6 1A
-Z_8AF7:
-	jp z,Z_8AFC	; 8AF7 28 03
-Z_8AF9:
-	ld hl,(D_93F1)	; 8AF9 2A F1 93
-Z_8AFC:
-	ld a,l	; 8AFC 7D
-Z_8AFD:
-	sub 0x08	; 8AFD D6 08
-Z_8AFF:
-	ld l,a	; 8AFF 6F
-Z_8B00:
-	ld (BLIT_Y),hl	; 8B00 22 00 33
-Z_8B03:
-	ld a,0x48	; 8B03 3E 48
-Z_8B05:
-	call Z_9394	; 8B05 CD 94 93
-Z_8B08:
-	call Z_B01C	; 8B08 CD 1C B0
-Z_8B0B:
-	ld (il_tmp),hl	; 8B0B DD 21 F5 93
-	ld hl,D_93F5
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_8B0F:
-	rst 0x08	; 8B0F DD CB 00 4E
-	db 0x00, 0x02
-Z_8B13:
-	ret z	; 8B13 C8
-Z_8B14:
-	rst 0x00	; 8B14 DD 36 00 00
-	db 0x00, 0x00
-Z_8B18:
-	ld a,(D_93EB)	; 8B18 3A EB 93
-Z_8B1B:
-	ld (il_a),a	; 8B1B CB 5F
-	and 0x08
-	ld a,(il_a)
-Z_8B1D:
-	jp z,Z_8B32	; 8B1D 28 13
-Z_8B1F:
-	and 0xE0	; 8B1F E6 E0
-	jp	Z_8B21	; мост в следующий кусок
-	org	0x1748
-Z_8B21:
-	push af	; 8B21 CB E7
-	or 0x10
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_8B23:
-	ld (D_93EB),a	; 8B23 32 EB 93
-Z_8B26:
-	ld hl,D_93F1	; 8B26 21 F1 93
-Z_8B29:
-	ld a,(hl)	; 8B29 7E
-Z_8B2A:
-	dec hl	; 8B2A 2B
-Z_8B2B:
-	add a,0x06	; 8B2B C6 06
-Z_8B2D:
-	ld (hl),a	; 8B2D 77
-Z_8B2E:
-	dec hl	; 8B2E 2B
-Z_8B2F:
-	ld (hl),0x00	; 8B2F 36 00
-Z_8B31:
-	ret	; 8B31 C9
-	org	0x18B7
-Z_8B32:
-	ld a,(D_944F)	; 8B32 3A 4F 94
-Z_8B35:
-	ld bc,0x32	; 8B35 01 32 00
-Z_8B38:
-	ld l,a	; 8B38 6F
-Z_8B39:
-	ld h,b	; 8B39 60
-Z_8B3A:
-	call Z_398C	; 8B3A CD 8C 39
-Z_8B3D:
-	ld bc,0x46	; 8B3D 01 46 00
-	jp	Z_8B40	; мост в следующий кусок
-	org	0x190A
-Z_8B40:
-	call Z_39A3	; 8B40 CD A3 39
-Z_8B43:
-	ex de,hl	; 8B43 EB
-Z_8B44:
-	ld a,(D_9450)	; 8B44 3A 50 94
-Z_8B47:
-	ld bc,0x23	; 8B47 01 23 00
-Z_8B4A:
-	ld l,a	; 8B4A 6F
-Z_8B4B:
-	ld h,b	; 8B4B 60
-Z_8B4C:
-	call Z_398C	; 8B4C CD 8C 39
-Z_8B4F:
-	ld bc,0x08	; 8B4F 01 08 00
-Z_8B52:
-	call Z_39A3	; 8B52 CD A3 39
-Z_8B55:
-	add hl,de	; 8B55 19
-Z_8B56:
-	ex de,hl	; 8B56 EB
-Z_8B57:
-	ld a,(D_944E)	; 8B57 3A 4E 94
-Z_8B5A:
-	ld bc,0x0A	; 8B5A 01 0A 00
-Z_8B5D:
-	cpl	; 8B5D ED 44
-	inc a
-Z_8B5F:
-	add a,0x16	; 8B5F C6 16
-Z_8B61:
-	ld l,a	; 8B61 6F
-Z_8B62:
-	ld h,b	; 8B62 60
-Z_8B63:
-	call Z_398C	; 8B63 CD 8C 39
-Z_8B66:
-	ld bc,0x17	; 8B66 01 17 00
-Z_8B69:
-	call Z_39A3	; 8B69 CD A3 39
-Z_8B6C:
-	add hl,de	; 8B6C 19
-Z_8B6D:
-	ex de,hl	; 8B6D EB
-Z_8B6E:
-	ld a,(D_944D)	; 8B6E 3A 4D 94
-Z_8B71:
-	ld bc,0x05	; 8B71 01 05 00
-Z_8B74:
-	cpl	; 8B74 ED 44
-	inc a
-Z_8B76:
-	add a,0x32	; 8B76 C6 32
-Z_8B78:
-	ld l,a	; 8B78 6F
-Z_8B79:
-	ld h,b	; 8B79 60
-Z_8B7A:
-	call Z_398C	; 8B7A CD 8C 39
-Z_8B7D:
-	ld bc,0x32	; 8B7D 01 32 00
-Z_8B80:
-	call Z_39A3	; 8B80 CD A3 39
-Z_8B83:
-	add hl,de	; 8B83 19
-Z_8B84:
-	call Z_A172	; 8B84 CD 72 A1
-Z_8B87:
-	nop	; 8B87 00
-Z_8B88:
-	add a,0x04	; 8B88 C6 04
-Z_8B8A:
-	ld c,l	; 8B8A 4D
-Z_8B8B:
-	call Z_A0AA	; 8B8B CD AA A0
-Z_8B8E:
-	ld (il_a),a	; 8B8E CB 11
-	ld a,c
-	rla
-	ld c,a
-	ld a,(il_a)
-Z_8B90:
-	ld a,(D_93EB)	; 8B90 3A EB 93
-Z_8B93:
-	ld (il_a),a	; 8B93 CB 7F
+NAT_action_223:
 	and 0x80
-	ld a,(il_a)
-Z_8B95:
-	ld (il_tmp),hl	; 8B95 DD 21 25 94
-	ld hl,D_9425
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_8B99:
-	ld (il_tmp),hl	; 8B99 FD 21 0B 94
-	ld hl,D_940B
-	ld (z80_iy),hl
-	ld hl,(il_tmp)
-Z_8B9D:
-	jp z,Z_8BA7	; 8B9D 28 08
-Z_8B9F:
-	ld (il_tmp),hl	; 8B9F DD 21 0B 94
-	ld hl,D_940B
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_8BA3:
-	ld (il_tmp),hl	; 8BA3 FD 21 25 94
-	ld hl,D_9425
-	ld (z80_iy),hl
-	ld hl,(il_tmp)
-Z_8BA7:
-	ld a,(D_93D9)	; 8BA7 3A D9 93
-Z_8BAA:
-	cp 0x03	; 8BAA FE 03
-Z_8BAC:
-	jp nz,Z_8BBA	; 8BAC 20 0C
-Z_8BAE:
-	call il_ix_inc	; 8BAE DD 34 11
-	db 0x11
-Z_8BB1:
-	ld (il_a),a	; 8BB1 CB 41
-	ld a,c
-	and 0x01
-	ld a,(il_a)
-Z_8BB3:
-	jp nz,Z_8BCD	; 8BB3 20 18
-Z_8BB5:
-	call il_ix_inc	; 8BB5 DD 34 12
-	db 0x12
-Z_8BB8:
-	jp Z_8BCD	; 8BB8 18 13
-Z_8BBA:
-	cp 0x01	; 8BBA FE 01
-Z_8BBC:
-	jp nz,Z_8BCA	; 8BBC 20 0C
-Z_8BBE:
-	call il_ix_inc	; 8BBE DD 34 0E
-	db 0x0E
-Z_8BC1:
-	ld (il_a),a	; 8BC1 CB 41
-	ld a,c
-	and 0x01
-	ld a,(il_a)
-Z_8BC3:
-	jp nz,Z_8BCD	; 8BC3 20 08
-Z_8BC5:
-	call il_ix_inc	; 8BC5 DD 34 0F
-	db 0x0F
-Z_8BC8:
-	jp Z_8BCD	; 8BC8 18 03
-Z_8BCA:
-	call il_ix_inc	; 8BCA DD 34 0C
-	db 0x0C
-Z_8BCD:
-	ld (il_a),a	; 8BCD CB 41
-	ld a,c
-	and 0x01
-	ld a,(il_a)
-Z_8BCF:
-	jp z,Z_8C16	; 8BCF 28 45
-Z_8BD1:
-	ld a,(D_93EB)	; 8BD1 3A EB 93
-Z_8BD4:
-	push af	; 8BD4 CB 8F
-	and 0xFD
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_8BD6:
-	push af	; 8BD6 CB DF
-	or 0x08
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_8BD8:
-	ld (D_93EB),a	; 8BD8 32 EB 93
-Z_8BDB:
-	rst 0x10	; 8BDB DD 7E FD
-	db 0xFD
-Z_8BDE:
-	sub 0x02	; 8BDE D6 02
-Z_8BE0:
-	jp nc,Z_8BE3	; 8BE0 30 01
-Z_8BE2:
-	xor a	; 8BE2 AF
-Z_8BE3:
-	rst 0x20	; 8BE3 DD 77 FD
-	db 0xFD
-Z_8BE6:
-	call il_iy_lda	; 8BE6 FD 7E FD
-	db 0xFD
-Z_8BE9:
-	inc a	; 8BE9 3C
-Z_8BEA:
-	cp 0x33	; 8BEA FE 33
-Z_8BEC:
-	jp z,Z_8BF1	; 8BEC 28 03
-Z_8BEE:
-	call il_iy_sta	; 8BEE FD 77 FD
-	db 0xFD
-Z_8BF1:
-	call Z_8BFE	; 8BF1 CD FE 8B
-Z_8BF4:
-	ld a,(D_93D6)	; 8BF4 3A D6 93
-Z_8BF7:
-	and a	; 8BF7 A7
-Z_8BF8:
-	ret z	; 8BF8 C8
-Z_8BF9:
-	ld e,0x03	; 8BF9 1E 03
-Z_8BFB:
-	jp Z_93B2	; 8BFB C3 B2 93
-Z_8BFE:
-	ld a,(D_93D8)	; 8BFE 3A D8 93
-Z_8C01:
-	and a	; 8C01 A7
-Z_8C02:
-	ret nz	; 8C02 C0
-Z_8C03:
-	inc a	; 8C03 3C
-Z_8C04:
-	ld (D_AA83),a	; 8C04 32 83 AA
-Z_8C07:
-	ld hl,0x02	; 8C07 21 02 00
-Z_8C0A:
-	ld (BLIT_Y),hl	; 8C0A 22 00 33
-Z_8C0D:
-	ld hl,0x8070	; 8C0D 21 70 80
-Z_8C10:
-	ld (BLIT_SRC),hl	; 8C10 22 02 33
-Z_8C13:
-	jp Z_AA80	; 8C13 C3 80 AA
-Z_8C16:
-	ld a,(D_93D9)	; 8C16 3A D9 93
-Z_8C19:
-	cp 0x02	; 8C19 FE 02
-Z_8C1B:
-	jp nz,Z_8C20	; 8C1B 20 03
-Z_8C1D:
-	call il_ix_inc	; 8C1D DD 34 0D
-	db 0x0D
-Z_8C20:
-	ld a,(D_93EB)	; 8C20 3A EB 93
-Z_8C23:
-	push af	; 8C23 CB 8F
-	and 0xFD
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_8C25:
-	push af	; 8C25 CB D7
-	or 0x04
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_8C27:
-	ld (D_93EB),a	; 8C27 32 EB 93
-Z_8C2A:
-	ld de,D_93DC	; 8C2A 11 DC 93
-Z_8C2D:
-	push hl	; 8C2D ED 53 DA 93
-	ld h,d
-	ld l,e
-	ld (D_93DA),hl
-	pop hl
-Z_8C31:
-	rst 0x10	; 8C31 DD 7E FD
-	db 0xFD
-Z_8C34:
-	add a,0x02	; 8C34 C6 02
-Z_8C36:
-	cp 0x32	; 8C36 FE 32
-Z_8C38:
-	jp c,Z_8C3C	; 8C38 38 02
-Z_8C3A:
-	ld a,0x32	; 8C3A 3E 32
-Z_8C3C:
-	rst 0x20	; 8C3C DD 77 FD
-	db 0xFD
-Z_8C3F:
-	call il_iy_lda	; 8C3F FD 7E FD
-	db 0xFD
-Z_8C42:
-	and a	; 8C42 A7
-Z_8C43:
-	jp z,Z_8C48	; 8C43 28 03
-Z_8C45:
-	call il_iy_dec	; 8C45 FD 35 FD
-	db 0xFD
-Z_8C48:
-	rst 0x08	; 8C48 DD CB 00 6E
-	db 0x00, 0x20
-Z_8C4C:
-	ret nz	; 8C4C C0
-Z_8C4D:
-	xor a	; 8C4D AF
-Z_8C4E:
-	ld (D_AA83),a	; 8C4E 32 83 AA
-Z_8C51:
-	ld hl,0x02	; 8C51 21 02 00
-Z_8C54:
-	ld (BLIT_Y),hl	; 8C54 22 00 33
-Z_8C57:
-	ld hl,0x8039	; 8C57 21 39 80
-Z_8C5A:
-	ld (BLIT_SRC),hl	; 8C5A 22 02 33
-Z_8C5D:
-	jp Z_AA80	; 8C5D C3 80 AA
-Z_8C60:
-	ld hl,0x0418	; 8C60 21 18 04
-Z_8C63:
-	ld de,D_9402	; 8C63 11 02 94
-Z_8C66:
-	ld (il_tmp),hl	; 8C66 DD 21 25 94
-	ld hl,D_9425
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_8C6A:
-	call Z_8C77	; 8C6A CD 77 8C
-Z_8C6D:
-	ld hl,0x7018	; 8C6D 21 18 70
-Z_8C70:
-	ld de,D_9401	; 8C70 11 01 94
-Z_8C73:
-	ld (il_tmp),hl	; 8C73 DD 21 0B 94
-	ld hl,D_940B
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_8C77:
-	push hl	; 8C77 E5
-Z_8C78:
-	ld a,(D_93EB)	; 8C78 3A EB 93
-Z_8C7B:
-	ld c,a	; 8C7B 4F
-Z_8C7C:
-	ld (il_a),a	; 8C7C CB 57
-	and 0x04
-	ld a,(il_a)
-Z_8C7E:
-	ld a,0x3E	; 8C7E 3E 3E
-Z_8C80:
-	jp z,Z_8CE7	; 8C80 28 65
-Z_8C82:
-	ld (il_a),a	; 8C82 CB 01
-	ld a,c
-	rlca
+NAT_action_224:
+	jp z,ac_19
+NAT_action_225:
+	dec hl
+NAT_action_226:
+	dec hl
+NAT_action_227:
+	ld a,(hl)
+NAT_action_228:
+	or 0x20
+NAT_action_229:
+	ld (hl),a
+NAT_action_230:
+	ret
+ac_19:
+NAT_action_232:
+	ld a,(hl)
+NAT_action_233:
+	and 0x10
+NAT_action_234:
+	jp nz,ac_rel
+NAT_action_235:
+	inc hl
+NAT_action_236:
+	ld a,(hl)
+NAT_action_237:
+	and 8
+NAT_action_238:
+	ret nz
+NAT_action_239:
+	ld a,(0x93EB)
+NAT_action_240:
+	and 2
+NAT_action_241:
+	jp z,ac_34
+NAT_action_242:
+	ld a,(hl)
+NAT_action_243:
+	rrca
+NAT_action_244:
+	ld b,a
+NAT_action_245:
+	ld a,(0x93EB)
+NAT_action_246:
+	xor b
+NAT_action_247:
+	and 0x80
+NAT_action_248:
+	ret z
+ac_34:
+NAT_action_250:
+	ld a,(hl)
+NAT_action_251:
+	and 0x40
+NAT_action_252:
+	ret z
+NAT_action_253:
+	ld a,(hl)
+NAT_action_254:
+	and 8
+NAT_action_255:
+	ret nz
+NAT_action_256:
+	jp Z_8E73
+ac_rel:
+NAT_action_258:
+	ld hl,(z80_ix)
+NAT_action_259:
+	inc hl
+NAT_action_260:
+	ld a,(hl)
+NAT_action_261:
+	and 2
+NAT_action_262:
+	jp nz,ac_b7
+NAT_action_263:
+	ld a,(hl)
+NAT_action_264:
+	and 4
+NAT_action_265:
+	jp nz,ac_7e
+NAT_action_266:
+	dec hl
+NAT_action_267:
+	dec hl
+NAT_action_268:
+	dec hl
+NAT_action_269:
+	ld a,(hl)
+NAT_action_270:
+	and 0x10
+NAT_action_271:
+	ret z
+NAT_action_272:
+	ld hl,(z80_ix)
+NAT_action_273:
+	inc hl
+NAT_action_274:
+	ld b,(hl)
+NAT_action_275:
+	inc hl
+NAT_action_276:
+	inc hl
+NAT_action_277:
+	ld a,(hl)
+NAT_action_278:
 	ld c,a
-	ld a,(il_a)
-Z_8C84:
-	rst 0x10	; 8C84 DD 7E 01
-	db 0x01
-Z_8C87:
-	xor c	; 8C87 A9
-Z_8C88:
-	and 0x01	; 8C88 E6 01
-Z_8C8A:
-	ld a,0x3E	; 8C8A 3E 3E
-Z_8C8C:
-	jp nz,Z_8CE7	; 8C8C 20 59
-Z_8C8E:
-	ld hl,(D_93DA)	; 8C8E 2A DA 93
-Z_8C91:
-	ld a,(hl)	; 8C91 7E
-Z_8C92:
-	inc hl	; 8C92 23
-Z_8C93:
-	ld (D_93DA),hl	; 8C93 22 DA 93
-Z_8C96:
-	cp 0xFF	; 8C96 FE FF
-Z_8C98:
-	jp nz,Z_8CE7	; 8C98 20 4D
-Z_8C9A:
-	ld hl,D_93F1	; 8C9A 21 F1 93
-Z_8C9D:
-	ld a,0x2A	; 8C9D 3E 2A
-Z_8C9F:
-	ld (hl),a	; 8C9F 77
-Z_8CA0:
-	dec hl	; 8CA0 2B
-Z_8CA1:
-	add a,0x08	; 8CA1 C6 08
-Z_8CA3:
-	ld (hl),a	; 8CA3 77
-Z_8CA4:
-	dec hl	; 8CA4 2B
-Z_8CA5:
-	ld (hl),0x00	; 8CA5 36 00
-Z_8CA7:
-	ld a,(D_93EB)	; 8CA7 3A EB 93
-Z_8CAA:
-	push af	; 8CAA CB 97
-	and 0xFB
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_8CAC:
-	push af	; 8CAC CB E7
+NAT_action_279:
+	ld a,b
+NAT_action_280:
+	rrca
+NAT_action_281:
+	ld a,c
+NAT_action_282:
+	jp nc,ac_r1
+NAT_action_283:
+	cp 0x60
+NAT_action_284:
+	jp nc,ac_lo
+NAT_action_285:
+	jp ac_r2
+ac_r1:
+NAT_action_287:
+	cp 0x14
+NAT_action_288:
+	jp c,ac_lo
+ac_r2:
+NAT_action_290:
+	ld hl,(z80_ix)
+NAT_action_291:
+	dec hl
+NAT_action_292:
+	ld a,(hl)
+NAT_action_293:
+	and 4
+NAT_action_294:
+	jp nz,ac_hi
+NAT_action_295:
+	inc hl
+NAT_action_296:
+	ld a,(hl)
+NAT_action_297:
+	or 0x80
+NAT_action_298:
+	ld (hl),a
+NAT_action_299:
+	dec hl
+NAT_action_300:
+	dec hl
+NAT_action_301:
+	ld a,(hl)
+NAT_action_302:
+	or 0x20
+NAT_action_303:
+	ld (hl),a
+NAT_action_304:
+	xor a
+NAT_action_305:
+	ld de,9
+NAT_action_306:
+	add hl,de
+NAT_action_307:
+	ld (hl),a
+NAT_action_308:
+	jp Z_9DC2
+ac_hi:
+NAT_action_310:
+	inc hl
+NAT_action_311:
+	inc hl
+NAT_action_312:
+	ld a,(hl)
+NAT_action_313:
+	or 4
+NAT_action_314:
+	ld (hl),a
+NAT_action_315:
+	jp ac_7e
+ac_lo:
+NAT_action_317:
+	ld hl,(z80_ix)
+NAT_action_318:
+	inc hl
+NAT_action_319:
+	ld a,(hl)
+NAT_action_320:
+	or 2
+NAT_action_321:
+	ld (hl),a
+ac_b7:
+NAT_action_323:
+	ld hl,(z80_ix)
+NAT_action_324:
+	dec hl
+NAT_action_325:
+	ld c,(hl)
+NAT_action_326:
+	inc hl
+NAT_action_327:
+	inc hl
+NAT_action_328:
+	inc hl
+NAT_action_329:
+	ld a,(hl)
+NAT_action_330:
+	cp 0x55
+NAT_action_331:
+	jp c,ac_b1
+NAT_action_332:
+	ld a,c
+NAT_action_333:
+	rrca
+NAT_action_334:
+	ld a,1
+NAT_action_335:
+	jp nc,ac_pose
+NAT_action_336:
+	ld a,c
+NAT_action_337:
+	and 2
+NAT_action_338:
+	jp nz,ac_c9
+NAT_action_339:
+	jp Z_90EF
+ac_b1:
+NAT_action_341:
+	ld a,c
+NAT_action_342:
+	rrca
+NAT_action_343:
+	ld a,3
+NAT_action_344:
+	jp nc,ac_pose
+NAT_action_345:
+	ld a,c
+NAT_action_346:
+	and 2
+NAT_action_347:
+	jp nz,Z_90EF
+ac_c9:
+NAT_action_349:
+	ld hl,(z80_ix)
+NAT_action_350:
+	inc hl
+NAT_action_351:
+	ld a,(hl)
+NAT_action_352:
+	rrca
+NAT_action_353:
+	ld a,4
+NAT_action_354:
+	jp nc,ac_pose
+NAT_action_355:
+	ld a,0x0C
+NAT_action_356:
+	jp ac_pose
+ac_7e:
+NAT_action_358:
+	ld hl,(z80_ix)
+NAT_action_359:
+	dec hl
+NAT_action_360:
+	ld c,(hl)
+NAT_action_361:
+	inc hl
+NAT_action_362:
+	inc hl
+NAT_action_363:
+	ld a,(hl)
+NAT_action_364:
+	rrca
+NAT_action_365:
+	jp nc,ac_7f
+NAT_action_366:
+	ld a,c
+NAT_action_367:
+	and 4
+NAT_action_368:
+	ld a,0x0C
+NAT_action_369:
+	jp z,ac_pose
+NAT_action_370:
+	ld a,c
+NAT_action_371:
+	and 8
+NAT_action_372:
+	jp nz,Z_90EF
+NAT_action_373:
+	ld a,1
+NAT_action_374:
+	jp ac_pose
+ac_7f:
+NAT_action_376:
+	ld a,c
+NAT_action_377:
+	and 4
+NAT_action_378:
+	ld a,4
+NAT_action_379:
+	jp z,ac_pose
+NAT_action_380:
+	ld a,c
+NAT_action_381:
+	and 8
+NAT_action_382:
+	jp z,Z_90EF
+NAT_action_383:
+	ld a,3
+ac_pose:
+NAT_action_385:
+	ld hl,(z80_ix)
+NAT_action_386:
+	dec hl
+NAT_action_387:
+	ld (hl),a
+NAT_action_388:
+	jp Z_9DC2
+Z_90EF:
+NAT_action_390:
+	ld hl,(z80_ix)
+NAT_action_391:
+	inc hl
+NAT_action_392:
+	ld a,(hl)
+NAT_action_393:
+	rrca
+NAT_action_394:
+	ld a,2
+NAT_action_395:
+	jp nc,ac_s1
+NAT_action_396:
+	ld a,0x82
+ac_s1:
+NAT_action_398:
+	ld (0x93EB),a
+NAT_action_399:
+	dec hl
+NAT_action_400:
+	ld a,(hl)
+NAT_action_401:
+	and 0xE3
+NAT_action_402:
+	ld (hl),a
+NAT_action_403:
+	call Z_9391
+NAT_action_404:
+	ld a,0xFD
+NAT_action_405:
+	call ac_at
+NAT_action_406:
+	ld a,(hl)
+NAT_action_407:
+	ld (0x944D),a
+NAT_action_408:
+	dec hl
+NAT_action_409:
+	ld e,(hl)
+NAT_action_410:
+	dec e
+NAT_action_411:
+	ld d,0
+NAT_action_412:
+	ld a,0x0A
+NAT_action_413:
+	call ac_at2
+NAT_action_414:
+	ld a,(hl)
+NAT_action_415:
+	ld (0x944E),a
+NAT_action_416:
+	ld hl,0x943A
+NAT_action_417:
+	add hl,de
+NAT_action_418:
+	ld a,(hl)
+NAT_action_419:
+	ld (0x9450),a
+NAT_action_420:
+	ld hl,(z80_ix)
+NAT_action_421:
+	inc hl
+NAT_action_422:
+	ld b,(hl)
+NAT_action_423:
+	inc hl
+NAT_action_424:
+	ld a,(hl)
+NAT_action_425:
+	sub 0x58
+NAT_action_426:
+	jp nc,ac_s2
+NAT_action_427:
+	cpl
+NAT_action_428:
+	inc a
+ac_s2:
+NAT_action_430:
+	ld c,a
+NAT_action_431:
+	inc hl
+NAT_action_432:
+	ld a,(hl)
+NAT_action_433:
+	ld d,a
+NAT_action_434:
+	ld a,b
+NAT_action_435:
+	rrca
+NAT_action_436:
+	ld a,d
+NAT_action_437:
+	jp nc,ac_s3
+NAT_action_438:
+	cpl
+NAT_action_439:
+	inc a
+NAT_action_440:
+	add a,0x74
+ac_s3:
+NAT_action_442:
+	add a,c
+NAT_action_443:
+	or a
+NAT_action_444:
+	rra
+NAT_action_445:
+	ld (0x944F),a
+NAT_action_446:
+	inc hl
+NAT_action_447:
+	ld a,(hl)
+NAT_action_448:
+	sub 0x1A
+NAT_action_449:
+	ld e,a
+NAT_action_450:
+	inc hl
+NAT_action_451:
+	ld d,(hl)
+NAT_action_452:
+	ld hl,(z80_ix)
+NAT_action_453:
+	dec hl
+NAT_action_454:
+	ld c,(hl)
+NAT_action_455:
+	ld a,b
+NAT_action_456:
+	rrca
+NAT_action_457:
+	jp nc,ac_s5
+NAT_action_458:
+	inc d
+NAT_action_459:
+	ld a,c
+NAT_action_460:
+	rrca
+NAT_action_461:
+	jp c,ac_s6
+NAT_action_462:
+	ld a,d
+NAT_action_463:
+	add a,8
+	jp	NAT_action_464	; мост в следующий кусок
+	org	0x1548
+NAT_action_464:
+	ld d,a
+NAT_action_465:
+	jp ac_s7
+ac_s5:
+NAT_action_467:
+	dec d
+NAT_action_468:
+	ld a,c
+NAT_action_469:
+	rrca
+NAT_action_470:
+	jp nc,ac_s7
+ac_s6:
+NAT_action_472:
+	inc d
+NAT_action_473:
+	inc d
+ac_s7:
+NAT_action_475:
+	ex de,hl
+NAT_action_476:
+	ld (0x93F1),hl
+NAT_action_477:
+	ex de,hl
+NAT_action_478:
+	inc hl
+NAT_action_479:
+	inc hl
+NAT_action_480:
+	inc hl
+NAT_action_481:
+	ld a,(hl)
+NAT_action_482:
+	ld e,a
+NAT_action_483:
+	ex de,hl
+NAT_action_484:
+	ld (0x93F3),hl
+NAT_action_485:
+	ex de,hl
+NAT_action_486:
+	dec hl
+NAT_action_487:
+	dec hl
+NAT_action_488:
+	dec hl
+NAT_action_489:
+	dec hl
+NAT_action_490:
+	ld a,(hl)
+NAT_action_491:
+	or 0x40
+NAT_action_492:
+	ld (hl),a
+NAT_action_493:
+	inc hl
+NAT_action_494:
+	inc hl
+NAT_action_495:
+	inc hl
+NAT_action_496:
+	ld a,(hl)
+NAT_action_497:
 	or 0x10
-	ld (il_a),a
+NAT_action_498:
+	ld (hl),a
+NAT_action_499:
+	ret
+Z_8E73:
+NAT_action_501:
+	ld a,(0x93EB)
+NAT_action_502:
+	ld c,a
+NAT_action_503:
+	and 8
+NAT_action_504:
+	jp z,ac_t1
+NAT_action_505:
+	ld a,0x10
+NAT_action_506:
+	call ac_at
+NAT_action_507:
+	inc (hl)
+ac_t1:
+NAT_action_509:
+	ld hl,(z80_ix)
+NAT_action_510:
+	inc hl
+NAT_action_511:
+	ld a,(hl)
+NAT_action_512:
+	rrca
+NAT_action_513:
+	ld a,0x21
+NAT_action_514:
+	jp nc,ac_t2
+NAT_action_515:
+	ld a,0xA1
+ac_t2:
+NAT_action_517:
+	ld (0x93EB),a
+NAT_action_518:
+	xor a
+NAT_action_519:
+	ld (0x93F5),a
+NAT_action_520:
+	ld hl,(z80_iy)
+NAT_action_521:
+	dec hl
+NAT_action_522:
+	dec hl
+NAT_action_523:
+	ld a,(hl)
+NAT_action_524:
+	and 0xDF
+NAT_action_525:
+	ld (hl),a
+NAT_action_526:
+	inc hl
+NAT_action_527:
+	inc hl
+NAT_action_528:
+	ld a,(hl)
+NAT_action_529:
+	ld b,a
+NAT_action_530:
+	and 0x43
+NAT_action_531:
+	ld (hl),a
+NAT_action_532:
+	inc hl
+NAT_action_533:
+	ld a,(hl)
+NAT_action_534:
+	and 0xA9
+NAT_action_535:
+	ld (hl),a
+NAT_action_536:
+	ld hl,(z80_ix)
+NAT_action_537:
+	ld a,(hl)
+NAT_action_538:
+	or 0x10
+NAT_action_539:
+	ld (hl),a
+NAT_action_540:
+	dec hl
+NAT_action_541:
+	dec hl
+NAT_action_542:
+	ld a,(hl)
+NAT_action_543:
+	and 0xEF
+NAT_action_544:
+	ld (hl),a
+NAT_action_545:
+	ld de,8
+NAT_action_546:
+	add hl,de
+NAT_action_547:
+	ld (hl),3
+NAT_action_548:
+	ld a,c
+NAT_action_549:
+	rrca
+NAT_action_550:
+	jp c,ac_t3
+NAT_action_551:
+	ld hl,(z80_ix)
+NAT_action_552:
+	ld a,(hl)
+NAT_action_553:
+	rrca
+NAT_action_554:
+	jp c,ac_t3
+NAT_action_555:
+	ld a,(0x93F1)
+NAT_action_556:
+	ld c,a
+NAT_action_557:
+	ld a,(0x93F3)
+NAT_action_558:
+	sub c
+NAT_action_559:
+	cp 0x14
+NAT_action_560:
+	jp c,ac_t3
+NAT_action_561:
+	dec hl
+NAT_action_562:
+	dec hl
+NAT_action_563:
+	ld a,(hl)
+NAT_action_564:
+	or 0x40
+NAT_action_565:
+	ld (hl),a
+NAT_action_566:
+	inc hl
+NAT_action_567:
+	inc hl
+NAT_action_568:
+	inc hl
+NAT_action_569:
+	inc hl
+NAT_action_570:
+	ld a,(hl)
+NAT_action_571:
+	sub 2
+NAT_action_572:
+	inc hl
+NAT_action_573:
+	ld c,(hl)
+NAT_action_574:
+	inc hl
+NAT_action_575:
+	ld (hl),a
+NAT_action_576:
+	inc hl
+NAT_action_577:
+	ld (hl),c
+ac_t3:
+NAT_action_579:
+	ld a,b
+NAT_action_580:
+	and 0x20
+NAT_action_581:
+	jp z,Z_9DC2
+NAT_action_582:
+	ld hl,(z80_iy)
+NAT_action_583:
+	ld de,8
+NAT_action_584:
+	add hl,de
+NAT_action_585:
+	ld (hl),4
+NAT_action_586:
+	xor a
+	jp	NAT_action_587	; мост в следующий кусок
+	org	0x1748
+NAT_action_587:
+	ld (0x93D3),a
+NAT_action_588:
+	jp Z_9DC2
+ac_land:
+NAT_action_590:
+	call Z_9009
+NAT_action_591:
+	ld hl,(z80_ix)
+NAT_action_592:
+	inc hl
+NAT_action_593:
+	inc hl
+NAT_action_594:
+	ld b,(hl)
+NAT_action_595:
+	inc hl
+NAT_action_596:
+	inc hl
+NAT_action_597:
+	ld a,(hl)
+NAT_action_598:
+	add a,4
+NAT_action_599:
+	ld (hl),a
+NAT_action_600:
+	cp b
+NAT_action_601:
+	ret c
+	jp	NAT_action_602	; мост в следующий кусок
+	org	0x18B7
+NAT_action_602:
+	ld hl,(z80_ix)
+NAT_action_603:
+	ld a,(hl)
+NAT_action_604:
+	ld b,a
+NAT_action_605:
+	and 0x10
+NAT_action_606:
+	ld (hl),a
+NAT_action_607:
+	inc hl
+NAT_action_608:
+	ld a,(hl)
+NAT_action_609:
+	and 0x71
+NAT_action_610:
+	ld (hl),a
+NAT_action_611:
+	ld de,5
+	jp	NAT_action_612	; мост в следующий кусок
+	org	0x190A
+NAT_action_612:
+	add hl,de
+NAT_action_613:
+	ld (hl),0
+NAT_action_614:
+	ld a,b
+NAT_action_615:
+	and 8
+NAT_action_616:
+	ret z
+NAT_action_617:
+	ld a,(0x93D6)
+NAT_action_618:
+	and a
+NAT_action_619:
+	ret nz
+NAT_action_620:
+	ld e,1
+NAT_action_621:
+	jp Z_9919
+ac_at:
+NAT_action_623:
+	ld hl,(z80_ix)
+NAT_action_624:
+	ld e,a
+NAT_action_625:
+	add a,a
+NAT_action_626:
+	sbc a,a
+NAT_action_627:
+	ld d,a
+NAT_action_628:
+	add hl,de
+NAT_action_629:
+	ret
+ac_at2:
+NAT_action_631:
+	push de
+NAT_action_632:
+	call ac_at
+NAT_action_633:
+	pop de
+NAT_action_634:
+	ret
+Z_869C:
+NAT_ai_1:
+	ld hl,0
+NAT_ai_2:
+	ld (0x8696),hl
+NAT_ai_3:
+	ld a,(0x93D2)
+NAT_ai_4:
+	and 3
+NAT_ai_5:
+	sub 4
+NAT_ai_6:
+	cpl
+NAT_ai_7:
+	inc a
+NAT_ai_8:
+	dec a
+NAT_ai_9:
+	ld (ai_lvl),a
+NAT_ai_10:
+	call Z_386E
+NAT_ai_11:
+	and 3
+NAT_ai_12:
+	ld c,0x0C
+NAT_ai_13:
+	jp z,ai_s1
+NAT_ai_14:
+	cp 2
+NAT_ai_15:
+	ld c,1
+NAT_ai_16:
+	jp c,ai_s1
+NAT_ai_17:
+	ld c,4
+NAT_ai_18:
+	jp z,ai_s1
+NAT_ai_19:
+	ld c,3
+ai_s1:
+NAT_ai_21:
+	ld a,c
+NAT_ai_22:
+	ld (0x8699),a
+NAT_ai_23:
+	ld hl,IX0
+NAT_ai_24:
+	ld (z80_ix),hl
+NAT_ai_25:
+	ld hl,IY0
+NAT_ai_26:
+	ld (z80_iy),hl
+Z_86D0:
+NAT_ai_28:
+	call Z_A160
+NAT_ai_29:
+	push af
+NAT_ai_30:
+	ld de,0x46
+NAT_ai_31:
+	ld hl,0x66
+NAT_ai_32:
+	jp c,ai_t1
+NAT_ai_33:
+	ld a,(IY2)
+NAT_ai_34:
+	ld b,a
+NAT_ai_35:
+	ld a,(IX2)
+NAT_ai_36:
+	cp b
+NAT_ai_37:
+	ld hl,0x4E
+NAT_ai_38:
+	jp c,ai_t1
+NAT_ai_39:
+	ld de,0x5E
+NAT_ai_40:
+	ld hl,0x68
+ai_t1:
+NAT_ai_42:
+	call Z_388A
+NAT_ai_43:
+	ld h,0x14
+NAT_ai_44:
+	ld a,l
+NAT_ai_45:
+	and 0xFE
+NAT_ai_46:
+	ld l,a
+NAT_ai_47:
+	ld (0x869A),hl
+NAT_ai_48:
 	pop af
-	ld a,(il_a)
-Z_8CAE:
-	ld (D_93EB),a	; 8CAE 32 EB 93
-Z_8CB1:
-	ld a,(D_9400)	; 8CB1 3A 00 94
-Z_8CB4:
-	and a	; 8CB4 A7
-Z_8CB5:
-	jp z,Z_8CC2	; 8CB5 28 0B
-Z_8CB7:
-	and 0x80	; 8CB7 E6 80
-Z_8CB9:
-	ld c,a	; 8CB9 4F
-Z_8CBA:
-	ld a,(D_93EB)	; 8CBA 3A EB 93
-Z_8CBD:
-	and 0x80	; 8CBD E6 80
-Z_8CBF:
-	xor c	; 8CBF A9
-Z_8CC0:
-	jp z,Z_8CD4	; 8CC0 28 12
-Z_8CC2:
-	ld a,(D_93D9)	; 8CC2 3A D9 93
-Z_8CC5:
-	ex de,hl	; 8CC5 EB
-Z_8CC6:
-	add a,(hl)	; 8CC6 86
-Z_8CC7:
-	ld (hl),a	; 8CC7 77
-	jp	Z_8CC8	; мост в следующий кусок
+NAT_ai_49:
+	ld de,0x18
+NAT_ai_50:
+	jp c,ai_t2
+NAT_ai_51:
+	ld de,0x0A
+ai_t2:
+NAT_ai_53:
+	ld hl,0x22
+NAT_ai_54:
+	call Z_388A
+NAT_ai_55:
+	ld a,l
+NAT_ai_56:
+	and 0xFE
+NAT_ai_57:
+	ld (0x869B),a
+NAT_ai_58:
+	ret
+Z_870E:
+NAT_ai_60:
+	ld hl,IX0
+NAT_ai_61:
+	ld (z80_ix),hl
+NAT_ai_62:
+	ld hl,IY0
+NAT_ai_63:
+	ld (z80_iy),hl
+NAT_ai_64:
+	ld a,(0x93D6)
+NAT_ai_65:
+	and a
+NAT_ai_66:
+	jp z,ai_72d
+NAT_ai_67:
+	ld a,(IX0)
+NAT_ai_68:
+	and 0x10
+NAT_ai_69:
+	jp z,ai_77f
+NAT_ai_70:
+	ld a,(IX0)
+NAT_ai_71:
+	rrca
+NAT_ai_72:
+	jp c,ai_776
+NAT_ai_73:
+	ld a,0x10
+NAT_ai_74:
+	jp ai_8e5
+ai_72d:
+NAT_ai_76:
+	ld a,(0x9400)
+NAT_ai_77:
+	and a
+NAT_ai_78:
+	jp z,ai_749
+NAT_ai_79:
+	ld b,a
+NAT_ai_80:
+	and 0x80
+NAT_ai_81:
+	ret nz
+NAT_ai_82:
+	ld a,b
+NAT_ai_83:
+	and 7
+NAT_ai_84:
+	cp 4
+NAT_ai_85:
+	ret nz
+NAT_ai_86:
+	ld hl,0x6454
+NAT_ai_87:
+	ld a,(IX1)
+NAT_ai_88:
+	and 0xBF
+NAT_ai_89:
+	ld (IX1),a
+NAT_ai_90:
+	ld a,(IX2)
+NAT_ai_91:
+	and 0xFE
+NAT_ai_92:
+	ld (IX2),a
+NAT_ai_93:
+	jp ai_89f
+ai_749:
+NAT_ai_95:
+	ld a,(IX0)
+NAT_ai_96:
+	and 0x10
+NAT_ai_97:
+	jp z,ai_873
+NAT_ai_98:
+	ld a,(IX0)
+NAT_ai_99:
+	rrca
+NAT_ai_100:
+	jp nc,ai_783
+NAT_ai_101:
+	ld a,(IX0)
+NAT_ai_102:
+	and 0x20
+NAT_ai_103:
+	ld a,(0x8699)
+NAT_ai_104:
+	jp nz,ai_8e5
+NAT_ai_105:
+	ld a,(IX0)
+NAT_ai_106:
+	and 8
+NAT_ai_107:
+	jp nz,ai_776
+NAT_ai_108:
+	ld a,(IX3)
+NAT_ai_109:
+	cp 0x20
+NAT_ai_110:
+	jp nc,ai_77f
+NAT_ai_111:
+	call Z_A169
+NAT_ai_112:
+	jp nz,ai_8c6
+NAT_ai_113:
+	jp ai_77f
+ai_776:
+NAT_ai_115:
+	ld a,(IX0)
+NAT_ai_116:
+	and 2
+NAT_ai_117:
+	ld a,0x10
+NAT_ai_118:
+	jp nz,ai_8e5
+ai_77f:
+NAT_ai_120:
+	xor a
+NAT_ai_121:
+	jp ai_8e5
+ai_783:
+NAT_ai_123:
+	ld a,(0x8697)
+NAT_ai_124:
+	and a
+NAT_ai_125:
+	jp z,ai_78f
+NAT_ai_126:
+	dec a
+NAT_ai_127:
+	ld (0x8697),a
+NAT_ai_128:
+	jp nz,ai_7a2
+ai_78f:
+NAT_ai_130:
+	ld a,(IXA)
+NAT_ai_131:
+	cp 4
+NAT_ai_132:
+	jp nc,ai_7fe
+NAT_ai_133:
+	ld c,a
+NAT_ai_134:
+	call Z_A172
+NAT_ai_135:
+	or 3
+NAT_ai_136:
+	add a,c
+NAT_ai_137:
+	rlca
+NAT_ai_138:
+	ld (0x8697),a
+ai_7a2:
+NAT_ai_140:
+	ld a,(IY2)
+NAT_ai_141:
+	ld b,a
+NAT_ai_142:
+	ld a,(IX2)
+NAT_ai_143:
+	sub b
+NAT_ai_144:
+	ld e,1
+NAT_ai_145:
+	jp nc,ai_7af
+NAT_ai_146:
+	dec e
+NAT_ai_147:
+	cpl
+NAT_ai_148:
+	inc a
+ai_7af:
+NAT_ai_150:
+	cp 6
+NAT_ai_151:
+	jp nc,ai_77f
+NAT_ai_152:
+	ld a,(IY3)
+NAT_ai_153:
+	ld b,a
+NAT_ai_154:
+	ld a,(IX3)
+NAT_ai_155:
+	add a,2
+NAT_ai_156:
+	sub b
+NAT_ai_157:
+	ld d,1
+NAT_ai_158:
+	jp nc,ai_7c2
+NAT_ai_159:
+	dec d
+NAT_ai_160:
+	cpl
+NAT_ai_161:
+	inc a
+ai_7c2:
+NAT_ai_163:
+	cp 0x0E
+NAT_ai_164:
+	jp nc,ai_77f
+NAT_ai_165:
+	cp 6
+NAT_ai_166:
+	jp c,ai_7e3
+NAT_ai_167:
+	ld a,d
+NAT_ai_168:
+	and a
+NAT_ai_169:
+	ld a,(IXM1)
+NAT_ai_170:
+	jp z,ai_7da
+NAT_ai_171:
+	xor 0x0C
+NAT_ai_172:
+	jp z,ai_77f
+NAT_ai_173:
+	ld a,0x1C
+NAT_ai_174:
+	jp ai_8c6
+ai_7da:
+NAT_ai_176:
+	xor 4
+NAT_ai_177:
+	jp z,ai_77f
+NAT_ai_178:
+	ld a,0x14
+NAT_ai_179:
+	jp ai_8c6
+ai_7e3:
+NAT_ai_181:
+	ld a,e
+NAT_ai_182:
+	and a
+NAT_ai_183:
+	ld a,(IXM1)
+NAT_ai_184:
+	jp z,ai_7f4
+NAT_ai_185:
+	xor 3
+NAT_ai_186:
+	jp z,ai_77f
+NAT_ai_187:
+	ld a,0x13
+NAT_ai_188:
+	jp ai_8c6
+ai_7f4:
+NAT_ai_190:
+	xor 1
+NAT_ai_191:
+	jp z,ai_77f
+NAT_ai_192:
+	ld a,0x11
+NAT_ai_193:
+	jp ai_8c6
+ai_7fe:
+NAT_ai_195:
+	ld a,(IXM1)
+NAT_ai_196:
+	and 0x0C
+NAT_ai_197:
+	cp 4
+NAT_ai_198:
+	jp z,ai_813
+NAT_ai_199:
+	ld a,(0x8696)
+NAT_ai_200:
+	and 8
+NAT_ai_201:
+	jp nz,ai_813
+NAT_ai_202:
+	ld a,0x14
+NAT_ai_203:
+	jp ai_8c6
+ai_813:
+NAT_ai_205:
+	ld hl,0x0754
+NAT_ai_206:
+	ld a,(IX2)
+NAT_ai_207:
+	cp l
+NAT_ai_208:
+	jp nz,ai_825
+NAT_ai_209:
+	ld a,(IX3)
+NAT_ai_210:
+	cp h
+NAT_ai_211:
+	ld a,0x10
+NAT_ai_212:
+	jp z,ai_8e5
+ai_825:
+NAT_ai_214:
+	ld a,(ai_lvl)
+NAT_ai_215:
+	inc a
+NAT_ai_216:
+	cpl
+NAT_ai_217:
+	inc a
+NAT_ai_218:
+	ld e,a
+NAT_ai_219:
+	ld a,(IY3)
+NAT_ai_220:
+	add a,e
+NAT_ai_221:
+	cp 0x0E
+NAT_ai_222:
+	jp nc,ai_844
+NAT_ai_223:
+	cp 4
+NAT_ai_224:
+	jp c,ai_844
+NAT_ai_225:
+	ld a,(IY2)
+NAT_ai_226:
+	cp 0x51
+NAT_ai_227:
+	jp c,ai_844
+NAT_ai_228:
+	cp 0x58
+NAT_ai_229:
+	jp nc,ai_844
+NAT_ai_230:
+	ld hl,(0x869A)
+ai_844:
+NAT_ai_232:
+	ld a,(ai_lvl)
+NAT_ai_233:
+	ld c,a
+NAT_ai_234:
+	ld b,a
+NAT_ai_235:
+	inc c
+NAT_ai_236:
+	cp 3
+NAT_ai_237:
+	jp c,ai_84f
+NAT_ai_238:
+	inc c
+ai_84f:
+NAT_ai_240:
+	ld e,a
+NAT_ai_241:
+	ld a,(IX2)
+NAT_ai_242:
+	add a,e
+NAT_ai_243:
+	sub l
+NAT_ai_244:
+	jp c,ai_869
+NAT_ai_245:
+	cp c
+NAT_ai_246:
+	jp nc,ai_869
+NAT_ai_247:
+	ld a,(IX3)
+NAT_ai_248:
+	add a,b
+NAT_ai_249:
+	sub h
+NAT_ai_250:
+	jp c,ai_869
+NAT_ai_251:
+	cp c
+NAT_ai_252:
+	jp nc,ai_869
+NAT_ai_253:
+	call Z_86D0
+NAT_ai_254:
+	ld a,0x10
+	jp	NAT_ai_255	; мост в следующий кусок
 	org	0x3304
 D_3304:
 Z_3304:
@@ -1463,220 +1531,284 @@ D_34B4:
 Z_34B4:
 	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; 34B4
 	org	0x352B
-Z_8CC8:
-	ld a,(D_93D3)	; 8CC8 3A D3 93
-Z_8CCB:
-	dec a	; 8CCB 3D
-Z_8CCC:
-	call nz,Z_93AC	; 8CCC C4 AC 93
-Z_8CCF:
-	ld e,0x44	; 8CCF 1E 44
-Z_8CD1:
-	call Z_93B2	; 8CD1 CD B2 93
-Z_8CD4:
-	ld a,(D_93F4)	; 8CD4 3A F4 93
-Z_8CD7:
-	ld h,a	; 8CD7 67
-Z_8CD8:
-	ld l,0x22	; 8CD8 2E 22
-Z_8CDA:
-	ld (BLIT_Y),hl	; 8CDA 22 00 33
-Z_8CDD:
-	ld a,0x48	; 8CDD 3E 48
-Z_8CDF:
-	call Z_9394	; 8CDF CD 94 93
-Z_8CE2:
-	call Z_B01C	; 8CE2 CD 1C B0
-Z_8CE5:
-	ld a,0x42	; 8CE5 3E 42
-Z_8CE7:
-	pop hl	; 8CE7 E1
-Z_8CE8:
-	ld (BLIT_Y),hl	; 8CE8 22 00 33
-Z_8CEB:
-	ld (il_a),a	; 8CEB CB 74
-	ld a,h
-	and 0x40
-	ld a,(il_a)
-Z_8CED:
-	jp z,Z_8CF1	; 8CED 28 02
-Z_8CEF:
-	add a,0x05	; 8CEF C6 05
-Z_8CF1:
-	call Z_9394	; 8CF1 CD 94 93
-Z_8CF4:
-	jp Z_B01C	; 8CF4 C3 1C B0
-Z_8CF7:
-	ld c,0x00	; 8CF7 0E 00
-Z_8CF9:
-	ld a,(D_93EB)	; 8CF9 3A EB 93
-Z_8CFC:
-	ld (il_a),a	; 8CFC CB 6F
-	and 0x20
-	ld a,(il_a)
-Z_8CFE:
-	jp nz,Z_8D08	; 8CFE 20 08
-Z_8D00:
-	ld (il_a),a	; 8D00 CB 47
-	and 0x01
-	ld a,(il_a)
-Z_8D02:
-	jp nz,Z_8D33	; 8D02 20 2F
-Z_8D04:
-	ld (il_a),a	; 8D04 CB 57
-	and 0x04
-	ld a,(il_a)
-Z_8D06:
-	jp z,Z_8D10	; 8D06 28 08
-Z_8D08:
-	and a	; 8D08 A7
-Z_8D09:
-	rst 0x08	; 8D09 DD CB 00 66
-	db 0x00, 0x10
-Z_8D0D:
-	ret z	; 8D0D C8
-Z_8D0E:
-	scf	; 8D0E 37
-Z_8D0F:
-	ret	; 8D0F C9
-Z_8D10:
-	ld (il_a),a	; 8D10 CB 4F
-	and 0x02
-	ld a,(il_a)
-Z_8D12:
-	jp nz,Z_8D2C	; 8D12 20 18
-Z_8D14:
-	ld (il_a),a	; 8D14 CB 5F
-	and 0x08
-	ld a,(il_a)
-Z_8D16:
-	jp z,Z_8D22	; 8D16 28 0A
-Z_8D18:
-	ld c,0xE6	; 8D18 0E E6
-Z_8D1A:
-	rst 0x08	; 8D1A DD CB 00 46
-	db 0x00, 0x01
-Z_8D1E:
-	jp z,Z_8D2E	; 8D1E 28 0E
-Z_8D20:
-	jp Z_8D2C	; 8D20 18 0A
-Z_8D22:
-	ld (il_a),a	; 8D22 CB 67
+NAT_ai_255:
+	jp ai_8e5
+ai_869:
+NAT_ai_257:
+	call ai_attack
+NAT_ai_258:
+	and a
+NAT_ai_259:
+	jp nz,ai_8c6
+NAT_ai_260:
+	ld a,0x10
+NAT_ai_261:
+	jp ai_8c6
+ai_873:
+NAT_ai_263:
+	ld hl,(0x93F3)
+NAT_ai_264:
+	ld a,(0x93EB)
+NAT_ai_265:
+	ld b,a
+NAT_ai_266:
+	and 4
+NAT_ai_267:
+	ret nz
+NAT_ai_268:
+	ld a,b
+NAT_ai_269:
 	and 0x10
-	ld a,(il_a)
-Z_8D24:
-	jp z,Z_8D72	; 8D24 28 4C
-Z_8D26:
-	rst 0x08	; 8D26 DD CB 00 46
-	db 0x00, 0x01
-Z_8D2A:
-	jp z,Z_8D72	; 8D2A 28 46
-Z_8D2C:
-	ld c,0xE2	; 8D2C 0E E2
-Z_8D2E:
-	ld hl,(D_93F1)	; 8D2E 2A F1 93
-Z_8D31:
-	jp Z_8D45	; 8D31 18 12
-Z_8D33:
-	scf	; 8D33 37
-Z_8D34:
-	rst 0x08	; 8D34 DD CB 00 66
-	db 0x00, 0x10
-Z_8D38:
-	ret nz	; 8D38 C0
-Z_8D39:
-	ld hl,(D_93F3)	; 8D39 2A F3 93
-Z_8D3C:
-	call il_iy_bit	; 8D3C FD CB 00 46
-	db 0x00, 0x01
-Z_8D40:
-	jp z,Z_8D45	; 8D40 28 03
-Z_8D42:
-	call il_iy_ldl	; 8D42 FD 6E 04
-	db 0x04
-Z_8D45:
-	push hl	; 8D45 E5
-Z_8D46:
-	push bc	; 8D46 C5
-Z_8D47:
-	call Z_8D72	; 8D47 CD 72 8D
-Z_8D4A:
-	pop bc	; 8D4A C1
-Z_8D4B:
-	pop hl	; 8D4B E1
-Z_8D4C:
-	ret nc	; 8D4C D0
-Z_8D4D:
-	call il_ix_lde	; 8D4D DD 5E 02
-	db 0x02
-Z_8D50:
-	call il_ix_ldd	; 8D50 DD 56 03
-	db 0x03
-Z_8D53:
-	rst 0x08	; 8D53 DD CB 00 46
-	db 0x00, 0x01
-Z_8D57:
-	jp z,Z_8D5F	; 8D57 28 06
-Z_8D59:
-	call il_ix_lde	; 8D59 DD 5E 04
-	db 0x04
-Z_8D5C:
-	call il_ix_ldd	; 8D5C DD 56 05
-	db 0x05
-Z_8D5F:
-	call il_iy_bit	; 8D5F FD CB 00 46
-	db 0x00, 0x01
-Z_8D63:
-	jp z,Z_8D7D	; 8D63 28 18
-Z_8D65:
-	ld a,l	; 8D65 7D
-Z_8D66:
-	sub e	; 8D66 93
-Z_8D67:
-	jp nc,Z_8D6C	; 8D67 30 03
-Z_8D69:
-	cpl	; 8D69 ED 44
+NAT_ai_270:
+	jp nz,ai_89f
+NAT_ai_271:
+	ld a,b
+NAT_ai_272:
+	and 8
+NAT_ai_273:
+	jp nz,ai_88c
+NAT_ai_274:
+	ld a,b
+NAT_ai_275:
+	and 2
+NAT_ai_276:
+	jp z,ai_89f
+NAT_ai_277:
+	ld a,b
+NAT_ai_278:
+	and 0x80
+NAT_ai_279:
+	jp z,ai_89f
+ai_88c:
+NAT_ai_281:
+	ld a,(IX3)
+NAT_ai_282:
+	sub h
+NAT_ai_283:
+	ld e,4
+NAT_ai_284:
+	jp nc,ai_896
+NAT_ai_285:
+	cpl
+NAT_ai_286:
 	inc a
-Z_8D6B:
-	add a,a	; 8D6B 87
-Z_8D6C:
-	cpl	; 8D6C ED 44
+ai_896:
+NAT_ai_288:
+	cp 4
+NAT_ai_289:
+	jp nc,ai_89f
+NAT_ai_290:
+	ld a,0x10
+NAT_ai_291:
+	or e
+NAT_ai_292:
+	jp ai_8c6
+ai_89f:
+NAT_ai_294:
+	call Z_A133
+NAT_ai_295:
+	jp nz,ai_8c6
+NAT_ai_296:
+	call ai_defend
+NAT_ai_297:
+	and a
+NAT_ai_298:
+	jp nz,ai_8be
+NAT_ai_299:
+	ld a,(IX3)
+NAT_ai_300:
+	xor 1
+NAT_ai_301:
+	ld (IX3),a
+NAT_ai_302:
+	ld a,(IX2)
+NAT_ai_303:
+	xor 1
+NAT_ai_304:
+	ld (IX2),a
+NAT_ai_305:
+	xor a
+ai_8be:
+NAT_ai_307:
+	ld b,a
+NAT_ai_308:
+	ld a,(IX1)
+NAT_ai_309:
+	and 0x40
+NAT_ai_310:
+	ld a,b
+NAT_ai_311:
+	jp z,ai_8c6
+NAT_ai_312:
+	or 0x10
+ai_8c6:
+NAT_ai_314:
+	ld c,a
+NAT_ai_315:
+	and a
+NAT_ai_316:
+	jp z,ai_8e5
+NAT_ai_317:
+	ld a,(0x93EB)
+NAT_ai_318:
+	rrca
+NAT_ai_319:
+	ld a,c
+NAT_ai_320:
+	jp nc,ai_8e5
+NAT_ai_321:
+	ld a,(ai_lvl)
+NAT_ai_322:
+	ld b,a
+NAT_ai_323:
+	ld a,(0x8698)
+NAT_ai_324:
 	inc a
-Z_8D6E:
-	add a,c	; 8D6E 81
-Z_8D6F:
-	ld c,a	; 8D6F 4F
-Z_8D70:
-	jp Z_8D7D	; 8D70 18 0B
-Z_8D72:
-	ld hl,(D_93F3)	; 8D72 2A F3 93
-Z_8D75:
-	call il_ix_lde	; 8D75 DD 5E 02
-	db 0x02
-Z_8D78:
-	call il_ix_ldd	; 8D78 DD 56 03
-	db 0x03
-Z_8D7B:
-	ld c,0x00	; 8D7B 0E 00
-Z_8D7D:
-	ld a,e	; 8D7D 7B
-Z_8D7E:
-	add a,c	; 8D7E 81
-Z_8D7F:
-	ld e,a	; 8D7F 5F
-Z_8D80:
-	rst 0x08	; 8D80 DD CB FF 56
-	db 0xFF, 0x04
-Z_8D84:
-	jp z,Z_8DD6	; 8D84 28 50
-Z_8D86:
-	ld c,0x08	; 8D86 0E 08
-Z_8D88:
-	ld b,0x04	; 8D88 06 04
-Z_8D8A:
-	call il_iy_bit	; 8D8A FD CB 00 66
-	db 0x00, 0x10
-	jp	Z_8D8E	; мост в следующий кусок
+NAT_ai_325:
+	cp b
+NAT_ai_326:
+	jp c,ai_8db
+NAT_ai_327:
+	xor a
+ai_8db:
+NAT_ai_329:
+	ld (0x8698),a
+NAT_ai_330:
+	and a
+NAT_ai_331:
+	ld a,c
+NAT_ai_332:
+	jp z,ai_8e5
+NAT_ai_333:
+	ld a,(0x8696)
+ai_8e5:
+NAT_ai_335:
+	ld b,a
+NAT_ai_336:
+	ld a,(IXM2)
+NAT_ai_337:
+	and 0x80
+NAT_ai_338:
+	ld a,b
+NAT_ai_339:
+	jp z,ai_8ed
+NAT_ai_340:
+	and 0xEF
+ai_8ed:
+NAT_ai_342:
+	ld (0xAC4E),a
+NAT_ai_343:
+	ld (0x8696),a
+NAT_ai_344:
+	ret
+ai_attack:
+NAT_ai_346:
+	ld c,0x0C
+NAT_ai_347:
+	ld a,(IX2)
+NAT_ai_348:
+	cp 0x54
+NAT_ai_349:
+	jp nc,ai_906
+NAT_ai_350:
+	ld a,(IY2)
+NAT_ai_351:
+	cp 0x51
+NAT_ai_352:
+	jp nc,ai_906
+NAT_ai_353:
+	ld c,0x10
+ai_906:
+NAT_ai_355:
+	ld a,(IY3)
+NAT_ai_356:
+	ld d,a
+NAT_ai_357:
+	ld a,h
+NAT_ai_358:
+	sub 6
+NAT_ai_359:
+	sub d
+NAT_ai_360:
+	jp nc,ai_a01
+NAT_ai_361:
+	cpl
+NAT_ai_362:
+	inc a
+NAT_ai_363:
+	ld b,a
+NAT_ai_364:
+	ld a,(IX3)
+NAT_ai_365:
+	add a,6
+NAT_ai_366:
+	sub d
+NAT_ai_367:
+	jp c,ai_a01
+NAT_ai_368:
+	ld a,b
+NAT_ai_369:
+	cp c
+NAT_ai_370:
+	jp nc,ai_944
+NAT_ai_371:
+	ld a,(IY2)
+NAT_ai_372:
+	ld d,a
+NAT_ai_373:
+	ld a,(IX2)
+NAT_ai_374:
+	sub d
+NAT_ai_375:
+	ld e,1
+NAT_ai_376:
+	jp nc,ai_92f
+NAT_ai_377:
+	dec e
+ai_92f:
+NAT_ai_379:
+	ld a,d
+NAT_ai_380:
+	cp l
+NAT_ai_381:
+	ld a,1
+NAT_ai_382:
+	jp nc,ai_938
+NAT_ai_383:
+	dec a
+ai_938:
+NAT_ai_385:
+	add a,e
+NAT_ai_386:
+	cp 1
+NAT_ai_387:
+	jp z,ai_a01
+NAT_ai_388:
+	ld a,0x0D
+NAT_ai_389:
+	ret nc
+NAT_ai_390:
+	ld a,0x0F
+NAT_ai_391:
+	ret
+ai_944:
+NAT_ai_393:
+	ld e,1
+NAT_ai_394:
+	ld a,(IY2)
+NAT_ai_395:
+	ld d,a
+NAT_ai_396:
+	ld a,l
+NAT_ai_397:
+	sub d
+NAT_ai_398:
+	jp nc,ai_94f
+NAT_ai_399:
+	dec e
+NAT_ai_400:
+	cpl
+	jp	NAT_ai_401	; мост в следующий кусок
 	org	0x3636
 D_3636:
 Z_3636:
@@ -1722,230 +1854,262 @@ D_36D4:
 Z_36D4:
 	db	0x10, 0xF9, 0xC9	; 36D4
 	org	0x36D7
-Z_8D8E:
-	jp z,Z_8DC0	; 8D8E 28 30
-Z_8D90:
-	ld c,0x06	; 8D90 0E 06
-Z_8D92:
-	call il_iy_bit	; 8D92 FD CB FF 56
-	db 0xFF, 0x04
-Z_8D96:
-	jp z,Z_8DB4	; 8D96 28 1C
-Z_8D98:
-	ld b,0x03	; 8D98 06 03
-Z_8D9A:
-	call il_iy_bit	; 8D9A FD CB FF 5E
-	db 0xFF, 0x08
-	jp	Z_8D9E	; мост в следующий кусок
+NAT_ai_401:
+	inc a
+ai_94f:
+NAT_ai_403:
+	inc a
+NAT_ai_404:
+	and 0xFE
+NAT_ai_405:
+	cp 6
+NAT_ai_406:
+	jp nc,ai_a01
+NAT_ai_407:
+	add a,6
+NAT_ai_408:
+	dec e
+NAT_ai_409:
+	jp z,ai_95e
+NAT_ai_410:
+	cpl
+NAT_ai_411:
+	inc a
+ai_95e:
+NAT_ai_413:
+	add a,l
+NAT_ai_414:
+	ld l,a
+NAT_ai_415:
+	jp ai_a01
 	org	0x36F0
 D_36F0:
 Z_36F0:
 	db	0xC3, 0x9B, 0x40	; 36F0
 	org	0x36F3
-Z_8D9E:
-	jp nz,Z_8DAB	; 8D9E 20 0B
-Z_8DA0:
-	ld b,0x06	; 8DA0 06 06
-Z_8DA2:
-	rst 0x08	; 8DA2 DD CB FF 5E
-	db 0xFF, 0x08
-Z_8DA6:
-	jp nz,Z_8DC0	; 8DA6 20 18
-Z_8DA8:
-	dec b	; 8DA8 05
-Z_8DA9:
-	jp Z_8DC0	; 8DA9 18 15
-Z_8DAB:
-	rst 0x08	; 8DAB DD CB FF 5E
-	db 0xFF, 0x08
-Z_8DAF:
-	jp z,Z_8DC0	; 8DAF 28 0F
-Z_8DB1:
-	inc b	; 8DB1 04
-Z_8DB2:
-	jp Z_8DC0	; 8DB2 18 0C
-Z_8DB4:
-	ld b,0x06	; 8DB4 06 06
-Z_8DB6:
-	ld c,b	; 8DB6 48
-Z_8DB7:
-	call il_iy_bit	; 8DB7 FD CB FF 4E
-	db 0xFF, 0x02
-Z_8DBB:
-	jp nz,Z_8DC0	; 8DBB 20 03
-Z_8DBD:
-	ld b,0x04	; 8DBD 06 04
-Z_8DBF:
-	inc c	; 8DBF 0C
-Z_8DC0:
-	ld a,d	; 8DC0 7A
-Z_8DC1:
-	add a,b	; 8DC1 80
-Z_8DC2:
-	ld d,a	; 8DC2 57
-Z_8DC3:
-	rst 0x08	; 8DC3 DD CB FF 5E
-	db 0xFF, 0x08
-Z_8DC7:
-	jp z,Z_8DCB	; 8DC7 28 02
-Z_8DC9:
-	ld d,h	; 8DC9 54
-	jp	Z_8DCA	; мост в следующий кусок
+ai_defend:
+NAT_ai_417:
+	ld c,8
+NAT_ai_418:
+	ld a,(IY0)
+NAT_ai_419:
+	and 0x10
+NAT_ai_420:
+	jp z,ai_96d
+NAT_ai_421:
+	ld c,0x0A
+ai_96d:
+NAT_ai_423:
+	ld a,(IY3)
+NAT_ai_424:
+	ld e,a
+NAT_ai_425:
+	ld a,(IX3)
+NAT_ai_426:
+	sub e
+NAT_ai_427:
+	jp nc,ai_977
+NAT_ai_428:
+	cpl
+NAT_ai_429:
+	inc a
+ai_977:
+NAT_ai_431:
+	cp c
+NAT_ai_432:
+	ld d,a
+NAT_ai_433:
+	jp nc,ai_a01
+NAT_ai_434:
+	ld a,(IY2)
+NAT_ai_435:
+	and 0xE0
+NAT_ai_436:
+	rrca
+NAT_ai_437:
+	rrca
+NAT_ai_438:
+	rrca
+NAT_ai_439:
+	rrca
+NAT_ai_440:
+	ld b,a
+NAT_ai_441:
+	ld a,(IY0)
+NAT_ai_442:
+	and 0x10
+NAT_ai_443:
+	jp z,ai_9ce
+	jp	NAT_ai_444	; мост в следующий кусок
 	org	0x3727
 D_3727:
 Z_3727:
 	db	0x00, 0x00, 0x00, 0x00, 0xC9	; 3727
 	org	0x372C
-Z_8DCA:
-	ld h,a	; 8DCA 67
-Z_8DCB:
-	ld a,d	; 8DCB 7A
-Z_8DCC:
-	sub h	; 8DCC 94
-Z_8DCD:
-	cp c	; 8DCD B9
-Z_8DCE:
-	ret nc	; 8DCE D0
-Z_8DCF:
-	ld a,e	; 8DCF 7B
-Z_8DD0:
-	add a,0x04	; 8DD0 C6 04
-Z_8DD2:
-	sub l	; 8DD2 95
-Z_8DD3:
-	cp 0x09	; 8DD3 FE 09
-Z_8DD5:
-	ret	; 8DD5 C9
-Z_8DD6:
-	ld c,0x06	; 8DD6 0E 06
-Z_8DD8:
-	ld a,e	; 8DD8 7B
-Z_8DD9:
-	call il_iy_bit	; 8DD9 FD CB 00 66
-	db 0x00, 0x10
-Z_8DDD:
-	jp z,Z_8E37	; 8DDD 28 58
-Z_8DDF:
-	call il_iy_bit	; 8DDF FD CB FF 56
-	db 0xFF, 0x04
-Z_8DE3:
-	jp z,Z_8DF0	; 8DE3 28 0B
-Z_8DE5:
-	dec a	; 8DE5 3D
-Z_8DE6:
-	dec c	; 8DE6 0D
-Z_8DE7:
-	rst 0x08	; 8DE7 DD CB FF 4E
-	db 0xFF, 0x02
-Z_8DEB:
-	jp z,Z_8E30	; 8DEB 28 43
-Z_8DED:
-	dec a	; 8DED 3D
-Z_8DEE:
-	jp Z_8E30	; 8DEE 18 40
-Z_8DF0:
-	call il_iy_bit	; 8DF0 FD CB FF 4E
-	db 0xFF, 0x02
-	jp	Z_8DF4	; мост в следующий кусок
+NAT_ai_444:
+	ld a,(IYM1)
+NAT_ai_445:
+	and 4
+NAT_ai_446:
+	jp nz,ai_9ce
+NAT_ai_447:
+	ld a,(IX2)
+NAT_ai_448:
+	cp l
+NAT_ai_449:
+	sbc a,a
+NAT_ai_450:
+	ld e,a
+NAT_ai_451:
+	ld a,(IYM1)
+NAT_ai_452:
+	and 2
+NAT_ai_453:
+	jp z,ai_9b3
+NAT_ai_454:
+	inc l
+NAT_ai_455:
+	inc l
+NAT_ai_456:
+	ld a,e
+NAT_ai_457:
+	or a
+NAT_ai_458:
+	jp z,ai_a01
+NAT_ai_459:
+	ld a,d
+NAT_ai_460:
+	cp 6
+NAT_ai_461:
+	jp nc,ai_a01
+NAT_ai_462:
+	ld e,3
+NAT_ai_463:
+	ld a,0x14
+NAT_ai_464:
+	sub b
+NAT_ai_465:
+	ld b,a
+ai_9ae:
+NAT_ai_467:
+	ld a,h
+NAT_ai_468:
+	sub b
+NAT_ai_469:
+	ld h,a
+NAT_ai_470:
+	jp ai_a0e
+ai_9b3:
+NAT_ai_472:
+	ld a,e
+NAT_ai_473:
+	or a
+	jp	NAT_ai_474	; мост в следующий кусок
 	org	0x3761
 D_3761:
 Z_3761:
 	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; 3761
 	org	0x3769
-Z_8DF4:
-	jp z,Z_8E0E	; 8DF4 28 18
-Z_8DF6:
-	ld c,0x03	; 8DF6 0E 03
-Z_8DF8:
-	add a,0x04	; 8DF8 C6 04
-Z_8DFA:
-	ld e,a	; 8DFA 5F
-Z_8DFB:
-	rst 0x08	; 8DFB DD CB FF 4E
-	db 0xFF, 0x02
-Z_8DFF:
-	jp nz,Z_8E27	; 8DFF 20 26
-Z_8E01:
-	add a,0x04	; 8E01 C6 04
-Z_8E03:
-	ld e,a	; 8E03 5F
-Z_8E04:
-	inc c	; 8E04 0C
-Z_8E05:
-	rst 0x08	; 8E05 DD CB 01 46
-	db 0x01, 0x01
-Z_8E09:
-	jp nz,Z_8E40	; 8E09 20 35
-Z_8E0B:
-	inc c	; 8E0B 0C
-Z_8E0C:
-	jp Z_8E40	; 8E0C 18 32
-Z_8E0E:
-	ld c,0x05	; 8E0E 0E 05
-Z_8E10:
-	add a,0x02	; 8E10 C6 02
-Z_8E12:
-	ld e,a	; 8E12 5F
-Z_8E13:
-	rst 0x08	; 8E13 DD CB FF 4E
-	db 0xFF, 0x02
-	jp	Z_8E17	; мост в следующий кусок
+NAT_ai_474:
+	jp nz,ai_a01
+NAT_ai_475:
+	ld a,d
+NAT_ai_476:
+	cp 6
+NAT_ai_477:
+	jp c,ai_9be
+NAT_ai_478:
+	dec l
+NAT_ai_479:
+	dec l
+NAT_ai_480:
+	jp ai_a01
+ai_9be:
+NAT_ai_482:
+	ld e,1
+NAT_ai_483:
+	ld a,(IY3)
+NAT_ai_484:
+	ld c,a
+NAT_ai_485:
+	ld a,0x62
+NAT_ai_486:
+	add a,b
+NAT_ai_487:
+	ld b,0x0F
+NAT_ai_488:
+	cp c
+NAT_ai_489:
+	jp c,ai_9ae
+NAT_ai_490:
+	inc h
+NAT_ai_491:
+	inc h
+NAT_ai_492:
+	jp ai_a0e
 	org	0x3790
 D_3790:
 Z_3790:
 	db	0x00	; 3790
 	org	0x3791
-Z_8E17:
-	jp nz,Z_8E27	; 8E17 20 0E
-Z_8E19:
-	add a,0x04	; 8E19 C6 04
-Z_8E1B:
-	ld e,a	; 8E1B 5F
-Z_8E1C:
-	ld c,0x02	; 8E1C 0E 02
-Z_8E1E:
-	rst 0x08	; 8E1E DD CB 01 46
-	db 0x01, 0x01
-Z_8E22:
-	jp nz,Z_8E40	; 8E22 20 1C
-Z_8E24:
-	inc c	; 8E24 0C
-Z_8E25:
-	jp Z_8E40	; 8E25 18 19
-Z_8E27:
-	rst 0x08	; 8E27 DD CB 01 46
-	db 0x01, 0x01
-Z_8E2B:
-	jp nz,Z_8E44	; 8E2B 20 17
-Z_8E2D:
-	dec c	; 8E2D 0D
-	jp	Z_8E2E	; мост в следующий кусок
+ai_9ce:
+NAT_ai_494:
+	ld a,(IY2)
+NAT_ai_495:
+	ld e,a
+NAT_ai_496:
+	ld a,(IX2)
+NAT_ai_497:
+	sub e
+NAT_ai_498:
+	jp nc,ai_9d8
+NAT_ai_499:
+	cpl
+NAT_ai_500:
+	inc a
+ai_9d8:
+NAT_ai_502:
+	inc a
+NAT_ai_503:
+	and 0xFE
+NAT_ai_504:
+	cp 4
+NAT_ai_505:
+	jp nc,ai_a01
+NAT_ai_506:
+	ld a,(IY2)
+NAT_ai_507:
+	sub l
+	jp	NAT_ai_508	; мост в следующий кусок
 	org	0x37AD
 D_37AD:
 Z_37AD:
 	db	0x32, 0xCB, 0xD1, 0x47, 0x0E, 0x07, 0x18, 0xAB, 0x47, 0x3A, 0xBC, 0xD1, 0xE6, 0xF0, 0x18, 0x0A	; 37AD
 	org	0x37BD
-Z_8E2E:
-	jp Z_8E44	; 8E2E 18 14
-Z_8E30:
-	rst 0x08	; 8E30 DD CB 01 46
-	db 0x01, 0x01
-Z_8E34:
-	jp nz,Z_8E37	; 8E34 20 01
-Z_8E36:
-	inc a	; 8E36 3C
-Z_8E37:
-	add a,0x06	; 8E37 C6 06
-Z_8E39:
-	ld e,a	; 8E39 5F
-Z_8E3A:
-	rst 0x08	; 8E3A DD CB FF 4E
-	db 0xFF, 0x02
-Z_8E3E:
-	jp nz,Z_8E44	; 8E3E 20 04
-Z_8E40:
-	sub 0x0A	; 8E40 D6 0A
-	jp	Z_8E42	; мост в следующий кусок
+NAT_ai_508:
+	ld e,1
+NAT_ai_509:
+	jp nc,ai_9ea
+NAT_ai_510:
+	dec e
+NAT_ai_511:
+	cpl
+NAT_ai_512:
+	inc a
+ai_9ea:
+NAT_ai_514:
+	inc a
+NAT_ai_515:
+	and 0xFE
+NAT_ai_516:
+	cp 4
+NAT_ai_517:
+	jp nc,ai_a01
+NAT_ai_518:
+	and a
+NAT_ai_519:
+	jp nz,ai_9f8
+	jp	NAT_ai_520	; мост в следующий кусок
 	org	0x37D5
 D_37D5:
 Z_37D5:
@@ -1963,123 +2127,145 @@ D_3805:
 Z_3805:
 	db	0xD8, 0x00, 0xF3, 0xE1, 0xFE, 0xFF, 0x20, 0x02, 0xCB, 0x86, 0x23, 0xC9	; 3805
 	org	0x3811
-Z_8E42:
-	ld e,l	; 8E42 5D
-Z_8E43:
-	ld l,a	; 8E43 6F
-Z_8E44:
-	ld a,e	; 8E44 7B
-Z_8E45:
-	sub l	; 8E45 95
-Z_8E46:
-	cp c	; 8E46 B9
-Z_8E47:
-	ret nc	; 8E47 D0
-Z_8E48:
-	ld a,d	; 8E48 7A
-Z_8E49:
-	add a,0x0D	; 8E49 C6 0D
-Z_8E4B:
-	rst 0x08	; 8E4B DD CB FF 4E
-	db 0xFF, 0x02
-Z_8E4F:
-	ld c,0x10	; 8E4F 0E 10
-Z_8E51:
-	jp z,Z_8E57	; 8E51 28 04
-Z_8E53:
-	dec c	; 8E53 0D
-Z_8E54:
-	dec c	; 8E54 0D
-Z_8E55:
-	dec a	; 8E55 3D
-Z_8E56:
-	dec a	; 8E56 3D
-Z_8E57:
-	sub h	; 8E57 94
-Z_8E58:
-	cp c	; 8E58 B9
-Z_8E59:
-	ret	; 8E59 C9
-Z_8E5A:
-	rst 0x30	; 8E5A DD CB FE A6
-	db 0xFE, 0xEF
-Z_8E5E:
-	rst 0x08	; 8E5E DD CB 00 66
-	db 0x00, 0x10
-Z_8E62:
-	jp nz,Z_8F0F	; 8E62 C2 0F 8F
-Z_8E65:
-	rst 0x08	; 8E65 DD CB 01 76
-	db 0x01, 0x40
-Z_8E69:
-	jp z,Z_8F00	; 8E69 CA 00 8F
-Z_8E6C:
-	rst 0x08	; 8E6C DD CB 01 5E
-	db 0x01, 0x08
-Z_8E70:
-	jp nz,Z_8F00	; 8E70 C2 00 8F
-Z_8E73:
-	ld a,(D_93EB)	; 8E73 3A EB 93
-Z_8E76:
-	ld (il_a),a	; 8E76 CB 5F
-	and 0x08
-	ld a,(il_a)
-Z_8E78:
-	jp z,Z_8E7D	; 8E78 28 03
-Z_8E7A:
-	call il_ix_inc	; 8E7A DD 34 10
-	db 0x10
-Z_8E7D:
-	ld a,(D_93EB)	; 8E7D 3A EB 93
-Z_8E80:
-	ld c,a	; 8E80 4F
-Z_8E81:
-	ld a,0x21	; 8E81 3E 21
-Z_8E83:
-	rst 0x08	; 8E83 DD CB 01 46
-	db 0x01, 0x01
-Z_8E87:
-	jp z,Z_8E8B	; 8E87 28 02
-	jp	Z_8E89	; мост в следующий кусок
+NAT_ai_520:
+	ld e,3
+NAT_ai_521:
+	jp ai_a0e
+ai_9f8:
+NAT_ai_523:
+	dec e
+NAT_ai_524:
+	ld e,3
+NAT_ai_525:
+	jp nz,ai_a0e
+NAT_ai_526:
+	ld e,1
+NAT_ai_527:
+	jp ai_a0e
+ai_a01:
+NAT_ai_529:
+	ld a,(IX2)
+NAT_ai_530:
+	ld b,a
+NAT_ai_531:
+	ld a,l
+NAT_ai_532:
+	ld e,0
+NAT_ai_533:
+	cp b
+NAT_ai_534:
+	jp z,ai_a0e
+NAT_ai_535:
+	inc e
+NAT_ai_536:
+	jp c,ai_a0e
+NAT_ai_537:
+	ld e,3
+ai_a0e:
+NAT_ai_539:
+	ld a,(IX3)
+NAT_ai_540:
+	cp h
+NAT_ai_541:
+	ld a,e
+NAT_ai_542:
+	jp z,ai_a1b
+NAT_ai_543:
+	ld a,0x0C
+NAT_ai_544:
+	jp c,ai_a1b
+NAT_ai_545:
+	ld a,4
+ai_a1b:
+NAT_ai_547:
+	or e
+NAT_ai_548:
+	ld b,a
+NAT_ai_549:
+	ld a,(IXM7)
+NAT_ai_550:
+	rrca
+NAT_ai_551:
+	ld a,b
+NAT_ai_552:
+	ret nc
+NAT_ai_553:
+	ld a,e
+NAT_ai_554:
+	ret
+ai_lvl:
+NAT_ai_556:
+	db 0
+Z_8A23:
+NAT_ball_1:
+	ld a,(0x93EB)
+NAT_ball_2:
+	ld b,a
+NAT_ball_3:
+	and 5
+NAT_ball_4:
+	jp nz,bl_icons
+NAT_ball_5:
+	ld a,b
+NAT_ball_6:
+	and 2
+NAT_ball_7:
+	jp nz,bl_fly
+NAT_ball_8:
+	ld a,b
+	jp	NAT_ball_9	; мост в следующий кусок
 	org	0x3860
 D_3860:
 Z_3860:
 	db	0xCD, 0xDE, 0xD5, 0x26, 0x00, 0x28, 0x04, 0x3E, 0xFF, 0x6F, 0xC9, 0xAF, 0x6F, 0xC9	; 3860
 	org	0x386E
-Z_8E89:
-	push af	; 8E89 CB FF
-	or 0x80
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_8E8B:
-	ld (D_93EB),a	; 8E8B 32 EB 93
-Z_8E8E:
-	xor a	; 8E8E AF
-Z_8E8F:
-	ld (D_93F5),a	; 8E8F 32 F5 93
-	jp	Z_8E92	; мост в следующий кусок
+NAT_ball_9:
+	and 8
+NAT_ball_10:
+	jp nz,bl_reb
+NAT_ball_11:
+	ld a,b
+NAT_ball_12:
+	and 0x10
+NAT_ball_13:
+	jp z,bl_icons
+NAT_ball_14:
+	ld hl,0x93F1
+NAT_ball_15:
+	ld (z80_ix),hl
+	jp	NAT_ball_16	; мост в следующий кусок
 	org	0x3883
 D_3883:
 Z_3883:
 	db	0xED, 0x5B, 0x00, 0x33, 0x2A, 0x9A, 0xD0	; 3883
 	org	0x388A
-Z_8E92:
-	call il_iy_res	; 8E92 FD CB 00 96
-	db 0x00, 0xFB
-Z_8E96:
-	rst 0x30	; 8E96 DD CB FE A6
-	db 0xFE, 0xEF
-Z_8E9A:
-	call il_iy_res	; 8E9A FD CB 01 B6
-	db 0x01, 0xBF
-Z_8E9E:
-	rst 0x28	; 8E9E DD CB 00 E6
-	db 0x00, 0x10
-Z_8EA2:
-	call il_iy_res	; 8EA2 FD CB 00 A6
-	db 0x00, 0xEF
-	jp	Z_8EA6	; мост в следующий кусок
+NAT_ball_16:
+	ld a,(0x93EF)
+NAT_ball_17:
+	rrca
+NAT_ball_18:
+	jp c,bl_down
+NAT_ball_19:
+	ld a,(hl)
+NAT_ball_20:
+	add a,6
+NAT_ball_21:
+	ld (hl),a
+NAT_ball_22:
+	ld b,a
+NAT_ball_23:
+	ld a,(0x93F3)
+NAT_ball_24:
+	ld c,a
+NAT_ball_25:
+	ld a,b
+NAT_ball_26:
+	cp c
+NAT_ball_27:
+	jp c,bl_icons
+NAT_ball_28:
+	ld (hl),c
+	jp	NAT_ball_29	; мост в следующий кусок
 	org	0x38A4
 D_38A4:
 Z_38A4:
@@ -2101,180 +2287,206 @@ D_38E4:
 Z_38E4:
 	db	0x43, 0xD6, 0x18, 0x09	; 38E4
 	org	0x38E8
-Z_8EA6:
-	call il_iy_res	; 8EA6 FD CB 01 A6
-	db 0x01, 0xEF
-Z_8EAA:
-	call il_iy_res	; 8EAA FD CB 00 9E
-	db 0x00, 0xF7
-Z_8EAE:
-	call il_iy_res	; 8EAE FD CB 00 BE
-	db 0x00, 0x7F
-Z_8EB2:
-	call il_iy_res	; 8EB2 FD CB FE AE
-	db 0xFE, 0xDF
-Z_8EB6:
-	call il_iy_res	; 8EB6 FD CB 01 8E
-	db 0x01, 0xFD
-Z_8EBA:
-	call il_iy_res	; 8EBA FD CB 01 96
-	db 0x01, 0xFB
-Z_8EBE:
-	rst 0x00	; 8EBE DD 36 06 03
-	db 0x06, 0x03
-Z_8EC2:
-	ld (il_a),a	; 8EC2 CB 41
+NAT_ball_29:
+	ld a,(0x93EF)
+NAT_ball_30:
+	or 1
+NAT_ball_31:
+	ld (0x93EF),a
+NAT_ball_32:
+	jp Z_8BFE
+bl_down:
+NAT_ball_34:
+	ld a,(0x93F0)
+NAT_ball_35:
+	ld c,a
+NAT_ball_36:
+	ld a,(hl)
+NAT_ball_37:
+	cp c
+NAT_ball_38:
+	jp c,bl_d1
+NAT_ball_39:
+	sub 6
+NAT_ball_40:
+	ld (hl),a
+NAT_ball_41:
+	jp bl_icons
+bl_d1:
+NAT_ball_43:
 	ld a,c
-	and 0x01
-	ld a,(il_a)
-Z_8EC4:
-	jp nz,Z_8EEA	; 8EC4 20 24
-Z_8EC6:
-	rst 0x08	; 8EC6 DD CB 00 46
-	db 0x00, 0x01
-Z_8ECA:
-	jp nz,Z_8EEA	; 8ECA 20 1E
-Z_8ECC:
-	ld a,(D_93F1)	; 8ECC 3A F1 93
-Z_8ECF:
-	ld c,a	; 8ECF 4F
-Z_8ED0:
-	ld a,(D_93F3)	; 8ED0 3A F3 93
-Z_8ED3:
-	sub c	; 8ED3 91
-Z_8ED4:
-	cp 0x14	; 8ED4 FE 14
-Z_8ED6:
-	jp c,Z_8EEA	; 8ED6 38 12
-Z_8ED8:
-	rst 0x28	; 8ED8 DD CB FE F6
-	db 0xFE, 0x40
-Z_8EDC:
-	call il_ix_ldl	; 8EDC DD 6E 02
-	db 0x02
-Z_8EDF:
-	dec l	; 8EDF 2D
-Z_8EE0:
-	dec l	; 8EE0 2D
-Z_8EE1:
-	call il_ix_ldh	; 8EE1 DD 66 03
-	db 0x03
-Z_8EE4:
-	call il_ix_stl	; 8EE4 DD 75 04
-	db 0x04
-Z_8EE7:
-	call il_ix_sth	; 8EE7 DD 74 05
-	db 0x05
-Z_8EEA:
-	call il_iy_bit	; 8EEA FD CB 00 6E
-	db 0x00, 0x20
-Z_8EEE:
-	call il_iy_res	; 8EEE FD CB 00 AE
-	db 0x00, 0xDF
-Z_8EF2:
-	jp z,Z_93BE	; 8EF2 CA BE 93
-Z_8EF5:
-	call il_iy_stn	; 8EF5 FD 36 08 04
-	db 0x08, 0x04
-Z_8EF9:
-	xor a	; 8EF9 AF
-Z_8EFA:
-	ld (D_93D3),a	; 8EFA 32 D3 93
-Z_8EFD:
-	jp Z_93BE	; 8EFD C3 BE 93
-Z_8F00:
-	call il_iy_bit	; 8F00 FD CB 00 66
-	db 0x00, 0x10
-Z_8F04:
-	jp z,Z_8F51	; 8F04 28 4B
-Z_8F06:
-	rst 0x08	; 8F06 DD CB 01 6E
-	db 0x01, 0x20
-Z_8F0A:
-	jp z,Z_8F51	; 8F0A 28 45
-Z_8F0C:
-	jp Z_93B8	; 8F0C C3 B8 93
-Z_8F0F:
-	rst 0x28	; 8F0F DD CB 00 DE
-	db 0x00, 0x08
-Z_8F13:
-	call il_ix_ldl	; 8F13 DD 6E 02
-	db 0x02
-Z_8F16:
-	call il_ix_ldh	; 8F16 DD 66 03
-	db 0x03
-Z_8F19:
-	ld a,l	; 8F19 7D
-Z_8F1A:
-	cp 0x50	; 8F1A FE 50
-Z_8F1C:
-	jp c,Z_8F51	; 8F1C 38 33
-Z_8F1E:
-	cp 0x5B	; 8F1E FE 5B
-Z_8F20:
-	jp nc,Z_8F51	; 8F20 30 2F
-Z_8F22:
-	ld a,h	; 8F22 7C
-Z_8F23:
-	rst 0x08	; 8F23 DD CB 01 46
-	db 0x01, 0x01
-Z_8F27:
-	jp nz,Z_8F2F	; 8F27 20 06
-Z_8F29:
-	cp 0x0D	; 8F29 FE 0D
-Z_8F2B:
-	jp nc,Z_8F51	; 8F2B 30 24
-Z_8F2D:
-	jp Z_8F33	; 8F2D 18 04
-Z_8F2F:
-	cp 0x68	; 8F2F FE 68
-Z_8F31:
-	jp c,Z_8F51	; 8F31 38 1E
-Z_8F33:
-	rst 0x10	; 8F33 DD 7E 0A
-	db 0x0A
-Z_8F36:
-	cp 0x03	; 8F36 FE 03
-Z_8F38:
-	jp c,Z_8F59	; 8F38 38 1F
-Z_8F3A:
-	rst 0x28	; 8F3A DD CB 00 EE
-	db 0x00, 0x20
-Z_8F3E:
-	rst 0x30	; 8F3E DD CB 00 9E
-	db 0x00, 0xF7
-Z_8F42:
-	ld b,0x09	; 8F42 06 09
-Z_8F44:
-	ld a,(D_9400)	; 8F44 3A 00 94
-Z_8F47:
-	and a	; 8F47 A7
-Z_8F48:
-	jp nz,Z_8F5F	; 8F48 20 15
-Z_8F4A:
-	ld a,0x02	; 8F4A 3E 02
-Z_8F4C:
-	ld (D_93D3),a	; 8F4C 32 D3 93
-Z_8F4F:
-	jp Z_8F5F	; 8F4F 18 0E
-Z_8F51:
-	rst 0x10	; 8F51 DD 7E 0A
-	db 0x0A
-Z_8F54:
-	ld b,0x04	; 8F54 06 04
-Z_8F56:
-	and a	; 8F56 A7
-Z_8F57:
-	jp nz,Z_8F5F	; 8F57 20 06
-Z_8F59:
-	ld b,0x02	; 8F59 06 02
-Z_8F5B:
-	rst 0x28	; 8F5B DD CB 01 FE
-	db 0x01, 0x80
-Z_8F5F:
-	call il_ix_stb	; 8F5F DD 70 08
-	db 0x08
-	jp	Z_8F62	; мост в следующий кусок
+NAT_ball_44:
+	add a,6
+NAT_ball_45:
+	ld c,a
+NAT_ball_46:
+	ld a,(0x93F3)
+NAT_ball_47:
+	ld b,a
+NAT_ball_48:
+	ld a,c
+NAT_ball_49:
+	cp b
+NAT_ball_50:
+	jp nc,bl_dead
+NAT_ball_51:
+	ld (0x93F0),a
+NAT_ball_52:
+	ld a,(0x93EF)
+NAT_ball_53:
+	and 0xFE
+NAT_ball_54:
+	ld (0x93EF),a
+NAT_ball_55:
+	jp bl_icons
+bl_dead:
+NAT_ball_57:
+	xor a
+NAT_ball_58:
+	ld (0x93EB),a
+NAT_ball_59:
+	call Z_8BFE
+NAT_ball_60:
+	jp bl_icons
+bl_reb:
+NAT_ball_62:
+	call Z_9BF6
+NAT_ball_63:
+	jp bl_icons
+bl_fly:
+NAT_ball_65:
+	call Z_9A1B
+bl_icons:
+NAT_ball_67:
+	ld hl,0x940B
+NAT_ball_68:
+	ld (z80_ix),hl
+NAT_ball_69:
+	ld hl,0x9425
+NAT_ball_70:
+	ld (z80_iy),hl
+NAT_ball_71:
+	ld hl,0x0690
+NAT_ball_72:
+	call bl_icon
+NAT_ball_73:
+	ld hl,0x9425
+NAT_ball_74:
+	ld (z80_ix),hl
+NAT_ball_75:
+	ld hl,0x940B
+NAT_ball_76:
+	ld (z80_iy),hl
+NAT_ball_77:
+	ld hl,0x1990
+bl_icon:
+NAT_ball_79:
+	push hl
+NAT_ball_80:
+	call Z_8CF7
+NAT_ball_81:
+	ld de,0x7750
+NAT_ball_82:
+	ld hl,(z80_ix)
+NAT_ball_83:
+	inc hl
+NAT_ball_84:
+	ld a,(hl)
+NAT_ball_85:
+	jp nc,bl_i1
+NAT_ball_86:
+	or 0x40
+NAT_ball_87:
+	ld (hl),a
+NAT_ball_88:
+	pop hl
+NAT_ball_89:
+	jp HUD_ICON
+bl_i1:
+NAT_ball_91:
+	and 0xBF
+NAT_ball_92:
+	ld (hl),a
+NAT_ball_93:
+	ld e,0x58
+NAT_ball_94:
+	pop hl
+NAT_ball_95:
+	jp HUD_ICON
+Z_8ADD:
+NAT_ball_97:
+	ld hl,(0x93F3)
+NAT_ball_98:
+	ld a,l
+NAT_ball_99:
+	sub 4
+NAT_ball_100:
+	ld l,a
+NAT_ball_101:
+	ld (0x3300),hl
+NAT_ball_102:
+	ld a,0x49
+NAT_ball_103:
+	call Z_9E6F
+NAT_ball_104:
+	call Z_B01C
+NAT_ball_105:
+	ld hl,(0x93F3)
+NAT_ball_106:
+	ld a,(0x93EB)
+NAT_ball_107:
+	and 0x1A
+NAT_ball_108:
+	jp z,bl_b1
+NAT_ball_109:
+	ld hl,(0x93F1)
+bl_b1:
+NAT_ball_111:
+	ld a,l
+NAT_ball_112:
+	sub 8
+NAT_ball_113:
+	ld l,a
+NAT_ball_114:
+	ld (0x3300),hl
+NAT_ball_115:
+	ld a,0x48
+NAT_ball_116:
+	call Z_9E6F
+NAT_ball_117:
+	call Z_B01C
+NAT_ball_118:
+	ld hl,0x93F5
+NAT_ball_119:
+	ld (z80_ix),hl
+NAT_ball_120:
+	ld a,(hl)
+NAT_ball_121:
+	and 2
+NAT_ball_122:
+	ret z
+NAT_ball_123:
+	ld (hl),0
+NAT_ball_124:
+	ld a,(0x93EB)
+NAT_ball_125:
+	ld b,a
+NAT_ball_126:
+	and 8
+NAT_ball_127:
+	jp z,bl_chance
+NAT_ball_128:
+	ld a,b
+NAT_ball_129:
+	and 0xE0
+NAT_ball_130:
+	or 0x10
+NAT_ball_131:
+	ld (0x93EB),a
+Z_8B26:
+NAT_ball_133:
+	ld a,(0x93F1)
+	jp	NAT_ball_134	; мост в следующий кусок
 	org	0x39C3
 D_39C3:
 Z_39C3:
@@ -2288,115 +2500,121 @@ D_39E3:
 Z_39E3:
 	db	0x41, 0x7D, 0xC9	; 39E3
 	org	0x39E6
-Z_8F62:
-	rst 0x28	; 8F62 DD CB 00 C6
-	db 0x00, 0x01
-Z_8F66:
-	rst 0x00	; 8F66 DD 36 FC 00
-	db 0xFC, 0x00
-Z_8F6A:
-	call il_ix_ldl	; 8F6A DD 6E 02
-	db 0x02
-Z_8F6D:
-	call il_ix_ldh	; 8F6D DD 66 03
-	db 0x03
-Z_8F70:
-	call il_ix_stl	; 8F70 DD 75 04
-	db 0x04
-Z_8F73:
-	call il_ix_sth	; 8F73 DD 74 05
-	db 0x05
-Z_8F76:
-	call il_ix_inc	; 8F76 DD 34 FC
-	db 0xFC
-Z_8F79:
-	call Z_938E	; 8F79 CD 8E 93
-Z_8F7C:
-	rst 0x08	; 8F7C DD CB 00 4E
-	db 0x00, 0x02
-Z_8F80:
-	jp nz,Z_9179	; 8F80 C2 79 91
-Z_8F83:
-	call Z_93A3	; 8F83 CD A3 93
-Z_8F86:
-	call Z_93A3	; 8F86 CD A3 93
-Z_8F89:
-	rst 0x08	; 8F89 DD CB 00 6E
-	db 0x00, 0x20
-Z_8F8D:
-	jp z,Z_8FE6	; 8F8D 28 57
-Z_8F8F:
-	rst 0x08	; 8F8F DD CB FF 56
-	db 0xFF, 0x04
-Z_8F93:
-	jp z,Z_8FAF	; 8F93 28 1A
-Z_8F95:
-	rst 0x30	; 8F95 DD CB 00 B6
-	db 0x00, 0xBF
-Z_8F99:
-	ld e,0x08	; 8F99 1E 08
-Z_8F9B:
-	rst 0x08	; 8F9B DD CB 01 46
-	db 0x01, 0x01
-Z_8F9F:
-	jp nz,Z_8FA3	; 8F9F 20 02
-Z_8FA1:
-	ld e,0x00	; 8FA1 1E 00
-Z_8FA3:
-	rst 0x10	; 8FA3 DD 7E FF
-	db 0xFF
-Z_8FA6:
-	and 0x08	; 8FA6 E6 08
-Z_8FA8:
-	xor e	; 8FA8 AB
-Z_8FA9:
-	jp z,Z_8FAF	; 8FA9 28 04
-Z_8FAB:
-	rst 0x28	; 8FAB DD CB 00 F6
-	db 0x00, 0x40
-Z_8FAF:
-	ld bc,0x00	; 8FAF 01 00 00
-Z_8FB2:
-	rst 0x10	; 8FB2 DD 7E 02
-	db 0x02
-Z_8FB5:
-	cp 0x54	; 8FB5 FE 54
-Z_8FB7:
-	jp z,Z_8FC3	; 8FB7 28 0A
-Z_8FB9:
-	ld c,0x02	; 8FB9 0E 02
-Z_8FBB:
-	jp c,Z_8FBF	; 8FBB 38 02
-Z_8FBD:
-	ld c,0xFE	; 8FBD 0E FE
-Z_8FBF:
-	add a,c	; 8FBF 81
-Z_8FC0:
-	rst 0x20	; 8FC0 DD 77 02
-	db 0x02
-Z_8FC3:
-	ld e,0x09	; 8FC3 1E 09
-Z_8FC5:
-	rst 0x08	; 8FC5 DD CB 01 46
-	db 0x01, 0x01
-Z_8FC9:
-	jp z,Z_8FCD	; 8FC9 28 02
-Z_8FCB:
-	ld e,0x6B	; 8FCB 1E 6B
-Z_8FCD:
-	rst 0x10	; 8FCD DD 7E 03
-	db 0x03
-Z_8FD0:
-	cp e	; 8FD0 BB
-Z_8FD1:
-	jp z,Z_8FDD	; 8FD1 28 0A
-Z_8FD3:
-	jp nc,Z_8FDA	; 8FD3 30 05
-Z_8FD5:
-	inc a	; 8FD5 3C
-Z_8FD6:
-	ld b,0x01	; 8FD6 06 01
-	jp	Z_8FD8	; мост в следующий кусок
+NAT_ball_134:
+	add a,6
+NAT_ball_135:
+	ld (0x93F0),a
+NAT_ball_136:
+	xor a
+NAT_ball_137:
+	ld (0x93EF),a
+NAT_ball_138:
+	ld hl,0x93EF
+NAT_ball_139:
+	ret
+bl_chance:
+NAT_ball_141:
+	ld a,(0x944F)
+NAT_ball_142:
+	ld bc,0x32
+NAT_ball_143:
+	ld de,0x46
+NAT_ball_144:
+	call bl_term
+NAT_ball_145:
+	push hl
+NAT_ball_146:
+	ld a,(0x9450)
+NAT_ball_147:
+	ld bc,0x23
+NAT_ball_148:
+	ld de,0x08
+NAT_ball_149:
+	call bl_term
+NAT_ball_150:
+	pop de
+NAT_ball_151:
+	add hl,de
+NAT_ball_152:
+	push hl
+NAT_ball_153:
+	ld a,(0x944E)
+NAT_ball_154:
+	cpl
+NAT_ball_155:
+	inc a
+NAT_ball_156:
+	add a,0x16
+NAT_ball_157:
+	ld bc,0x0A
+NAT_ball_158:
+	ld de,0x17
+NAT_ball_159:
+	call bl_term
+NAT_ball_160:
+	pop de
+NAT_ball_161:
+	add hl,de
+NAT_ball_162:
+	push hl
+NAT_ball_163:
+	ld a,(0x944D)
+NAT_ball_164:
+	cpl
+NAT_ball_165:
+	inc a
+NAT_ball_166:
+	add a,0x32
+NAT_ball_167:
+	ld bc,0x05
+NAT_ball_168:
+	ld de,0x32
+NAT_ball_169:
+	call bl_term
+NAT_ball_170:
+	pop de
+NAT_ball_171:
+	add hl,de
+NAT_ball_172:
+	call Z_A172
+NAT_ball_173:
+	add a,4
+NAT_ball_174:
+	ld c,l
+NAT_ball_175:
+	call Z_A0B0
+NAT_ball_176:
+	ld a,c
+NAT_ball_177:
+	rla
+NAT_ball_178:
+	ld c,a
+NAT_ball_179:
+	ld a,(0x93EB)
+NAT_ball_180:
+	and 0x80
+NAT_ball_181:
+	ld hl,0x9425
+NAT_ball_182:
+	ld de,0x940B
+NAT_ball_183:
+	jp z,bl_c1
+NAT_ball_184:
+	ex de,hl
+bl_c1:
+NAT_ball_186:
+	ld (z80_ix),hl
+NAT_ball_187:
+	ex de,hl
+NAT_ball_188:
+	ld (z80_iy),hl
+NAT_ball_189:
+	ex de,hl
+NAT_ball_190:
+	ld a,(0x93D9)
+NAT_ball_191:
+	cp 3
+	jp	NAT_ball_192	; мост в следующий кусок
 	org	0x3A61
 D_3A61:
 Z_3A61:
@@ -2450,203 +2668,242 @@ D_3B21:
 Z_3B21:
 	db	0x7E, 0x23, 0xE5, 0xB7, 0xC8, 0xDF, 0x18, 0xF7, 0xC9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; 3B21
 	org	0x3B31
-Z_8FD8:
-	jp Z_8FDD	; 8FD8 18 03
-Z_8FDA:
-	dec a	; 8FDA 3D
-Z_8FDB:
-	ld b,0xFF	; 8FDB 06 FF
-Z_8FDD:
-	rst 0x20	; 8FDD DD 77 03
-	db 0x03
-Z_8FE0:
-	rst 0x20	; 8FE0 DD 77 05
-	db 0x05
-Z_8FE3:
-	call Z_938B	; 8FE3 CD 8B 93
-Z_8FE6:
-	rst 0x10	; 8FE6 DD 7E 04
-	db 0x04
-Z_8FE9:
-	sub 0x04	; 8FE9 D6 04
-Z_8FEB:
-	rst 0x20	; 8FEB DD 77 04
-	db 0x04
-	jp	Z_8FEE	; мост в следующий кусок
+NAT_ball_192:
+	jp nz,bl_c2
+NAT_ball_193:
+	ld de,0x11
+NAT_ball_194:
+	call bl_inc
+NAT_ball_195:
+	jp bl_c4
+bl_c2:
+NAT_ball_197:
+	cp 1
+NAT_ball_198:
+	jp nz,bl_c3
+	jp	NAT_ball_199	; мост в следующий кусок
 	org	0x3B47
 D_3B47:
 Z_3B47:
 	db	0xC5, 0xD5, 0xE5, 0xCD, 0xEB, 0xD8, 0xE1, 0xD1, 0xC1, 0xF1, 0xF1, 0xC9	; 3B47
 	org	0x3B53
-Z_8FEE:
-	call il_ix_dec	; 8FEE DD 35 08
-	db 0x08
-Z_8FF1:
-	jp nz,Z_9009	; 8FF1 20 16
-Z_8FF3:
-	rst 0x28	; 8FF3 DD CB 00 CE
-	db 0x00, 0x02
-Z_8FF7:
-	rst 0x08	; 8FF7 DD CB 00 66
-	db 0x00, 0x10
-Z_8FFB:
-	jp z,Z_9009	; 8FFB 28 0C
-Z_8FFD:
-	rst 0x08	; 8FFD DD CB 01 7E
-	db 0x01, 0x80
-Z_9001:
-	jp z,Z_9009	; 9001 28 06
-Z_9003:
-	rst 0x28	; 9003 DD CB FE E6
-	db 0xFE, 0x10
-Z_9007:
-	jp Z_9041	; 9007 18 38
-Z_9009:
-	rst 0x08	; 9009 DD CB 00 6E
-	db 0x00, 0x20
-Z_900D:
-	ret nz	; 900D C0
-Z_900E:
-	rst 0x08	; 900E DD CB 00 7E
-	db 0x00, 0x80
-Z_9012:
-	jp z,Z_9019	; 9012 28 05
-Z_9014:
-	rst 0x28	; 9014 DD CB FE EE
-	db 0xFE, 0x20
-Z_9018:
-	ret	; 9018 C9
-Z_9019:
-	rst 0x08	; 9019 DD CB 00 66
-	db 0x00, 0x10
-Z_901D:
-	jp nz,Z_9041	; 901D 20 22
-Z_901F:
-	rst 0x08	; 901F DD CB 01 5E
-	db 0x01, 0x08
-Z_9023:
-	ret nz	; 9023 C0
-Z_9024:
-	ld a,(D_93EB)	; 9024 3A EB 93
-Z_9027:
-	ld (il_a),a	; 9027 CB 4F
-	and 0x02
-	ld a,(il_a)
-Z_9029:
-	jp z,Z_9034	; 9029 28 09
-Z_902B:
-	call il_ix_ldc	; 902B DD 4E 01
-	db 0x01
-Z_902E:
-	ld (il_a),a	; 902E CB 09
+NAT_ball_199:
+	ld de,0x0E
+NAT_ball_200:
+	call bl_inc
+NAT_ball_201:
+	jp bl_c4
+bl_c3:
+NAT_ball_203:
+	ld de,0x0C
+NAT_ball_204:
+	add hl,de
+NAT_ball_205:
+	inc (hl)
+NAT_ball_206:
+	jp bl_c5
+bl_c4:
+NAT_ball_208:
 	ld a,c
+NAT_ball_209:
 	rrca
-	ld c,a
-	ld a,(il_a)
-Z_9030:
-	xor c	; 9030 A9
-Z_9031:
-	and 0x80	; 9031 E6 80
-Z_9033:
-	ret z	; 9033 C8
-Z_9034:
-	rst 0x08	; 9034 DD CB 01 76
-	db 0x01, 0x40
-Z_9038:
-	ret z	; 9038 C8
-Z_9039:
-	rst 0x08	; 9039 DD CB 01 5E
-	db 0x01, 0x08
-Z_903D:
-	ret nz	; 903D C0
-Z_903E:
-	jp Z_8E73	; 903E C3 73 8E
-Z_9041:
-	rst 0x08	; 9041 DD CB 01 4E
-	db 0x01, 0x02
-Z_9045:
-	jp nz,Z_90B7	; 9045 20 70
-Z_9047:
-	rst 0x08	; 9047 DD CB 01 56
-	db 0x01, 0x04
-Z_904B:
-	jp nz,Z_907E	; 904B 20 31
-Z_904D:
-	rst 0x08	; 904D DD CB FE 66
-	db 0xFE, 0x10
-Z_9051:
-	ret z	; 9051 C8
-Z_9052:
-	rst 0x10	; 9052 DD 7E 03
-	db 0x03
-Z_9055:
-	rst 0x08	; 9055 DD CB 01 46
-	db 0x01, 0x01
-Z_9059:
-	jp nz,Z_9061	; 9059 20 06
-Z_905B:
-	cp 0x14	; 905B FE 14
-Z_905D:
-	jp c,Z_90B3	; 905D 38 54
-Z_905F:
-	jp Z_9065	; 905F 18 04
-Z_9061:
-	cp 0x60	; 9061 FE 60
-Z_9063:
-	jp nc,Z_90B3	; 9063 30 4E
-Z_9065:
-	rst 0x08	; 9065 DD CB FF 56
-	db 0xFF, 0x04
-Z_9069:
-	jp nz,Z_907A	; 9069 20 0F
-Z_906B:
-	rst 0x28	; 906B DD CB 00 FE
-	db 0x00, 0x80
-Z_906F:
-	rst 0x28	; 906F DD CB FE EE
-	db 0xFE, 0x20
-Z_9073:
-	xor a	; 9073 AF
-Z_9074:
-	rst 0x20	; 9074 DD 77 07
-	db 0x07
-Z_9077:
-	jp Z_93BE	; 9077 C3 BE 93
-Z_907A:
-	rst 0x28	; 907A DD CB 01 D6
-	db 0x01, 0x04
-Z_907E:
-	call il_ix_ldc	; 907E DD 4E FF
-	db 0xFF
-Z_9081:
-	rst 0x08	; 9081 DD CB 01 46
-	db 0x01, 0x01
-Z_9085:
-	jp nz,Z_90A4	; 9085 20 1D
-Z_9087:
-	ld (il_a),a	; 9087 CB 51
+NAT_ball_210:
+	jp c,bl_c5
+NAT_ball_211:
+	inc hl
+NAT_ball_212:
+	inc (hl)
+bl_c5:
+NAT_ball_214:
 	ld a,c
-	and 0x04
-	ld a,(il_a)
-Z_9089:
-	jp z,Z_9096	; 9089 28 0B
-Z_908B:
-	ld (il_a),a	; 908B CB 59
-	ld a,c
-	and 0x08
-	ld a,(il_a)
-Z_908D:
-	jp z,Z_90EF	; 908D 28 60
-Z_908F:
-	rst 0x00	; 908F DD 36 FF 03
-	db 0xFF, 0x03
-Z_9093:
-	jp Z_93BE	; 9093 C3 BE 93
-Z_9096:
-	rst 0x00	; 9096 DD 36 FF 04
-	db 0xFF, 0x04
-Z_909A:
-	jp Z_93BE	; 909A C3 BE 93
+NAT_ball_215:
+	rrca
+NAT_ball_216:
+	jp nc,Z_8C16
+NAT_ball_217:
+	ld a,(0x93EB)
+NAT_ball_218:
+	and 0xFD
+NAT_ball_219:
+	or 8
+NAT_ball_220:
+	ld (0x93EB),a
+NAT_ball_221:
+	ld hl,(z80_ix)
+NAT_ball_222:
+	dec hl
+NAT_ball_223:
+	dec hl
+NAT_ball_224:
+	dec hl
+NAT_ball_225:
+	ld a,(hl)
+NAT_ball_226:
+	sub 2
+NAT_ball_227:
+	jp nc,bl_c6
+NAT_ball_228:
+	xor a
+bl_c6:
+NAT_ball_230:
+	ld (hl),a
+NAT_ball_231:
+	ld hl,(z80_iy)
+NAT_ball_232:
+	dec hl
+NAT_ball_233:
+	dec hl
+NAT_ball_234:
+	dec hl
+NAT_ball_235:
+	ld a,(hl)
+NAT_ball_236:
+	inc a
+NAT_ball_237:
+	cp 0x33
+NAT_ball_238:
+	jp z,bl_c7
+NAT_ball_239:
+	ld (hl),a
+bl_c7:
+NAT_ball_241:
+	call Z_8BFE
+NAT_ball_242:
+	ld a,(0x93D6)
+NAT_ball_243:
+	and a
+NAT_ball_244:
+	ret z
+NAT_ball_245:
+	ld e,3
+NAT_ball_246:
+	jp Z_9919
+bl_term:
+NAT_ball_248:
+	ld l,a
+NAT_ball_249:
+	ld h,0
+NAT_ball_250:
+	push de
+NAT_ball_251:
+	call Z_398C
+NAT_ball_252:
+	pop bc
+NAT_ball_253:
+	jp Z_39A3
+bl_inc:
+NAT_ball_255:
+	add hl,de
+NAT_ball_256:
+	inc (hl)
+NAT_ball_257:
+	ret
+Z_8BFE:
+NAT_ball_259:
+	ld a,(0x93D8)
+NAT_ball_260:
+	and a
+NAT_ball_261:
+	ret nz
+NAT_ball_262:
+	inc a
+NAT_ball_263:
+	ld (0xAA83),a
+NAT_ball_264:
+	ld hl,2
+NAT_ball_265:
+	ld (0x3300),hl
+NAT_ball_266:
+	ld hl,0x8070
+NAT_ball_267:
+	ld (0x3302),hl
+NAT_ball_268:
+	jp Z_AA80
+Z_8C16:
+NAT_ball_270:
+	ld a,(0x93D9)
+NAT_ball_271:
+	cp 2
+NAT_ball_272:
+	jp nz,bl_m1
+NAT_ball_273:
+	ld hl,(z80_ix)
+NAT_ball_274:
+	ld de,0x0D
+NAT_ball_275:
+	add hl,de
+NAT_ball_276:
+	inc (hl)
+bl_m1:
+NAT_ball_278:
+	ld a,(0x93EB)
+NAT_ball_279:
+	and 0xFD
+NAT_ball_280:
+	or 4
+NAT_ball_281:
+	ld (0x93EB),a
+NAT_ball_282:
+	ld hl,0x93DC
+NAT_ball_283:
+	ld (0x93DA),hl
+NAT_ball_284:
+	ld hl,(z80_ix)
+NAT_ball_285:
+	dec hl
+NAT_ball_286:
+	dec hl
+NAT_ball_287:
+	dec hl
+NAT_ball_288:
+	ld a,(hl)
+NAT_ball_289:
+	add a,2
+NAT_ball_290:
+	cp 0x32
+NAT_ball_291:
+	jp c,bl_m2
+NAT_ball_292:
+	ld a,0x32
+bl_m2:
+NAT_ball_294:
+	ld (hl),a
+NAT_ball_295:
+	ld hl,(z80_iy)
+NAT_ball_296:
+	dec hl
+NAT_ball_297:
+	dec hl
+NAT_ball_298:
+	dec hl
+NAT_ball_299:
+	ld a,(hl)
+NAT_ball_300:
+	and a
+NAT_ball_301:
+	jp z,bl_m3
+NAT_ball_302:
+	dec (hl)
+bl_m3:
+NAT_ball_304:
+	ld hl,(z80_ix)
+NAT_ball_305:
+	ld a,(hl)
+NAT_ball_306:
+	and 0x20
+NAT_ball_307:
+	ret nz
+NAT_ball_308:
+	xor a
+NAT_ball_309:
+	ld (0xAA83),a
+NAT_ball_310:
+	ld hl,2
+NAT_ball_311:
+	ld (0x3300),hl
+NAT_ball_312:
+	ld hl,0x8039
+	jp	NAT_ball_313	; мост в следующий кусок
 	org	0x3C1E
 D_3C1E:
 Z_3C1E:
@@ -2868,314 +3125,172 @@ D_3F7E:
 Z_3F7E:
 	db	0x42, 0x3C	; 3F7E
 	org	0x3FB2
-Z_909D:
-	rst 0x00	; 909D DD 36 FF 0C
-	db 0xFF, 0x0C
-Z_90A1:
-	jp Z_93BE	; 90A1 C3 BE 93
-Z_90A4:
-	ld (il_a),a	; 90A4 CB 51
-	ld a,c
-	and 0x04
-	ld a,(il_a)
-Z_90A6:
-	jp z,Z_909D	; 90A6 28 F5
-Z_90A8:
-	ld (il_a),a	; 90A8 CB 59
-	ld a,c
-	and 0x08
-	ld a,(il_a)
-Z_90AA:
-	jp nz,Z_90EF	; 90AA 20 43
-Z_90AC:
-	rst 0x00	; 90AC DD 36 FF 01
-	db 0xFF, 0x01
-Z_90B0:
-	jp Z_93BE	; 90B0 C3 BE 93
-Z_90B3:
-	rst 0x28	; 90B3 DD CB 01 CE
-	db 0x01, 0x02
-Z_90B7:
-	call il_ix_ldc	; 90B7 DD 4E FF
-	db 0xFF
-Z_90BA:
-	rst 0x10	; 90BA DD 7E 02
-	db 0x02
-Z_90BD:
-	cp 0x55	; 90BD FE 55
-Z_90BF:
-	jp nc,Z_90E7	; 90BF 30 26
-Z_90C1:
-	ld (il_a),a	; 90C1 CB 41
-	ld a,c
-	and 0x01
-	ld a,(il_a)
-Z_90C3:
-	jp z,Z_90D9	; 90C3 28 14
-Z_90C5:
-	ld (il_a),a	; 90C5 CB 49
-	ld a,c
-	and 0x02
-	ld a,(il_a)
-Z_90C7:
-	jp nz,Z_90EF	; 90C7 20 26
-	jp	Z_90C9	; мост в следующий кусок
+NAT_ball_313:
+	ld (0x3302),hl
+NAT_ball_314:
+	jp Z_AA80
+Z_8C60:
+NAT_ball_316:
+	ld hl,0x9425
+NAT_ball_317:
+	ld (z80_ix),hl
+NAT_ball_318:
+	ld hl,0x0418
+NAT_ball_319:
+	ld de,0x9402
+NAT_ball_320:
+	call bl_bk
+NAT_ball_321:
+	ld hl,0x940B
+NAT_ball_322:
+	ld (z80_ix),hl
+NAT_ball_323:
+	ld hl,0x7018
+NAT_ball_324:
+	ld de,0x9401
+bl_bk:
+NAT_ball_326:
+	push hl
+NAT_ball_327:
+	ld a,(0x93EB)
+NAT_ball_328:
+	ld b,a
+NAT_ball_329:
+	and 4
+NAT_ball_330:
+	ld a,0x3E
+NAT_ball_331:
+	jp z,bl_k9
+NAT_ball_332:
+	ld a,b
+NAT_ball_333:
+	rlca
+NAT_ball_334:
+	ld b,a
+NAT_ball_335:
+	ld hl,(z80_ix)
+NAT_ball_336:
+	inc hl
+NAT_ball_337:
+	ld a,(hl)
+NAT_ball_338:
+	xor b
+NAT_ball_339:
+	and 1
+NAT_ball_340:
+	ld a,0x3E
+NAT_ball_341:
+	jp nz,bl_k9
+NAT_ball_342:
+	ld hl,(0x93DA)
+NAT_ball_343:
+	ld a,(hl)
+NAT_ball_344:
+	inc hl
+NAT_ball_345:
+	ld (0x93DA),hl
+NAT_ball_346:
+	cp 0xFF
+NAT_ball_347:
+	jp nz,bl_k9
+	jp	NAT_ball_348	; мост в следующий кусок
 	org	0x6618
-Z_90C9:
-	ld a,0x04	; 90C9 3E 04
-Z_90CB:
-	rst 0x08	; 90CB DD CB 01 46
-	db 0x01, 0x01
-Z_90CF:
-	jp z,Z_90D3	; 90CF 28 02
-Z_90D1:
-	ld a,0x0C	; 90D1 3E 0C
-Z_90D3:
-	rst 0x20	; 90D3 DD 77 FF
-	db 0xFF
-Z_90D6:
-	jp Z_93BE	; 90D6 C3 BE 93
-Z_90D9:
-	rst 0x00	; 90D9 DD 36 FF 03
-	db 0xFF, 0x03
-Z_90DD:
-	jp Z_93BE	; 90DD C3 BE 93
-Z_90E0:
-	rst 0x00	; 90E0 DD 36 FF 01
-	db 0xFF, 0x01
-Z_90E4:
-	jp Z_93BE	; 90E4 C3 BE 93
-Z_90E7:
-	jp c,il_KC5	; 90E7 CB 41
-	ld (il_a),a
-	ld a,c
-	and 0x01
-	ld a,(il_a)
-	jp il_KD6
-il_KC5:
-	ld (il_a),a
-	ld a,c
-	and 0x01
-	scf
-	ld a,(il_a)
-il_KD6:
-Z_90E9:
-	jp z,Z_90E0	; 90E9 28 F5
-Z_90EB:
-	jp c,il_KC7	; 90EB CB 49
-	ld (il_a),a
-	ld a,c
-	and 0x02
-	ld a,(il_a)
-	jp il_KD8
-il_KC7:
-	ld (il_a),a
-	ld a,c
-	and 0x02
-	scf
-	ld a,(il_a)
-il_KD8:
-Z_90ED:
-	jp nz,Z_90C9	; 90ED 20 DA
-Z_90EF:
-	ld a,0x02	; 90EF 3E 02
-Z_90F1:
-	rst 0x08	; 90F1 DD CB 01 46
-	db 0x01, 0x01
-Z_90F5:
-	jp z,Z_90F9	; 90F5 28 02
-Z_90F7:
-	push af	; 90F7 CB FF
-	or 0x80
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_90F9:
-	ld (D_93EB),a	; 90F9 32 EB 93
-Z_90FC:
-	rst 0x30	; 90FC DD CB 00 A6
-	db 0x00, 0xEF
-Z_9100:
-	rst 0x30	; 9100 DD CB 00 9E
-	db 0x00, 0xF7
-Z_9104:
-	rst 0x30	; 9104 DD CB 00 96
-	db 0x00, 0xFB
-Z_9108:
-	call Z_9391	; 9108 CD 91 93
-Z_910B:
-	rst 0x10	; 910B DD 7E FD
-	db 0xFD
-Z_910E:
-	ld (D_944D),a	; 910E 32 4D 94
-Z_9111:
-	rst 0x10	; 9111 DD 7E 0A
-	db 0x0A
-Z_9114:
-	ld (D_944E),a	; 9114 32 4E 94
-Z_9117:
-	ld hl,D_943A	; 9117 21 3A 94
-Z_911A:
-	ld d,0x00	; 911A 16 00
-Z_911C:
-	call il_ix_lde	; 911C DD 5E FC
-	db 0xFC
-Z_911F:
-	dec e	; 911F 1D
-Z_9120:
-	add hl,de	; 9120 19
-Z_9121:
-	ld a,(hl)	; 9121 7E
-Z_9122:
-	ld (D_9450),a	; 9122 32 50 94
-Z_9125:
-	rst 0x10	; 9125 DD 7E 02
-	db 0x02
-Z_9128:
-	sub 0x58	; 9128 D6 58
-Z_912A:
-	jp nc,Z_912E	; 912A 30 02
-Z_912C:
-	cpl	; 912C ED 44
-	inc a
-Z_912E:
-	ld c,a	; 912E 4F
-Z_912F:
-	rst 0x10	; 912F DD 7E 03
-	db 0x03
-Z_9132:
-	rst 0x08	; 9132 DD CB 01 46
-	db 0x01, 0x01
-Z_9136:
-	jp z,Z_913C	; 9136 28 04
-Z_9138:
-	cpl	; 9138 ED 44
-	inc a
-Z_913A:
-	add a,0x74	; 913A C6 74
-Z_913C:
-	add a,c	; 913C 81
-Z_913D:
-	or a	; 913D CB 3F
-	rra
-Z_913F:
-	ld (D_944F),a	; 913F 32 4F 94
-Z_9142:
-	rst 0x10	; 9142 DD 7E 04
-	db 0x04
-Z_9145:
-	call il_ix_ldh	; 9145 DD 66 05
-	db 0x05
-Z_9148:
-	sub 0x1A	; 9148 D6 1A
-Z_914A:
-	ld l,a	; 914A 6F
-Z_914B:
-	rst 0x08	; 914B DD CB 01 46
-	db 0x01, 0x01
-Z_914F:
-	jp z,Z_915E	; 914F 28 0D
-Z_9151:
-	inc h	; 9151 24
-Z_9152:
-	rst 0x08	; 9152 DD CB FF 46
-	db 0xFF, 0x01
-Z_9156:
-	jp nz,Z_9165	; 9156 20 0D
-Z_9158:
-	ld a,h	; 9158 7C
-Z_9159:
-	add a,0x08	; 9159 C6 08
-Z_915B:
-	ld h,a	; 915B 67
-Z_915C:
-	jp Z_9167	; 915C 18 09
-Z_915E:
-	dec h	; 915E 25
-Z_915F:
-	rst 0x08	; 915F DD CB FF 46
-	db 0xFF, 0x01
-Z_9163:
-	jp z,Z_9167	; 9163 28 02
-Z_9165:
-	inc h	; 9165 24
-Z_9166:
-	inc h	; 9166 24
-Z_9167:
-	ld (D_93F1),hl	; 9167 22 F1 93
-Z_916A:
-	call il_ix_ldl	; 916A DD 6E 02
-	db 0x02
-Z_916D:
-	ld (D_93F3),hl	; 916D 22 F3 93
-Z_9170:
-	rst 0x28	; 9170 DD CB FE F6
-	db 0xFE, 0x40
-Z_9174:
-	rst 0x28	; 9174 DD CB 01 E6
-	db 0x01, 0x10
-Z_9178:
-	ret	; 9178 C9
-Z_9179:
-	call il_ix_ldl	; 9179 DD 6E 04
-	db 0x04
-	jp	Z_917C	; мост в следующий кусок
-	org	0x754A
-Z_917C:
-	call il_ix_ldh	; 917C DD 66 05
-	db 0x05
-Z_917F:
-	call Z_9009	; 917F CD 09 90
-Z_9182:
-	rst 0x10	; 9182 DD 7E 04
-	db 0x04
-Z_9185:
-	add a,0x04	; 9185 C6 04
-Z_9187:
-	rst 0x20	; 9187 DD 77 04
-	db 0x04
-Z_918A:
-	call il_ix_cp	; 918A DD BE 02
-	db 0x02
-Z_918D:
-	ret c	; 918D D8
-Z_918E:
-	rst 0x10	; 918E DD 7E 00
-	db 0x00
-Z_9191:
-	and 0x18	; 9191 E6 18
-Z_9193:
-	rst 0x20	; 9193 DD 77 00
-	db 0x00
-Z_9196:
-	rst 0x10	; 9196 DD 7E 01
-	db 0x01
-Z_9199:
-	and 0x71	; 9199 E6 71
-Z_919B:
-	rst 0x20	; 919B DD 77 01
-	db 0x01
-Z_919E:
-	rst 0x00	; 919E DD 36 06 00
-	db 0x06, 0x00
-Z_91A2:
-	rst 0x08	; 91A2 DD CB 00 5E
-	db 0x00, 0x08
-Z_91A6:
-	rst 0x30	; 91A6 DD CB 00 9E
-	db 0x00, 0xF7
-Z_91AA:
-	ret z	; 91AA C8
-Z_91AB:
-	ld a,(D_93D6)	; 91AB 3A D6 93
-Z_91AE:
-	and a	; 91AE A7
-Z_91AF:
-	ret nz	; 91AF C0
-Z_91B0:
-	ld e,0x01	; 91B0 1E 01
-Z_91B2:
-	jp Z_93B2	; 91B2 C3 B2 93
+NAT_ball_348:
+	ld a,0x2A
+NAT_ball_349:
+	ld (0x93F1),a
+NAT_ball_350:
+	add a,8
+NAT_ball_351:
+	ld (0x93F0),a
+NAT_ball_352:
+	xor a
+NAT_ball_353:
+	ld (0x93EF),a
+NAT_ball_354:
+	ld a,(0x93EB)
+NAT_ball_355:
+	and 0xFB
+NAT_ball_356:
+	or 0x10
+NAT_ball_357:
+	ld (0x93EB),a
+NAT_ball_358:
+	ld a,(0x9400)
+NAT_ball_359:
+	and a
+NAT_ball_360:
+	jp z,bl_k2
+NAT_ball_361:
+	and 0x80
+NAT_ball_362:
+	ld b,a
+NAT_ball_363:
+	ld a,(0x93EB)
+NAT_ball_364:
+	and 0x80
+NAT_ball_365:
+	xor b
+NAT_ball_366:
+	jp z,bl_k3
+bl_k2:
+NAT_ball_368:
+	ld a,(0x93D9)
+NAT_ball_369:
+	ex de,hl
+NAT_ball_370:
+	add a,(hl)
+NAT_ball_371:
+	ld (hl),a
+NAT_ball_372:
+	ld a,(0x93D3)
+NAT_ball_373:
+	dec a
+NAT_ball_374:
+	call nz,Z_9FF2
+NAT_ball_375:
+	ld e,0x44
+NAT_ball_376:
+	call Z_9919
+bl_k3:
+NAT_ball_378:
+	ld a,(0x93F4)
+NAT_ball_379:
+	ld h,a
+NAT_ball_380:
+	ld l,0x22
+NAT_ball_381:
+	ld (0x3300),hl
+NAT_ball_382:
+	ld a,0x48
+NAT_ball_383:
+	call Z_9E6F
+NAT_ball_384:
+	call Z_B01C
+NAT_ball_385:
+	ld a,0x42
+bl_k9:
+NAT_ball_387:
+	pop hl
+NAT_ball_388:
+	ld (0x3300),hl
+NAT_ball_389:
+	ld b,a
+NAT_ball_390:
+	ld a,h
+NAT_ball_391:
+	and 0x40
+NAT_ball_392:
+	ld a,b
+NAT_ball_393:
+	jp z,bl_k10
+NAT_ball_394:
+	add a,5
+bl_k10:
+NAT_ball_396:
+	call Z_9E6F
+NAT_ball_397:
+	jp Z_B01C
 Z_91B5:
 	xor a	; 91B5 AF
 Z_91B6:
@@ -3275,6 +3390,7 @@ Z_9225:
 	ld h,0xC8	; 9225 26 C8
 Z_9227:
 	jp Z_9251	; 9227 18 28
+	org	0x7739
 Z_9229:
 	ld (il_a),a	; 9229 CB 7B
 	ld a,e
@@ -3295,6 +3411,8 @@ Z_9238:
 	ld hl,D_9425
 	ld (z80_ix),hl
 	ld hl,(il_tmp)
+	jp	Z_923C	; мост в следующий кусок
+	org	0x7A57
 Z_923C:
 	ld a,0x10	; 923C 3E 10
 Z_923E:
@@ -3404,6 +3522,8 @@ Z_92BA:
 	call Z_932A	; 92BA CD 2A 93
 Z_92BD:
 	ld l,0x14	; 92BD 2E 14
+	jp	Z_92BF	; мост в следующий кусок
+	org	0x7B2D
 Z_92BF:
 	call Z_932A	; 92BF CD 2A 93
 Z_92C2:
@@ -3508,6 +3628,7 @@ Z_939A:
 	jp Z_A022	; 939A C3 22 A0
 Z_939D:
 	jp Z_9F25	; 939D C3 25 9F
+	org	0x8496
 Z_93A0:
 	jp Z_9E82	; 93A0 C3 82 9E
 Z_93A3:
@@ -3536,525 +3657,563 @@ Z_93C4:
 	jp Z_9599	; 93C4 C3 99 95
 Z_93C7:
 	jp Z_958F	; 93C7 C3 8F 95
-Z_94B0:
-	ld hl,D_3C1E	; 94B0 21 1E 3C
-Z_94B3:
-	ld a,0x53	; 94B3 3E 53
-Z_94B5:
-	ld de,Z_84D3	; 94B5 11 D3 84
-Z_94B8:
-	call Z_953C	; 94B8 CD 3C 95
-Z_94BB:
-	ld a,(D_93EB)	; 94BB 3A EB 93
-	jp	Z_94BE	; мост в следующий кусок
-	org	0x7A57
-Z_94BE:
-	jp c,il_KC9	; 94BE CB 47
-	ld (il_a),a
-	and 0x01
-	ld a,(il_a)
-	jp il_KD10
-il_KC9:
-	ld (il_a),a
-	and 0x01
-	scf
-	ld a,(il_a)
-il_KD10:
-Z_94C0:
-	jp nz,Z_94CF	; 94C0 20 0D
-Z_94C2:
-	jp c,il_KC11	; 94C2 CB 57
-	ld (il_a),a
-	and 0x04
-	ld a,(il_a)
-	jp il_KD12
-il_KC11:
-	ld (il_a),a
-	and 0x04
-	scf
-	ld a,(il_a)
-il_KD12:
-Z_94C4:
-	jp nz,Z_94CF	; 94C4 20 09
-Z_94C6:
-	ld a,(D_93F3)	; 94C6 3A F3 93
-Z_94C9:
-	ld de,Z_84D6	; 94C9 11 D6 84
-Z_94CC:
-	call Z_953C	; 94CC CD 3C 95
-Z_94CF:
-	ld a,(D_940D)	; 94CF 3A 0D 94
-Z_94D2:
-	ld de,Z_9599	; 94D2 11 99 95
-Z_94D5:
-	call Z_953C	; 94D5 CD 3C 95
-Z_94D8:
-	ld a,(D_9427)	; 94D8 3A 27 94
-Z_94DB:
-	ld de,Z_958F	; 94DB 11 8F 95
-Z_94DE:
-	call Z_953C	; 94DE CD 3C 95
-Z_94E1:
-	ld (hl),0x00	; 94E1 36 00
-Z_94E3:
-	ld b,0x01	; 94E3 06 01
-Z_94E5:
-	ld (il_tmp),hl	; 94E5 DD 21 1E 3C
-	ld hl,D_3C1E
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_94E9:
-	ld (il_tmp2),hl	; 94E9 DD 7E 00
+Z_9C83:
+NAT_walk_1:
 	ld hl,(z80_ix)
+NAT_walk_2:
+	ld de,0xFFF9
+NAT_walk_3:
+	add hl,de
+NAT_walk_4:
+	ld (wk_p7),hl
+NAT_walk_5:
 	ld a,(hl)
-	ld hl,(il_tmp2)
-Z_94EC:
-	and a	; 94EC A7
-Z_94ED:
-	jp z,Z_9525	; 94ED 28 36
-Z_94EF:
-	ld (il_tmp2),hl	; 94EF DD BE 03
+NAT_walk_6:
+	and 0xFE
+NAT_walk_7:
+	ld (hl),a
+NAT_walk_8:
 	ld hl,(z80_ix)
-	inc hl
-	inc hl
-	inc hl
-	cp (hl)
-	ld hl,(il_tmp2)
-Z_94F2:
-	jp z,Z_951D	; 94F2 28 29
-Z_94F4:
-	jp c,Z_951D	; 94F4 38 27
-Z_94F6:
-	ld c,a	; 94F6 4F
-Z_94F7:
-	ld (il_tmp2),hl	; 94F7 DD 7E 03
-	ld hl,(z80_ix)
-	inc hl
-	inc hl
-	inc hl
+NAT_walk_9:
 	ld a,(hl)
-	ld hl,(il_tmp2)
-	jp	Z_94FA	; мост в следующий кусок
-	org	0x7B51
-Z_94FA:
-	and a	; 94FA A7
-Z_94FB:
-	jp z,Z_9525	; 94FB 28 28
-Z_94FD:
-	call il_ix_stc	; 94FD DD 71 03
-	db 0x03
-Z_9500:
-	rst 0x20	; 9500 DD 77 00
-	db 0x00
-Z_9503:
-	call il_ix_ldl	; 9503 DD 6E 01
-	db 0x01
-Z_9506:
-	call il_ix_ldh	; 9506 DD 66 02
-	db 0x02
-Z_9509:
-	call il_ix_lde	; 9509 DD 5E 04
-	db 0x04
-Z_950C:
-	call il_ix_ldd	; 950C DD 56 05
-	db 0x05
-Z_950F:
-	ex de,hl	; 950F EB
-Z_9510:
-	call il_ix_stl	; 9510 DD 75 01
-	db 0x01
-Z_9513:
-	call il_ix_sth	; 9513 DD 74 02
-	db 0x02
-Z_9516:
-	call il_ix_ste	; 9516 DD 73 04
-	db 0x04
-Z_9519:
-	call il_ix_std	; 9519 DD 72 05
-	db 0x05
-Z_951C:
-	inc b	; 951C 04
-Z_951D:
-	ld (il_tmp),hl	; 951D DD 23
-	ld hl,(z80_ix)
+NAT_walk_10:
+	rrca
+NAT_walk_11:
+	jp c,Z_8F76
+NAT_walk_12:
+	dec hl
+NAT_walk_13:
+	dec hl
+NAT_walk_14:
+	ld a,(hl)
+NAT_walk_15:
+	and 0x1F
+NAT_walk_16:
+	jp z,wk_idle
+NAT_walk_17:
 	inc hl
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_951F:
-	ld (il_tmp),hl	; 951F DD 23
-	ld hl,(z80_ix)
+NAT_walk_18:
+	ld b,(hl)
+NAT_walk_19:
+	cp 0x10
+NAT_walk_20:
+	jp z,Z_8E5A
+NAT_walk_21:
+	ld c,a
+NAT_walk_22:
 	inc hl
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-	jp	Z_9521	; мост в следующий кусок
-	org	0x8496
-Z_9521:
-	ld (il_tmp),hl	; 9521 DD 23
-	ld hl,(z80_ix)
-	inc hl
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_9523:
-	jp Z_94E9	; 9523 18 C4
-Z_9525:
-	dec b	; 9525 10 BE
-	jp nz,Z_94E5
-Z_9527:
-	ld hl,D_3C1E	; 9527 21 1E 3C
-Z_952A:
-	ld a,(hl)	; 952A 7E
-Z_952B:
-	and a	; 952B A7
-Z_952C:
-	ret z	; 952C C8
-Z_952D:
-	inc hl	; 952D 23
-Z_952E:
-	ld e,(hl)	; 952E 5E
-Z_952F:
-	inc hl	; 952F 23
-Z_9530:
-	ld d,(hl)	; 9530 56
-Z_9531:
-	inc hl	; 9531 23
-Z_9532:
-	push hl	; 9532 E5
-Z_9533:
-	ex de,hl	; 9533 EB
-Z_9534:
-	call Z_953B	; 9534 CD 3B 95
-Z_9537:
-	pop hl	; 9537 E1
-Z_9538:
-	jp Z_952A	; 9538 C3 2A 95
-Z_953B:
-	jp (hl)	; 953B E9
-Z_953C:
-	ld (hl),a	; 953C 77
-Z_953D:
-	inc hl	; 953D 23
-Z_953E:
-	ld (hl),e	; 953E 73
-Z_953F:
-	inc hl	; 953F 23
-Z_9540:
-	ld (hl),d	; 9540 72
-Z_9541:
-	inc hl	; 9541 23
-Z_9542:
-	ret	; 9542 C9
-Z_9543:
-	call Z_AC4A	; 9543 CD 4A AC
-Z_9546:
-	ld a,(D_9409)	; 9546 3A 09 94
-Z_9549:
-	ld c,a	; 9549 4F
-Z_954A:
-	ld a,(D_AC4D)	; 954A 3A 4D AC
-Z_954D:
-	ld (il_a),a	; 954D CB 67
+NAT_walk_23:
+	ld a,(hl)
+NAT_walk_24:
 	and 0x10
-	ld a,(il_a)
-Z_954F:
-	jp z,Z_9559	; 954F 28 08
-Z_9551:
-	ld (il_a),a	; 9551 CB 79
+NAT_walk_25:
+	jp z,wk_gnd
+NAT_walk_26:
 	ld a,c
-	and 0x80
-	ld a,(il_a)
-Z_9553:
-	push af	; 9553 CB FF
-	or 0x80
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_9555:
-	jp z,Z_9559	; 9555 28 02
-Z_9557:
-	push af	; 9557 CB A7
-	and 0xEF
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_9559:
-	ld (D_9409),a	; 9559 32 09 94
-Z_955C:
-	ld a,(D_93EA)	; 955C 3A EA 93
-Z_955F:
-	and a	; 955F A7
-Z_9560:
-	call nz,Z_84DF	; 9560 C4 DF 84
-Z_9563:
-	ld a,(D_9423)	; 9563 3A 23 94
-Z_9566:
-	ld c,a	; 9566 4F
-Z_9567:
-	ld a,(D_AC4E)	; 9567 3A 4E AC
-Z_956A:
-	ld (il_a),a	; 956A CB 67
+NAT_walk_27:
 	and 0x10
-	ld a,(il_a)
-Z_956C:
-	jp z,Z_9576	; 956C 28 08
-Z_956E:
-	ld (il_a),a	; 956E CB 79
+NAT_walk_28:
+	jp z,wk_pos
+NAT_walk_29:
 	ld a,c
-	and 0x80
-	ld a,(il_a)
-Z_9570:
-	push af	; 9570 CB FF
-	or 0x80
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_9572:
-	jp z,Z_9576	; 9572 28 02
-Z_9574:
-	push af	; 9574 CB A7
+NAT_walk_30:
 	and 0xEF
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_9576:
-	ld (D_9423),a	; 9576 32 23 94
-Z_9579:
-	ld a,(D_93D6)	; 9579 3A D6 93
-Z_957C:
-	and a	; 957C A7
-Z_957D:
-	ret z	; 957D C8
-Z_957E:
-	ld a,(D_9409)	; 957E 3A 09 94
-Z_9581:
-	and 0xF0	; 9581 E6 F0
-Z_9583:
-	ld (D_9409),a	; 9583 32 09 94
-Z_9586:
-	ld a,(D_9423)	; 9586 3A 23 94
-Z_9589:
-	and 0xF0	; 9589 E6 F0
-Z_958B:
-	ld (D_9423),a	; 958B 32 23 94
-Z_958E:
-	ret	; 958E C9
-Z_958F:
-	ld (il_tmp),hl	; 958F DD 21 25 94
-	ld hl,D_9425
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_9593:
-	ld (il_tmp),hl	; 9593 FD 21 0B 94
-	ld hl,D_940B
-	ld (z80_iy),hl
-	ld hl,(il_tmp)
-Z_9597:
-	jp Z_95A1	; 9597 18 08
-Z_9599:
-	ld (il_tmp),hl	; 9599 DD 21 0B 94
-	ld hl,D_940B
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_959D:
-	ld (il_tmp),hl	; 959D FD 21 25 94
-	ld hl,D_9425
-	ld (z80_iy),hl
-	ld hl,(il_tmp)
-Z_95A1:
-	ld (il_a),a	; 95A1 DD CB 00 6E
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,(hl)
-	and 0x20
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-Z_95A5:
-	jp nz,Z_97F5	; 95A5 C2 F5 97
-Z_95A8:
-	ld (il_a),a	; 95A8 DD CB FE 6E
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
+NAT_walk_31:
+	cp b
+NAT_walk_32:
+	jp z,Z_8E5A
+NAT_walk_33:
+	jp wk_st
+wk_gnd:
+NAT_walk_35:
+	ld a,c
+NAT_walk_36:
+	and 0x10
+NAT_walk_37:
+	jp nz,Z_8E5A
+NAT_walk_38:
+	ld a,c
+wk_st:
+NAT_walk_40:
+	ld c,a
+NAT_walk_41:
 	dec hl
-	dec hl
+NAT_walk_42:
+	ld (hl),a
+NAT_walk_43:
+	inc hl
+wk_pos:
+NAT_walk_45:
+	inc hl
+NAT_walk_46:
 	ld a,(hl)
-	and 0x20
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-Z_95AC:
-	jp nz,Z_978A	; 95AC C2 8A 97
-Z_95AF:
-	ld (il_a),a	; 95AF DD CB 00 7E
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,(hl)
-	and 0x80
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-Z_95B3:
-	jp nz,Z_978A	; 95B3 C2 8A 97
-Z_95B6:
-	ld (il_a),a	; 95B6 DD CB FE 76
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	dec hl
-	dec hl
-	ld a,(hl)
-	and 0x40
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-Z_95BA:
-	jp nz,Z_9705	; 95BA C2 05 97
-Z_95BD:
-	ld (il_a),a	; 95BD DD CB 00 46
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,(hl)
-	and 0x01
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-Z_95C1:
-	jp nz,Z_9705	; 95C1 C2 05 97
-Z_95C4:
-	ld e,0x01	; 95C4 1E 01
-Z_95C6:
-	ld hl,D_9442	; 95C6 21 42 94
-Z_95C9:
-	rst 0x10	; 95C9 DD 7E FE
-	db 0xFE
-Z_95CC:
-	and 0x1F	; 95CC E6 1F
-Z_95CE:
-	jp nz,Z_95E3	; 95CE 20 13
-Z_95D0:
-	rst 0x08	; 95D0 DD CB 00 66
-	db 0x00, 0x10
-Z_95D4:
-	jp z,Z_95F3	; 95D4 28 1D
-Z_95D6:
-	ld hl,D_9446	; 95D6 21 46 94
-Z_95D9:
-	dec e	; 95D9 1D
-Z_95DA:
-	rst 0x28	; 95DA DD CB 00 D6
-	db 0x00, 0x04
-Z_95DE:
-	rst 0x10	; 95DE DD 7E 06
-	db 0x06
-Z_95E1:
-	jp Z_95F3	; 95E1 18 10
-Z_95E3:
-	rst 0x10	; 95E3 DD 7E 06
-	db 0x06
-Z_95E6:
-	rst 0x08	; 95E6 DD CB 00 56
-	db 0x00, 0x04
-Z_95EA:
-	rst 0x30	; 95EA DD CB 00 96
-	db 0x00, 0xFB
-Z_95EE:
-	jp z,Z_95F3	; 95EE 28 03
-Z_95F0:
-	dec a	; 95F0 3D
-Z_95F1:
-	push af	; 95F1 CB C7
-	or 0x01
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_95F3:
-	inc a	; 95F3 3C
-Z_95F4:
-	and 0x03	; 95F4 E6 03
-Z_95F6:
-	rst 0x20	; 95F6 DD 77 06
-	db 0x06
-Z_95F9:
-	ld b,0x00	; 95F9 06 00
-Z_95FB:
-	ld c,a	; 95FB 4F
-Z_95FC:
-	add hl,bc	; 95FC 09
-Z_95FD:
-	ld a,(hl)	; 95FD 7E
-Z_95FE:
-	rst 0x20	; 95FE DD 77 07
-	db 0x07
-Z_9601:
-	ld c,a	; 9601 4F
-Z_9602:
-	ld hl,D_944A	; 9602 21 4A 94
-Z_9605:
-	add hl,bc	; 9605 09
-Z_9606:
-	ld a,(hl)	; 9606 7E
-Z_9607:
-	call il_ix_ldl	; 9607 DD 6E 02
-	db 0x02
-Z_960A:
-	call il_ix_ldh	; 960A DD 66 03
-	db 0x03
-Z_960D:
-	dec e	; 960D 1D
-Z_960E:
-	jp z,Z_9612	; 960E 28 02
-Z_9610:
-	ld a,0xDB	; 9610 3E DB
-Z_9612:
-	add a,l	; 9612 85
-Z_9613:
-	ld l,a	; 9613 6F
-Z_9614:
-	push hl	; 9614 E5
-Z_9615:
-	ld (il_tmp),hl	; 9615 DD E5
-	ld hl,(z80_ix)
-	push hl
-	ld hl,(il_tmp)
-Z_9617:
-	ld (il_tmp),hl	; 9617 FD E5
+NAT_walk_47:
+	and 0xDF
+NAT_walk_48:
+	ld (hl),a
+NAT_walk_49:
+	inc hl
+NAT_walk_50:
+	ld e,(hl)
+NAT_walk_51:
+	inc hl
+NAT_walk_52:
+	ld d,(hl)
+NAT_walk_53:
 	ld hl,(z80_iy)
+NAT_walk_54:
+	inc hl
+NAT_walk_55:
+	inc hl
+NAT_walk_56:
+	ld a,(hl)
+NAT_walk_57:
+	inc hl
+NAT_walk_58:
+	ld h,(hl)
+NAT_walk_59:
+	ld l,a
+NAT_walk_60:
+	ex de,hl
+NAT_walk_61:
+	ld a,c
+NAT_walk_62:
+	rrca
+NAT_walk_63:
+	jp nc,wk_edge
+NAT_walk_64:
+	ld a,c
+NAT_walk_65:
+	and 2
+NAT_walk_66:
+	jp nz,wk_right
+NAT_walk_67:
+	ld a,l
+NAT_walk_68:
+	cp 0x41
+NAT_walk_69:
+	jp c,wk_edge
+NAT_walk_70:
+	call wk_neary
+NAT_walk_71:
+	jp nc,wk_lmov
+NAT_walk_72:
+	ld a,l
+NAT_walk_73:
+	inc a
+NAT_walk_74:
+	cp e
+NAT_walk_75:
+	jp c,wk_lmov
+NAT_walk_76:
+	sub 6
+NAT_walk_77:
+	cp e
+NAT_walk_78:
+	jp c,wk_xblk
+wk_lmov:
+NAT_walk_80:
+	dec l
+NAT_walk_81:
+	call wk_rate
+NAT_walk_82:
+	jp nz,wk_edge
+NAT_walk_83:
+	dec l
+NAT_walk_84:
+	jp wk_edge
+wk_right:
+NAT_walk_86:
+	ld a,l
+NAT_walk_87:
+	cp 0x6E
+NAT_walk_88:
+	jp nc,wk_edge
+NAT_walk_89:
+	call wk_neary
+NAT_walk_90:
+	jp nc,wk_rmov
+NAT_walk_91:
+	ld a,e
+NAT_walk_92:
+	inc a
+NAT_walk_93:
+	cp l
+NAT_walk_94:
+	jp c,wk_rmov
+NAT_walk_95:
+	sub 6
+NAT_walk_96:
+	cp l
+NAT_walk_97:
+	jp c,wk_xblk
+wk_rmov:
+NAT_walk_99:
+	inc l
+NAT_walk_100:
+	call wk_rate
+NAT_walk_101:
+	jp nz,wk_edge
+NAT_walk_102:
+	inc l
+NAT_walk_103:
+	jp wk_edge
+wk_xblk:
+NAT_walk_105:
+	call wk_set5
+wk_edge:
+NAT_walk_107:
+	ld a,0x70
+NAT_walk_108:
+	ld c,a
+NAT_walk_109:
+	sub l
+NAT_walk_110:
+	or a
+NAT_walk_111:
+	rra
+NAT_walk_112:
+	or a
+NAT_walk_113:
+	rra
+NAT_walk_114:
+	inc a
+NAT_walk_115:
+	ld b,a
+NAT_walk_116:
+	cp h
+NAT_walk_117:
+	jp c,wk_e1
+NAT_walk_118:
+	ld a,h
+NAT_walk_119:
+	inc a
+NAT_walk_120:
+	cp b
+NAT_walk_121:
+	jp nc,wk_y
+NAT_walk_122:
+	ld a,0x0C
+NAT_walk_123:
+	jp wk_e2
+wk_e1:
+NAT_walk_125:
+	cpl
+NAT_walk_126:
+	inc a
+NAT_walk_127:
+	add a,0x73
+NAT_walk_128:
+	ld c,a
+NAT_walk_129:
+	cp h
+NAT_walk_130:
+	jp nc,wk_y
+NAT_walk_131:
+	ld a,h
+NAT_walk_132:
+	dec a
+NAT_walk_133:
+	dec a
+NAT_walk_134:
+	cp c
+NAT_walk_135:
+	jp c,wk_y
+NAT_walk_136:
+	jp z,wk_y
+NAT_walk_137:
+	ld a,4
+wk_e2:
+NAT_walk_139:
 	push hl
-	ld hl,(il_tmp)
-Z_9619:
-	call Z_9652	; 9619 CD 52 96
-Z_961C:
-	ld (il_tmp),hl	; 961C FD E1
+NAT_walk_140:
+	ld hl,(z80_ix)
+NAT_walk_141:
+	dec hl
+NAT_walk_142:
+	dec hl
+NAT_walk_143:
+	ld (hl),a
+NAT_walk_144:
 	pop hl
-	ld (z80_iy),hl
-	ld hl,(il_tmp)
-Z_961E:
-	ld (il_tmp),hl	; 961E DD E1
+wk_y:
+NAT_walk_146:
+	push hl
+NAT_walk_147:
+	ld hl,(z80_ix)
+NAT_walk_148:
+	dec hl
+NAT_walk_149:
+	dec hl
+NAT_walk_150:
+	ld a,(hl)
+NAT_walk_151:
 	pop hl
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_9620:
-	pop hl	; 9620 E1
-Z_9621:
-	ld a,0x0A	; 9621 3E 0A
-Z_9623:
-	rst 0x08	; 9623 DD CB FF 56
-	db 0xFF, 0x04
-Z_9627:
-	jp nz,Z_9633	; 9627 20 0A
-Z_9629:
-	ld a,0x22	; 9629 3E 22
-Z_962B:
-	rst 0x08	; 962B DD CB FF 4E
-	db 0xFF, 0x02
-Z_962F:
-	jp z,Z_9639	; 962F 28 08
-Z_9631:
-	jp Z_963B	; 9631 18 08
-Z_9633:
-	rst 0x08	; 9633 DD CB FF 5E
-	db 0xFF, 0x08
-Z_9637:
-	jp z,Z_963B	; 9637 28 02
-Z_9639:
-	add a,0x0C	; 9639 C6 0C
-Z_963B:
-	rst 0x08	; 963B DD CB 01 46
-	db 0x01, 0x01
-	jp	Z_963F	; мост в следующий кусок
+NAT_walk_152:
+	ld (wk_t),a
+NAT_walk_153:
+	and 4
+NAT_walk_154:
+	jp z,wk_end
+NAT_walk_155:
+	ld a,(wk_t)
+NAT_walk_156:
+	and 8
+NAT_walk_157:
+	jp nz,wk_down
+NAT_walk_158:
+	ld a,b
+NAT_walk_159:
+	cp h
+NAT_walk_160:
+	jp nc,wk_set0
+NAT_walk_161:
+	call wk_nearx
+NAT_walk_162:
+	jp nc,wk_umov
+NAT_walk_163:
+	ld a,h
+NAT_walk_164:
+	cp d
+NAT_walk_165:
+	jp c,wk_umov
+NAT_walk_166:
+	sub 8
+NAT_walk_167:
+	cp d
+NAT_walk_168:
+	jp c,wk_yblk
+wk_umov:
+NAT_walk_170:
+	dec h
+NAT_walk_171:
+	call wk_rate
+NAT_walk_172:
+	jp nz,wk_end
+NAT_walk_173:
+	dec h
+NAT_walk_174:
+	jp wk_end
+wk_down:
+NAT_walk_176:
+	ld a,c
+NAT_walk_177:
+	cp h
+NAT_walk_178:
+	jp c,wk_set0
+NAT_walk_179:
+	call wk_nearx
+NAT_walk_180:
+	jp nc,wk_dmov
+NAT_walk_181:
+	ld a,d
+NAT_walk_182:
+	cp h
+NAT_walk_183:
+	jp c,wk_dmov
+NAT_walk_184:
+	sub 8
+NAT_walk_185:
+	cp h
+NAT_walk_186:
+	jp c,wk_yblk
+wk_dmov:
+NAT_walk_188:
+	inc h
+NAT_walk_189:
+	call wk_rate
+NAT_walk_190:
+	jp nz,wk_end
+NAT_walk_191:
+	inc h
+NAT_walk_192:
+	jp wk_end
+wk_yblk:
+NAT_walk_194:
+	call wk_set5
+NAT_walk_195:
+	jp wk_end
+wk_set0:
+NAT_walk_197:
+	push hl
+NAT_walk_198:
+	ld hl,(wk_p7)
+NAT_walk_199:
+	ld a,(hl)
+NAT_walk_200:
+	or 1
+NAT_walk_201:
+	ld (hl),a
+NAT_walk_202:
+	pop hl
+wk_end:
+NAT_walk_204:
+	ex de,hl
+NAT_walk_205:
+	ld hl,(z80_ix)
+NAT_walk_206:
+	inc hl
+NAT_walk_207:
+	inc hl
+NAT_walk_208:
+	ld (hl),e
+NAT_walk_209:
+	inc hl
+NAT_walk_210:
+	ld (hl),d
+NAT_walk_211:
+	call Z_9ED4
+Z_9DC2:
+NAT_walk_213:
+	ld hl,(z80_ix)
+NAT_walk_214:
+	ld a,(hl)
+NAT_walk_215:
+	and 0x10
+NAT_walk_216:
+	ret z
+NAT_walk_217:
+	dec hl
+NAT_walk_218:
+	ld c,(hl)
+NAT_walk_219:
+	inc hl
+NAT_walk_220:
+	inc hl
+NAT_walk_221:
+	ld a,(hl)
+NAT_walk_222:
+	ld (wk_t),a
+NAT_walk_223:
+	inc hl
+NAT_walk_224:
+	ld e,(hl)
+NAT_walk_225:
+	inc hl
+NAT_walk_226:
+	ld d,(hl)
+NAT_walk_227:
+	ld b,d
+NAT_walk_228:
+	ex de,hl
+NAT_walk_229:
+	ld a,c
+NAT_walk_230:
+	and 4
+NAT_walk_231:
+	jp z,wk_f1
+NAT_walk_232:
+	ld a,c
+NAT_walk_233:
+	and 8
+NAT_walk_234:
+	jp z,wk_f3
+NAT_walk_235:
+	ld a,h
+NAT_walk_236:
+	add a,9
+NAT_walk_237:
+	ld h,a
+NAT_walk_238:
+	jp wk_f3
+wk_f1:
+NAT_walk_240:
+	ld a,c
+NAT_walk_241:
+	and 2
+NAT_walk_242:
+	ld c,2
+NAT_walk_243:
+	jp nz,wk_f2
+NAT_walk_244:
+	ld c,0xFE
+NAT_walk_245:
+	ld a,h
+NAT_walk_246:
+	add a,9
+NAT_walk_247:
+	ld h,a
+wk_f2:
+NAT_walk_249:
+	ld a,l
+NAT_walk_250:
+	add a,c
+NAT_walk_251:
+	ld l,a
+wk_f3:
+NAT_walk_253:
+	ld (0x93F3),hl
+NAT_walk_254:
+	ld a,l
+NAT_walk_255:
+	cp 0x41
+NAT_walk_256:
+	jp c,wk_out
+NAT_walk_257:
+	cp 0x6E
+NAT_walk_258:
+	jp c,wk_in
+wk_out:
+NAT_walk_260:
+	ld e,3
+NAT_walk_261:
+	jp Z_9919
+wk_in:
+NAT_walk_263:
+	ld a,(wk_t)
+NAT_walk_264:
+	ld c,a
+NAT_walk_265:
+	and 0x10
+NAT_walk_266:
+	jp nz,wk_cr
+NAT_walk_267:
+	ld a,c
+NAT_walk_268:
+	rrca
+NAT_walk_269:
+	ld a,b
+NAT_walk_270:
+	jp nc,wk_i2
+NAT_walk_271:
+	cp 0x3E
+NAT_walk_272:
+	ret c
+NAT_walk_273:
+	jp wk_set4
+wk_i2:
+NAT_walk_275:
+	cp 0x38
+NAT_walk_276:
+	ret nc
+wk_set4:
+NAT_walk_278:
+	ld hl,(z80_ix)
+NAT_walk_279:
+	inc hl
+NAT_walk_280:
+	ld a,(hl)
+NAT_walk_281:
+	or 0x10
+NAT_walk_282:
+	ld (hl),a
+NAT_walk_283:
+	ret
+wk_cr:
+NAT_walk_285:
+	ld a,c
+NAT_walk_286:
+	rrca
+NAT_walk_287:
+	ld a,b
+NAT_walk_288:
+	jp nc,wk_c2
+NAT_walk_289:
+	cp 0x3E
+NAT_walk_290:
+	ret nc
+NAT_walk_291:
+	jp wk_c3
 	org	0x8696
 D_8696:
 Z_8696:
@@ -4093,13 +4252,13 @@ il_pro_ix:
 	                push    hl              ; возврат в тело
 	                ld      hl,(z80_ix)
 	                or      a
-	                jp      m,il_ADRN21
+	                jp      m,il_ADRN13
 	                add     a,l
 	                ld      l,a
 	                ret     nc
 	                inc     h
 	                ret
-il_ADRN21:
+il_ADRN13:
 	                add     a,l
 	                ld      l,a
 	                ret     c
@@ -4123,13 +4282,13 @@ il_pro2_ix:
 	                push    hl              ; возврат в тело
 	                ld      hl,(z80_ix)
 	                or      a
-	                jp      m,il_ADRN22
+	                jp      m,il_ADRN14
 	                add     a,l
 	                ld      l,a
 	                ret     nc
 	                inc     h
 	                ret
-il_ADRN22:
+il_ADRN14:
 	                add     a,l
 	                ld      l,a
 	                ret     c
@@ -4148,13 +4307,13 @@ il_pro_iy:
 	                push    hl              ; возврат в тело
 	                ld      hl,(z80_iy)
 	                or      a
-	                jp      m,il_ADRN23
+	                jp      m,il_ADRN15
 	                add     a,l
 	                ld      l,a
 	                ret     nc
 	                inc     h
 	                ret
-il_ADRN23:
+il_ADRN15:
 	                add     a,l
 	                ld      l,a
 	                ret     c
@@ -4178,13 +4337,13 @@ il_pro2_iy:
 	                push    hl              ; возврат в тело
 	                ld      hl,(z80_iy)
 	                or      a
-	                jp      m,il_ADRN24
+	                jp      m,il_ADRN16
 	                add     a,l
 	                ld      l,a
 	                ret     nc
 	                inc     h
 	                ret
-il_ADRN24:
+il_ADRN16:
 	                add     a,l
 	                ld      l,a
 	                ret     c
@@ -4206,38 +4365,18 @@ il_epi_a:
 	                ld      a,(il_a)
 	                ld      hl,(il_tmp2)
 	                ret
-il_ix_add:
-	                call    il_pro_ix
-	                ld a,(il_f+1)
-	                add a,(hl)
-	                jp il_ret_hl
 il_ix_bit_b:
 	                call    il_pro2_ix
 	                ld a,(il_f)
 	                rra
 	                ld a,(il_d)
-	                jp c,il_BITC25
+	                jp c,il_BITC17
 	                and (hl)
 	                ld a,(il_f+1)
 	                jp il_ret_hl
-il_BITC25:
+il_BITC17:
 	                and (hl)
 	                scf
-	                ld a,(il_f+1)
-	                jp il_ret_hl
-il_ix_cp:
-	                call    il_pro_ix
-	                ld a,(il_f+1)
-	                cp (hl)
-	                jp il_ret_hl
-il_ix_dec:
-	                call    il_pro_ix
-	                dec (hl)
-	                ld a,(il_f+1)
-	                jp il_ret_hl
-il_ix_inc:
-	                call    il_pro_ix
-	                inc (hl)
 	                ld a,(il_f+1)
 	                jp il_ret_hl
 il_ix_lda_b:
@@ -4261,126 +4400,6 @@ il_ix_lde:
 	                call    il_pro_ix
 	                ld e,(hl)
 	                jp il_epi
-il_ix_ldh:
-	                call    il_pro_ix
-	                ld a,(hl)
-	                ld (il_tmp2+1),a
-	                jp il_epi
-il_ix_ldl:
-	                call    il_pro_ix
-	                ld a,(hl)
-	                ld (il_tmp2),a
-	                jp il_epi
-il_ix_res_b:
-	                call    il_pro2_ix
-	                ld a,(il_d)
-	                and (hl)
-	                ld (hl),a
-	                jp il_epi
-il_ix_set_b:
-	                call    il_pro2_ix
-	                ld a,(il_d)
-	                or (hl)
-	                ld (hl),a
-	                jp il_epi
-il_ix_sta_b:
-	                call    il_pro_ix
-	                ld a,(il_f+1)
-	                ld (hl),a
-	                jp il_epi
-il_ix_stb:
-	                call    il_pro_ix
-	                ld (hl),b
-	                jp il_epi
-il_ix_stc:
-	                call    il_pro_ix
-	                ld (hl),c
-	                jp il_epi
-il_ix_std:
-	                call    il_pro_ix
-	                ld (hl),d
-	                jp il_epi
-il_ix_ste:
-	                call    il_pro_ix
-	                ld (hl),e
-	                jp il_epi
-il_ix_sth:
-	                call    il_pro_ix
-	                ld a,(il_tmp2+1)
-	                ld (hl),a
-	                jp il_epi
-il_ix_stl:
-	                call    il_pro_ix
-	                ld a,(il_tmp2)
-	                ld (hl),a
-	                jp il_epi
-il_ix_stn_b:
-	                call    il_pro2_ix
-	                ld a,(il_d)
-	                ld (hl),a
-	                jp il_epi
-il_iy_add:
-	                call    il_pro_iy
-	                ld a,(il_f+1)
-	                add a,(hl)
-	                jp il_ret_hl
-il_iy_bit:
-	                call    il_pro2_iy
-	                ld a,(il_f)
-	                rra
-	                ld a,(il_d)
-	                jp c,il_BITC26
-	                and (hl)
-	                ld a,(il_f+1)
-	                jp il_ret_hl
-il_BITC26:
-	                and (hl)
-	                scf
-	                ld a,(il_f+1)
-	                jp il_ret_hl
-il_iy_cp:
-	                call    il_pro_iy
-	                ld a,(il_f+1)
-	                cp (hl)
-	                jp il_ret_hl
-il_iy_dec:
-	                call    il_pro_iy
-	                dec (hl)
-	                ld a,(il_f+1)
-	                jp il_ret_hl
-il_iy_lda:
-	                call    il_pro_iy
-	                ld a,(hl)
-	                ld (il_a),a
-	                jp il_epi_a
-il_iy_ldb:
-	                call    il_pro_iy
-	                ld b,(hl)
-	                jp il_epi
-il_iy_ldd:
-	                call    il_pro_iy
-	                ld d,(hl)
-	                jp il_epi
-il_iy_lde:
-	                call    il_pro_iy
-	                ld e,(hl)
-	                jp il_epi
-il_iy_ldl:
-	                call    il_pro_iy
-	                ld a,(hl)
-	                ld (il_tmp2),a
-	                jp il_epi
-il_iy_res:
-	                call    il_pro2_iy
-	                ld a,(il_d)
-	                and (hl)
-	                ld (hl),a
-	                jp il_epi
-il_iy_sta:
-	                call    il_pro_iy
-	                ld a,(il_f+1)
-	                ld (hl),a
-	                jp il_epi
 il_iy_std:
 	                call    il_pro_iy
 	                ld (hl),d
@@ -4394,11 +4413,6 @@ il_iy_stn:
 	                ld a,(il_d)
 	                ld (hl),a
 	                jp il_epi
-il_iy_sub:
-	                call    il_pro_iy
-	                ld a,(il_f+1)
-	                sub (hl)
-	                jp il_ret_hl
 il_rnd:
 	                ld      a,(z80_r)       ; у i8080 регистра R нет; ряд ведёт
 	                add     a,0x9D          ; эта ячейка: +0x9D на чтение,
@@ -4664,97 +4678,193 @@ Z_36EB:
 Z_36EF:
 	ret	; 36EF C9
 Z_36F3:
-	di	; 36F3 F3
-Z_36F4:
-	push af	; 36F4 F5
-Z_36F5:
-	ld a,0x80	; 36F5 3E 80
-Z_36F7:
-	and a	; 36F7 A7
-Z_36F8:
-	jp p,Z_3712	; 36F8 F2 12 37
-Z_36FB:
-	push bc	; 36FB C5
-Z_36FC:
-	push hl	; 36FC E5
-Z_36FD:
-	push de	; 36FD D5
-	ld hl,(il_tmp)
+NAT_isr_1:
+	di
+NAT_isr_2:
+	push af
+NAT_isr_3:
+	ld a,0x80
+NAT_isr_4:
+	and a
+NAT_isr_5:
+	push bc
+NAT_isr_6:
 	push hl
+NAT_isr_7:
+	push de
+NAT_isr_8:
+	ld hl,(il_tmp)
+NAT_isr_9:
+	push hl
+NAT_isr_10:
 	ld hl,(il_tmp2)
+NAT_isr_11:
 	push hl
+NAT_isr_12:
 	ld hl,(il_f)
+NAT_isr_13:
 	push hl
+NAT_isr_14:
 	ld hl,(il_a)
+NAT_isr_15:
 	push hl
-Z_36FE:
-	ld (il_tmp),hl	; 36FE DD E5
+NAT_isr_16:
 	ld hl,(z80_ix)
+NAT_isr_17:
 	push hl
-	ld hl,(il_tmp)
-Z_3700:
-	ld (il_tmp),hl	; 3700 FD E5
+NAT_isr_18:
 	ld hl,(z80_iy)
+NAT_isr_19:
 	push hl
-	ld hl,(il_tmp)
 Z_3702:
-	call Z_3714	; 3702 CD 14 37
+NAT_isr_21:
+	call Z_3714
 Z_3705:
-	call Z_3715	; 3705 CD 15 37
-Z_3708:
-	call Z_372C	; 3708 CD 2C 37
-Z_370B:
-	ld (il_tmp),hl	; 370B FD E1
+NAT_isr_23:
+	call Z_3715
+NAT_isr_24:
+	call Z_372C
+NAT_isr_25:
 	pop hl
+NAT_isr_26:
 	ld (z80_iy),hl
-	ld hl,(il_tmp)
-Z_370D:
-	ld (il_tmp),hl	; 370D DD E1
+NAT_isr_27:
 	pop hl
+NAT_isr_28:
 	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_370F:
-	pop hl	; 370F D1
+NAT_isr_29:
+	pop hl
+NAT_isr_30:
 	ld (il_a),hl
+NAT_isr_31:
 	pop hl
+NAT_isr_32:
 	ld (il_f),hl
+NAT_isr_33:
 	pop hl
+NAT_isr_34:
 	ld (il_tmp2),hl
+NAT_isr_35:
 	pop hl
+NAT_isr_36:
 	ld (il_tmp),hl
+NAT_isr_37:
 	pop de
-Z_3710:
-	pop hl	; 3710 E1
-Z_3711:
-	pop bc	; 3711 C1
-Z_3712:
-	pop af	; 3712 F1
-Z_3713:
-	ei	; 3713 FB
+NAT_isr_38:
+	pop hl
+NAT_isr_39:
+	pop bc
+NAT_isr_40:
+	pop af
+NAT_isr_41:
+	ei
 Z_3714:
-	ret	; 3714 C9
+NAT_isr_43:
+	ret
 Z_3715:
-	ld hl,(0x4111)	; 3715 2A 11 41
-Z_3718:
-	inc hl	; 3718 23
-Z_3719:
-	ld (0x4111),hl	; 3719 22 11 41
-Z_371C:
-	ld a,h	; 371C 7C
-Z_371D:
-	or l	; 371D B5
-Z_371E:
-	jp nz,Z_3724	; 371E 20 04
-Z_3720:
-	ld hl,0x4113	; 3720 21 13 41
-Z_3723:
-	inc (hl)	; 3723 34
-Z_3724:
-	jp Z_A186	; 3724 C3 86 A1
+NAT_isr_45:
+	ld hl,(0x4111)
+NAT_isr_46:
+	inc hl
+NAT_isr_47:
+	ld (0x4111),hl
+NAT_isr_48:
+	ld a,h
+NAT_isr_49:
+	or l
+NAT_isr_50:
+	jp nz,Z_A186
+NAT_isr_51:
+	ld hl,0x4113
+NAT_isr_52:
+	inc (hl)
+Z_A186:
+NAT_isr_54:
+	ld a,(0x0FED)
+NAT_isr_55:
+	dec a
+NAT_isr_56:
+	ret z
+NAT_isr_57:
+	ld hl,(0x4114)
+NAT_isr_58:
+	inc hl
+NAT_isr_59:
+	ld (0x4114),hl
+NAT_isr_60:
+	ret
 Z_372C:
-	call 0x063F	; 372C CD 3F 06
-Z_372F:
-	jp Z_3811	; 372F C3 11 38
+NAT_isr_62:
+	call 0x063F
+Z_3811:
+NAT_isr_64:
+	ld hl,0x4104
+NAT_isr_65:
+	ld b,0x0B
+is_k1:
+NAT_isr_67:
+	ld a,(hl)
+NAT_isr_68:
+	cp 0xFF
+NAT_isr_69:
+	jp nz,is_k2
+NAT_isr_70:
+	inc hl
+NAT_isr_71:
+	dec b
+NAT_isr_72:
+	jp nz,is_k1
+NAT_isr_73:
+	ld (0x410F),a
+NAT_isr_74:
+	ld (0x4110),a
+NAT_isr_75:
+	ret
+is_k2:
+NAT_isr_77:
+	ld c,0
+is_k3:
+NAT_isr_79:
+	rrca
+NAT_isr_80:
+	jp nc,is_k4
+NAT_isr_81:
+	inc c
+NAT_isr_82:
+	jp is_k3
+is_k4:
+NAT_isr_84:
+	ld a,0x0B
+NAT_isr_85:
+	sub b
+NAT_isr_86:
+	rlca
+NAT_isr_87:
+	rlca
+NAT_isr_88:
+	rlca
+NAT_isr_89:
+	add a,c
+NAT_isr_90:
+	ld (0x410F),a
+NAT_isr_91:
+	ld e,a
+NAT_isr_92:
+	ld d,0
+NAT_isr_93:
+	ld hl,(0x3436)
+NAT_isr_94:
+	add hl,de
+NAT_isr_95:
+	ld a,(hl)
+NAT_isr_96:
+	cp 5
+NAT_isr_97:
+	jp z,Z_36D7
+NAT_isr_98:
+	ld (0x4110),a
+NAT_isr_99:
+	ret
 Z_3732:
 	call Z_3769	; 3732 CD 69 37
 Z_3735:
@@ -4891,67 +5001,6 @@ Z_37D1:
 	ret	; 37D1 C9
 Z_37D2:
 	jp 0x063E	; 37D2 C3 3E 06
-Z_3811:
-	ld hl,0x4104	; 3811 21 04 41
-Z_3814:
-	ld b,0x0B	; 3814 06 0B
-Z_3816:
-	ld a,(hl)	; 3816 7E
-Z_3817:
-	cp 0xFF	; 3817 FE FF
-Z_3819:
-	jp z,Z_383E	; 3819 28 23
-Z_381B:
-	ld c,0x00	; 381B 0E 00
-Z_381D:
-	rrca	; 381D 0F
-Z_381E:
-	jp nc,Z_3823	; 381E 30 03
-Z_3820:
-	inc c	; 3820 0C
-Z_3821:
-	jp Z_381D	; 3821 18 FA
-Z_3823:
-	ld a,0x0B	; 3823 3E 0B
-Z_3825:
-	sub b	; 3825 90
-Z_3826:
-	rlca	; 3826 07
-Z_3827:
-	rlca	; 3827 07
-Z_3828:
-	rlca	; 3828 07
-Z_3829:
-	add a,c	; 3829 81
-Z_382A:
-	ld (G_KEY_CODE),a	; 382A 32 0F 41
-Z_382D:
-	ld e,a	; 382D 5F
-Z_382E:
-	ld d,0x00	; 382E 16 00
-Z_3830:
-	ld hl,(D_3436)	; 3830 2A 36 34
-Z_3833:
-	add hl,de	; 3833 19
-Z_3834:
-	ld a,(hl)	; 3834 7E
-Z_3835:
-	cp 0x05	; 3835 FE 05
-Z_3837:
-	jp z,Z_36D7	; 3837 CA D7 36
-Z_383A:
-	ld (G_KEY_ASCII),a	; 383A 32 10 41
-Z_383D:
-	ret	; 383D C9
-Z_383E:
-	inc hl	; 383E 23
-Z_383F:
-	dec b	; 383F 10 D5
-	jp nz,Z_3816
-Z_3841:
-	ld (G_KEY_CODE),a	; 3841 32 0F 41
-Z_3844:
-	jp Z_383A	; 3844 18 F4
 Z_3846:
 	ld l,a	; 3846 6F
 Z_3847:
@@ -6183,510 +6232,1039 @@ Z_8691:
 	ld a,0x3A	; 8691 3E 3A
 Z_8693:
 	jp 0x0669	; 8693 C3 69 06
-Z_869C:
-	ld hl,0x00	; 869C 21 00 00
-Z_869F:
-	ld (D_8696),hl	; 869F 22 96 86
-Z_86A2:
-	ld a,(D_93D2)	; 86A2 3A D2 93
-Z_86A5:
-	and 0x03	; 86A5 E6 03
-Z_86A7:
-	sub 0x04	; 86A7 D6 04
-Z_86A9:
-	cpl	; 86A9 ED 44
-	inc a
-Z_86AB:
-	dec a	; 86AB 3D
-Z_86AC:
-	ld (Z_88D6+1),a	; 86AC 32 D7 88
-Z_86AF:
-	call Z_386E	; 86AF CD 6E 38
-Z_86B2:
-	and 0x03	; 86B2 E6 03
-Z_86B4:
-	ld c,0x0C	; 86B4 0E 0C
-Z_86B6:
-	jp z,Z_86C4	; 86B6 28 0C
-Z_86B8:
-	cp 0x02	; 86B8 FE 02
-Z_86BA:
-	ld c,0x01	; 86BA 0E 01
-Z_86BC:
-	jp c,Z_86C4	; 86BC 38 06
-Z_86BE:
-	ld c,0x04	; 86BE 0E 04
-Z_86C0:
-	jp z,Z_86C4	; 86C0 28 02
-Z_86C2:
-	ld c,0x03	; 86C2 0E 03
-Z_86C4:
-	ld a,c	; 86C4 79
-Z_86C5:
-	ld (D_8699),a	; 86C5 32 99 86
-Z_86C8:
-	ld (il_tmp),hl	; 86C8 DD 21 25 94
-	ld hl,D_9425
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_86CC:
-	ld (il_tmp),hl	; 86CC FD 21 0B 94
-	ld hl,D_940B
-	ld (z80_iy),hl
-	ld hl,(il_tmp)
-Z_86D0:
-	call Z_A160	; 86D0 CD 60 A1
-Z_86D3:
-	nop	; 86D3 00
-Z_86D4:
-	push af	; 86D4 F5
-Z_86D5:
-	ld de,0x46	; 86D5 11 46 00
-Z_86D8:
-	ld hl,0x66	; 86D8 21 66 00
-Z_86DB:
-	jp c,Z_86EE	; 86DB 38 11
-Z_86DD:
-	rst 0x10	; 86DD DD 7E 02
-	db 0x02
-Z_86E0:
-	call il_iy_cp	; 86E0 FD BE 02
-	db 0x02
-Z_86E3:
-	ld hl,0x4E	; 86E3 21 4E 00
-Z_86E6:
-	jp c,Z_86EE	; 86E6 38 06
-Z_86E8:
-	ld de,0x5E	; 86E8 11 5E 00
-Z_86EB:
-	ld hl,0x68	; 86EB 21 68 00
-Z_86EE:
-	call Z_388A	; 86EE CD 8A 38
-Z_86F1:
-	ld h,0x14	; 86F1 26 14
-Z_86F3:
-	push af	; 86F3 CB 85
-	ld a,l
-	and 0xFE
-	ld l,a
-	pop af
-Z_86F5:
-	ld (D_869A),hl	; 86F5 22 9A 86
-Z_86F8:
-	pop af	; 86F8 F1
-Z_86F9:
-	ld de,0x18	; 86F9 11 18 00
-Z_86FC:
-	jp c,Z_8701	; 86FC 38 03
-Z_86FE:
-	ld de,0x0A	; 86FE 11 0A 00
-Z_8701:
-	ld hl,0x22	; 8701 21 22 00
-Z_8704:
-	call Z_388A	; 8704 CD 8A 38
-Z_8707:
-	push af	; 8707 CB 85
-	ld a,l
-	and 0xFE
-	ld l,a
-	pop af
-Z_8709:
-	ld a,l	; 8709 7D
-Z_870A:
-	ld (D_869B),a	; 870A 32 9B 86
-Z_870D:
-	ret	; 870D C9
-Z_870E:
-	ld (il_tmp),hl	; 870E DD 21 25 94
-	ld hl,D_9425
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_8712:
-	ld (il_tmp),hl	; 8712 FD 21 0B 94
-	ld hl,D_940B
-	ld (z80_iy),hl
-	ld hl,(il_tmp)
-Z_8716:
-	ld a,(D_93D6)	; 8716 3A D6 93
-Z_8719:
-	and a	; 8719 A7
-Z_871A:
-	jp z,Z_872D	; 871A 28 11
-Z_871C:
-	rst 0x08	; 871C DD CB 00 66
-	db 0x00, 0x10
-Z_8720:
-	jp z,Z_877F	; 8720 28 5D
-Z_8722:
-	rst 0x08	; 8722 DD CB 00 46
-	db 0x00, 0x01
-Z_8726:
-	jp nz,Z_8776	; 8726 20 4E
-Z_8728:
-	ld a,0x10	; 8728 3E 10
-Z_872A:
-	jp Z_88E5	; 872A C3 E5 88
-Z_872D:
-	ld a,(D_9400)	; 872D 3A 00 94
-Z_8730:
-	and a	; 8730 A7
-Z_8731:
-	jp z,Z_8749	; 8731 28 16
-Z_8733:
-	ld (il_a),a	; 8733 CB 7F
-	and 0x80
-	ld a,(il_a)
-Z_8735:
-	ret nz	; 8735 C0
-Z_8736:
-	and 0x07	; 8736 E6 07
-Z_8738:
-	cp 0x04	; 8738 FE 04
-Z_873A:
-	ret nz	; 873A C0
-Z_873B:
-	ld hl,0x6454	; 873B 21 54 64
-Z_873E:
-	rst 0x30	; 873E DD CB 01 B6
-	db 0x01, 0xBF
-Z_8742:
-	rst 0x30	; 8742 DD CB 02 86
-	db 0x02, 0xFE
-Z_8746:
-	jp Z_889F	; 8746 C3 9F 88
-Z_8749:
-	rst 0x08	; 8749 DD CB 00 66
-	db 0x00, 0x10
-Z_874D:
-	jp z,Z_8873	; 874D CA 73 88
-Z_8750:
-	rst 0x08	; 8750 DD CB 00 46
-	db 0x00, 0x01
-Z_8754:
-	jp z,Z_8783	; 8754 28 2D
-Z_8756:
-	rst 0x08	; 8756 DD CB 00 6E
-	db 0x00, 0x20
-Z_875A:
-	ld a,(D_8699)	; 875A 3A 99 86
-Z_875D:
-	jp nz,Z_88E5	; 875D C2 E5 88
-Z_8760:
-	rst 0x08	; 8760 DD CB 00 5E
-	db 0x00, 0x08
-Z_8764:
-	jp nz,Z_8776	; 8764 20 10
-Z_8766:
-	rst 0x10	; 8766 DD 7E 03
-	db 0x03
-Z_8769:
-	cp 0x20	; 8769 FE 20
-Z_876B:
-	jp nc,Z_877F	; 876B 30 12
-Z_876D:
-	call Z_A169	; 876D CD 69 A1
-Z_8770:
-	nop	; 8770 00
-Z_8771:
-	jp nz,Z_88C6	; 8771 C2 C6 88
-Z_8774:
-	jp Z_877F	; 8774 18 09
-Z_8776:
-	rst 0x08	; 8776 DD CB 00 4E
-	db 0x00, 0x02
-Z_877A:
-	ld a,0x10	; 877A 3E 10
-Z_877C:
-	jp nz,Z_88E5	; 877C C2 E5 88
-Z_877F:
-	xor a	; 877F AF
-Z_8780:
-	jp Z_88E5	; 8780 C3 E5 88
-Z_8783:
-	ld a,(D_8697)	; 8783 3A 97 86
-Z_8786:
-	and a	; 8786 A7
-Z_8787:
-	jp z,Z_878F	; 8787 28 06
-Z_8789:
-	dec a	; 8789 3D
-Z_878A:
-	ld (D_8697),a	; 878A 32 97 86
-Z_878D:
-	jp nz,Z_87A2	; 878D 20 13
-Z_878F:
-	rst 0x10	; 878F DD 7E 0A
-	db 0x0A
-Z_8792:
-	cp 0x04	; 8792 FE 04
-Z_8794:
-	jp nc,Z_87FE	; 8794 30 68
-Z_8796:
-	ld c,a	; 8796 4F
-Z_8797:
-	call Z_A172	; 8797 CD 72 A1
-Z_879A:
-	nop	; 879A 00
-Z_879B:
-	or 0x03	; 879B F6 03
-Z_879D:
-	add a,c	; 879D 81
-Z_879E:
-	rlca	; 879E 07
-Z_879F:
-	ld (D_8697),a	; 879F 32 97 86
-Z_87A2:
-	rst 0x10	; 87A2 DD 7E 02
-	db 0x02
-Z_87A5:
-	call il_iy_sub	; 87A5 FD 96 02
-	db 0x02
-Z_87A8:
-	ld e,0x01	; 87A8 1E 01
-Z_87AA:
-	jp nc,Z_87AF	; 87AA 30 03
-Z_87AC:
-	dec e	; 87AC 1D
-Z_87AD:
-	cpl	; 87AD ED 44
-	inc a
-Z_87AF:
-	cp 0x06	; 87AF FE 06
-Z_87B1:
-	jp nc,Z_877F	; 87B1 30 CC
-Z_87B3:
-	rst 0x10	; 87B3 DD 7E 03
-	db 0x03
-Z_87B6:
-	add a,0x02	; 87B6 C6 02
-Z_87B8:
-	call il_iy_sub	; 87B8 FD 96 03
-	db 0x03
-Z_87BB:
-	ld d,0x01	; 87BB 16 01
-Z_87BD:
-	jp nc,Z_87C2	; 87BD 30 03
-Z_87BF:
-	dec d	; 87BF 15
-Z_87C0:
-	cpl	; 87C0 ED 44
-	inc a
-Z_87C2:
-	cp 0x0E	; 87C2 FE 0E
-Z_87C4:
-	jp nc,Z_877F	; 87C4 30 B9
-Z_87C6:
-	cp 0x06	; 87C6 FE 06
-Z_87C8:
-	jp c,Z_87E3	; 87C8 38 19
-Z_87CA:
-	ld a,d	; 87CA 7A
-Z_87CB:
-	and a	; 87CB A7
-Z_87CC:
-	rst 0x10	; 87CC DD 7E FF
-	db 0xFF
-Z_87CF:
-	jp z,Z_87DA	; 87CF 28 09
-Z_87D1:
-	xor 0x0C	; 87D1 EE 0C
-Z_87D3:
-	jp z,Z_877F	; 87D3 28 AA
-Z_87D5:
-	ld a,0x1C	; 87D5 3E 1C
-Z_87D7:
-	jp Z_88C6	; 87D7 C3 C6 88
-Z_87DA:
-	xor 0x04	; 87DA EE 04
-Z_87DC:
-	jp z,Z_877F	; 87DC 28 A1
-Z_87DE:
-	ld a,0x14	; 87DE 3E 14
-Z_87E0:
-	jp Z_88C6	; 87E0 C3 C6 88
-Z_87E3:
-	ld a,e	; 87E3 7B
-Z_87E4:
-	and a	; 87E4 A7
-Z_87E5:
-	rst 0x10	; 87E5 DD 7E FF
-	db 0xFF
-Z_87E8:
-	jp z,Z_87F4	; 87E8 28 0A
-Z_87EA:
-	xor 0x03	; 87EA EE 03
-Z_87EC:
-	jp z,Z_877F	; 87EC CA 7F 87
-Z_87EF:
-	ld a,0x13	; 87EF 3E 13
-Z_87F1:
-	jp Z_88C6	; 87F1 C3 C6 88
-Z_87F4:
-	xor 0x01	; 87F4 EE 01
-Z_87F6:
-	jp z,Z_877F	; 87F6 CA 7F 87
-Z_87F9:
-	ld a,0x11	; 87F9 3E 11
-Z_87FB:
-	jp Z_88C6	; 87FB C3 C6 88
-Z_87FE:
-	rst 0x10	; 87FE DD 7E FF
-	db 0xFF
-Z_8801:
-	and 0x0C	; 8801 E6 0C
-Z_8803:
-	cp 0x04	; 8803 FE 04
-Z_8805:
-	jp z,Z_8813	; 8805 28 0C
-Z_8807:
-	ld a,(D_8696)	; 8807 3A 96 86
-Z_880A:
-	ld (il_a),a	; 880A CB 5F
+Z_8CF7:
+NAT_contact_1:
+	ld hl,(z80_ix)
+NAT_contact_2:
+	ld a,(hl)
+NAT_contact_3:
+	ld (ct_x0),a
+NAT_contact_4:
+	inc hl
+NAT_contact_5:
+	ld a,(hl)
+NAT_contact_6:
+	ld (ct_x1),a
+NAT_contact_7:
+	dec hl
+NAT_contact_8:
+	dec hl
+NAT_contact_9:
+	ld a,(hl)
+NAT_contact_10:
+	ld (ct_px),a
+NAT_contact_11:
+	ld hl,(z80_iy)
+NAT_contact_12:
+	ld a,(hl)
+NAT_contact_13:
+	ld (ct_y0),a
+NAT_contact_14:
+	dec hl
+NAT_contact_15:
+	ld a,(hl)
+NAT_contact_16:
+	ld (ct_py),a
+NAT_contact_17:
+	ld a,(0x93EB)
+NAT_contact_18:
+	ld b,a
+NAT_contact_19:
+	and 0x20
+NAT_contact_20:
+	jp nz,ct_held
+NAT_contact_21:
+	ld a,b
+NAT_contact_22:
+	rrca
+NAT_contact_23:
+	jp c,ct_loose
+NAT_contact_24:
+	ld a,b
+NAT_contact_25:
+	and 0x04
+NAT_contact_26:
+	jp nz,ct_held
+NAT_contact_27:
+	ld a,b
+NAT_contact_28:
+	and 0x02
+NAT_contact_29:
+	jp nz,ct_e2
+NAT_contact_30:
+	ld a,b
+NAT_contact_31:
 	and 0x08
-	ld a,(il_a)
-Z_880C:
-	jp nz,Z_8813	; 880C 20 05
-Z_880E:
-	ld a,0x14	; 880E 3E 14
-Z_8810:
-	jp Z_88C6	; 8810 C3 C6 88
-Z_8813:
-	ld hl,0x0754	; 8813 21 54 07
-Z_8816:
-	rst 0x10	; 8816 DD 7E 02
-	db 0x02
-Z_8819:
-	cp l	; 8819 BD
-Z_881A:
-	jp nz,Z_8825	; 881A 20 09
-Z_881C:
-	rst 0x10	; 881C DD 7E 03
-	db 0x03
-Z_881F:
-	cp h	; 881F BC
-Z_8820:
-	ld a,0x10	; 8820 3E 10
-Z_8822:
-	jp z,Z_88E5	; 8822 CA E5 88
-Z_8825:
-	ld a,(Z_88D6+1)	; 8825 3A D7 88
-Z_8828:
-	inc a	; 8828 3C
-Z_8829:
-	cpl	; 8829 ED 44
+NAT_contact_32:
+	jp z,ct_n8
+NAT_contact_33:
+	ld c,0xE6
+NAT_contact_34:
+	ld a,(ct_x0)
+NAT_contact_35:
+	rrca
+NAT_contact_36:
+	jp nc,ct_hand
+NAT_contact_37:
+	jp ct_e2
+ct_n8:
+NAT_contact_39:
+	ld a,b
+NAT_contact_40:
+	and 0x10
+NAT_contact_41:
+	jp z,ct_ball
+NAT_contact_42:
+	ld a,(ct_x0)
+NAT_contact_43:
+	rrca
+NAT_contact_44:
+	jp nc,ct_ball
+ct_e2:
+NAT_contact_46:
+	ld c,0xE2
+ct_hand:
+NAT_contact_48:
+	ld hl,(0x93F1)
+NAT_contact_49:
+	jp ct_with
+ct_held:
+NAT_contact_51:
+	ld a,(ct_x0)
+NAT_contact_52:
+	and 0x10
+NAT_contact_53:
+	add a,0xF0
+NAT_contact_54:
+	ret
+ct_loose:
+NAT_contact_56:
+	ld a,(ct_x0)
+NAT_contact_57:
+	and 0x10
+NAT_contact_58:
+	jp z,ct_l1
+NAT_contact_59:
+	scf
+NAT_contact_60:
+	ret
+ct_l1:
+NAT_contact_62:
+	ld hl,(0x93F3)
+NAT_contact_63:
+	ld c,0
+NAT_contact_64:
+	ld a,(ct_y0)
+NAT_contact_65:
+	rrca
+NAT_contact_66:
+	jp nc,ct_with
+NAT_contact_67:
+	push hl
+NAT_contact_68:
+	ld hl,(z80_iy)
+NAT_contact_69:
+	inc hl
+NAT_contact_70:
+	inc hl
+NAT_contact_71:
+	inc hl
+NAT_contact_72:
+	inc hl
+NAT_contact_73:
+	ld a,(hl)
+NAT_contact_74:
+	pop hl
+NAT_contact_75:
+	ld l,a
+ct_with:
+NAT_contact_77:
+	push hl
+NAT_contact_78:
+	push bc
+NAT_contact_79:
+	call ct_ball
+NAT_contact_80:
+	pop bc
+NAT_contact_81:
+	pop hl
+NAT_contact_82:
+	ret nc
+NAT_contact_83:
+	ex de,hl
+NAT_contact_84:
+	ld hl,(z80_ix)
+NAT_contact_85:
+	inc hl
+NAT_contact_86:
+	inc hl
+NAT_contact_87:
+	ld a,(ct_x0)
+NAT_contact_88:
+	rrca
+NAT_contact_89:
+	jp nc,ct_w1
+NAT_contact_90:
+	inc hl
+NAT_contact_91:
+	inc hl
+ct_w1:
+NAT_contact_93:
+	ld a,(hl)
+NAT_contact_94:
+	inc hl
+NAT_contact_95:
+	ld h,(hl)
+NAT_contact_96:
+	ld l,a
+NAT_contact_97:
+	ex de,hl
+NAT_contact_98:
+	ld a,(ct_y0)
+NAT_contact_99:
+	rrca
+NAT_contact_100:
+	jp nc,ct_box
+NAT_contact_101:
+	ld a,l
+NAT_contact_102:
+	sub e
+NAT_contact_103:
+	jp nc,ct_w2
+NAT_contact_104:
+	cpl
+NAT_contact_105:
 	inc a
-Z_882B:
-	call il_iy_add	; 882B FD 86 03
-	db 0x03
-Z_882E:
-	cp 0x0E	; 882E FE 0E
-Z_8830:
-	jp nc,Z_8844	; 8830 30 12
-Z_8832:
-	cp 0x04	; 8832 FE 04
-Z_8834:
-	jp c,Z_8844	; 8834 38 0E
-Z_8836:
-	call il_iy_lda	; 8836 FD 7E 02
-	db 0x02
-Z_8839:
-	cp 0x51	; 8839 FE 51
-Z_883B:
-	jp c,Z_8844	; 883B 38 07
-Z_883D:
-	cp 0x58	; 883D FE 58
-Z_883F:
-	jp nc,Z_8844	; 883F 30 03
-Z_8841:
-	ld hl,(D_869A)	; 8841 2A 9A 86
-Z_8844:
-	ld a,(Z_88D6+1)	; 8844 3A D7 88
-Z_8847:
-	ld c,a	; 8847 4F
-Z_8848:
-	ld b,a	; 8848 47
-Z_8849:
-	inc c	; 8849 0C
-Z_884A:
-	cp 0x03	; 884A FE 03
-Z_884C:
-	jp c,Z_884F	; 884C 38 01
-Z_884E:
-	inc c	; 884E 0C
-Z_884F:
-	call il_ix_add	; 884F DD 86 02
-	db 0x02
-Z_8852:
-	sub l	; 8852 95
-Z_8853:
-	jp c,Z_8869	; 8853 38 14
-Z_8855:
-	cp c	; 8855 B9
-Z_8856:
-	jp nc,Z_8869	; 8856 30 11
-Z_8858:
-	rst 0x10	; 8858 DD 7E 03
-	db 0x03
-Z_885B:
-	add a,b	; 885B 80
-Z_885C:
-	sub h	; 885C 94
-Z_885D:
-	jp c,Z_8869	; 885D 38 0A
-Z_885F:
-	cp c	; 885F B9
-Z_8860:
-	jp nc,Z_8869	; 8860 30 07
-Z_8862:
-	call Z_86D0	; 8862 CD D0 86
-Z_8865:
-	ld a,0x10	; 8865 3E 10
-Z_8867:
-	jp Z_88E5	; 8867 18 7C
-Z_8869:
-	call Z_88F4	; 8869 CD F4 88
-Z_886C:
-	and a	; 886C A7
-Z_886D:
-	jp nz,Z_88C6	; 886D 20 57
-Z_886F:
-	ld a,0x10	; 886F 3E 10
-	jp	Z_8871	; мост в следующий кусок
+NAT_contact_106:
+	add a,a
+ct_w2:
+NAT_contact_108:
+	cpl
+NAT_contact_109:
+	inc a
+NAT_contact_110:
+	add a,c
+NAT_contact_111:
+	ld c,a
+NAT_contact_112:
+	jp ct_box
+ct_ball:
+NAT_contact_114:
+	ld hl,(z80_ix)
+NAT_contact_115:
+	inc hl
+NAT_contact_116:
+	inc hl
+NAT_contact_117:
+	ld e,(hl)
+NAT_contact_118:
+	inc hl
+NAT_contact_119:
+	ld d,(hl)
+NAT_contact_120:
+	ld hl,(0x93F3)
+NAT_contact_121:
+	ld c,0
+ct_box:
+NAT_contact_123:
+	ld a,e
+NAT_contact_124:
+	add a,c
+NAT_contact_125:
+	ld e,a
+NAT_contact_126:
+	ld a,(ct_px)
+NAT_contact_127:
+	and 0x04
+NAT_contact_128:
+	jp z,ct_low
+NAT_contact_129:
+	ld c,8
+NAT_contact_130:
+	ld b,4
+NAT_contact_131:
+	ld a,(ct_y0)
+NAT_contact_132:
+	and 0x10
+NAT_contact_133:
+	jp z,ct_hi2
+NAT_contact_134:
+	ld c,6
+NAT_contact_135:
+	ld a,(ct_py)
+NAT_contact_136:
+	and 0x04
+NAT_contact_137:
+	jp z,ct_hib
+NAT_contact_138:
+	ld b,3
+NAT_contact_139:
+	ld a,(ct_py)
+NAT_contact_140:
+	and 0x08
+NAT_contact_141:
+	jp nz,ct_hia
+NAT_contact_142:
+	ld b,6
+NAT_contact_143:
+	ld a,(ct_px)
+NAT_contact_144:
+	and 0x08
+NAT_contact_145:
+	jp nz,ct_hi2
+NAT_contact_146:
+	dec b
+NAT_contact_147:
+	jp ct_hi2
+ct_hia:
+NAT_contact_149:
+	ld a,(ct_px)
+NAT_contact_150:
+	and 0x08
+NAT_contact_151:
+	jp z,ct_hi2
+NAT_contact_152:
+	inc b
+NAT_contact_153:
+	jp ct_hi2
+ct_hib:
+NAT_contact_155:
+	ld b,6
+NAT_contact_156:
+	ld c,b
+NAT_contact_157:
+	ld a,(ct_py)
+NAT_contact_158:
+	and 0x02
+NAT_contact_159:
+	jp nz,ct_hi2
+NAT_contact_160:
+	ld b,4
+NAT_contact_161:
+	inc c
+ct_hi2:
+NAT_contact_163:
+	ld a,d
+NAT_contact_164:
+	add a,b
+NAT_contact_165:
+	ld d,a
+NAT_contact_166:
+	ld a,(ct_px)
+NAT_contact_167:
+	and 0x08
+NAT_contact_168:
+	jp z,ct_hi3
+NAT_contact_169:
+	ld a,d
+NAT_contact_170:
+	ld d,h
+NAT_contact_171:
+	ld h,a
+ct_hi3:
+NAT_contact_173:
+	ld a,d
+NAT_contact_174:
+	sub h
+NAT_contact_175:
+	cp c
+NAT_contact_176:
+	ret nc
+NAT_contact_177:
+	ld a,e
+NAT_contact_178:
+	add a,4
+NAT_contact_179:
+	sub l
+NAT_contact_180:
+	cp 9
+NAT_contact_181:
+	ret
+ct_low:
+NAT_contact_183:
+	ld c,6
+NAT_contact_184:
+	ld a,e
+NAT_contact_185:
+	ld b,a
+NAT_contact_186:
+	ld a,(ct_y0)
+NAT_contact_187:
+	and 0x10
+NAT_contact_188:
+	ld a,b
+NAT_contact_189:
+	jp z,ct_l37
+NAT_contact_190:
+	ld a,(ct_py)
+NAT_contact_191:
+	and 0x04
+NAT_contact_192:
+	jp z,ct_lo2
+NAT_contact_193:
+	ld a,b
+NAT_contact_194:
+	dec a
+NAT_contact_195:
+	dec c
+NAT_contact_196:
+	ld b,a
+NAT_contact_197:
+	ld a,(ct_px)
+NAT_contact_198:
+	and 0x02
+NAT_contact_199:
+	ld a,b
+NAT_contact_200:
+	jp z,ct_l30
+NAT_contact_201:
+	dec a
+ct_l30:
+NAT_contact_203:
+	ld b,a
+NAT_contact_204:
+	ld a,(ct_x1)
+NAT_contact_205:
+	rrca
+NAT_contact_206:
+	ld a,b
+NAT_contact_207:
+	jp c,ct_l37
+NAT_contact_208:
+	inc a
+NAT_contact_209:
+	jp ct_l37
+ct_lo2:
+NAT_contact_211:
+	ld a,(ct_py)
+NAT_contact_212:
+	and 0x02
+NAT_contact_213:
+	jp z,ct_lo3
+NAT_contact_214:
+	ld c,3
+NAT_contact_215:
+	ld a,b
+NAT_contact_216:
+	add a,4
+NAT_contact_217:
+	ld e,a
+NAT_contact_218:
+	ld a,(ct_px)
+NAT_contact_219:
+	and 0x02
+NAT_contact_220:
+	jp nz,ct_l27
+NAT_contact_221:
+	ld a,e
+NAT_contact_222:
+	add a,4
+NAT_contact_223:
+	ld e,a
+NAT_contact_224:
+	ld c,4
+NAT_contact_225:
+	ld a,(ct_x1)
+NAT_contact_226:
+	rrca
+NAT_contact_227:
+	ld a,e
+NAT_contact_228:
+	jp c,ct_l40
+NAT_contact_229:
+	inc c
+NAT_contact_230:
+	jp ct_l40
+ct_lo3:
+NAT_contact_232:
+	ld c,5
+NAT_contact_233:
+	ld a,b
+NAT_contact_234:
+	add a,2
+NAT_contact_235:
+	ld e,a
+NAT_contact_236:
+	ld a,(ct_px)
+NAT_contact_237:
+	and 0x02
+NAT_contact_238:
+	jp nz,ct_l27
+NAT_contact_239:
+	ld a,e
+NAT_contact_240:
+	add a,4
+NAT_contact_241:
+	ld e,a
+NAT_contact_242:
+	ld c,2
+NAT_contact_243:
+	ld a,(ct_x1)
+NAT_contact_244:
+	rrca
+NAT_contact_245:
+	ld a,e
+NAT_contact_246:
+	jp c,ct_l40
+NAT_contact_247:
+	inc c
+NAT_contact_248:
+	jp ct_l40
+ct_l27:
+NAT_contact_250:
+	ld a,(ct_x1)
+NAT_contact_251:
+	rrca
+NAT_contact_252:
+	jp c,ct_l44
+NAT_contact_253:
+	dec c
+NAT_contact_254:
+	jp ct_l44
+ct_l37:
+NAT_contact_256:
+	add a,6
+NAT_contact_257:
+	ld e,a
+NAT_contact_258:
+	ld b,a
+NAT_contact_259:
+	ld a,(ct_px)
+NAT_contact_260:
+	and 0x02
+NAT_contact_261:
+	ld a,b
+NAT_contact_262:
+	jp nz,ct_l44
+ct_l40:
+NAT_contact_264:
+	sub 0x0A
+NAT_contact_265:
+	ld e,l
+NAT_contact_266:
+	ld l,a
+ct_l44:
+NAT_contact_268:
+	ld a,e
+NAT_contact_269:
+	sub l
+NAT_contact_270:
+	cp c
+NAT_contact_271:
+	ret nc
+NAT_contact_272:
+	ld a,d
+NAT_contact_273:
+	add a,0x0D
+NAT_contact_274:
+	ld b,a
+NAT_contact_275:
+	ld c,0x10
+NAT_contact_276:
+	ld a,(ct_px)
+NAT_contact_277:
+	and 0x02
+NAT_contact_278:
+	ld a,b
+NAT_contact_279:
+	jp z,ct_l57
+NAT_contact_280:
+	ld c,0x0E
+NAT_contact_281:
+	sub 2
+ct_l57:
+NAT_contact_283:
+	sub h
+NAT_contact_284:
+	cp c
+NAT_contact_285:
+	ret
+ct_x0:
+NAT_contact_287:
+	db 0
+ct_x1:
+NAT_contact_289:
+	db 0
+ct_px:
+NAT_contact_291:
+	db 0
+ct_y0:
+NAT_contact_293:
+	db 0
+ct_py:
+NAT_contact_295:
+	db 0
+Z_8E5A:
+NAT_action_1:
+	ld a,0xFE
+NAT_action_2:
+	call ac_at
+NAT_action_3:
+	ld a,(hl)
+NAT_action_4:
+	and 0xEF
+NAT_action_5:
+	ld (hl),a
+NAT_action_6:
+	inc hl
+NAT_action_7:
+	inc hl
+NAT_action_8:
+	ld a,(hl)
+NAT_action_9:
+	and 0x10
+NAT_action_10:
+	jp nz,ac_air
+NAT_action_11:
+	inc hl
+NAT_action_12:
+	ld a,(hl)
+NAT_action_13:
+	and 0x40
+NAT_action_14:
+	jp z,ac_f00
+NAT_action_15:
+	ld a,(hl)
+NAT_action_16:
+	and 8
+NAT_action_17:
+	jp z,Z_8E73
+ac_f00:
+NAT_action_19:
+	ld hl,(z80_iy)
+NAT_action_20:
+	ld a,(hl)
+NAT_action_21:
+	and 0x10
+NAT_action_22:
+	jp z,ac_f51
+NAT_action_23:
+	ld hl,(z80_ix)
+NAT_action_24:
+	inc hl
+NAT_action_25:
+	ld a,(hl)
+NAT_action_26:
+	and 0x20
+NAT_action_27:
+	jp nz,Z_98B3
+NAT_action_28:
+	jp ac_f51
+ac_air:
+NAT_action_30:
+	ld a,(hl)
+NAT_action_31:
+	or 8
+NAT_action_32:
+	ld (hl),a
+NAT_action_33:
+	inc hl
+NAT_action_34:
+	ld b,(hl)
+NAT_action_35:
+	inc hl
+NAT_action_36:
+	ld a,(hl)
+NAT_action_37:
+	inc hl
+NAT_action_38:
+	ld h,(hl)
+NAT_action_39:
+	ld l,a
+NAT_action_40:
+	cp 0x50
+NAT_action_41:
+	jp c,ac_f51
+NAT_action_42:
+	cp 0x5B
+NAT_action_43:
+	jp nc,ac_f51
+NAT_action_44:
+	ld a,b
+NAT_action_45:
+	rrca
+NAT_action_46:
+	ld a,h
+NAT_action_47:
+	jp nc,ac_a1
+NAT_action_48:
+	cp 0x68
+NAT_action_49:
+	jp c,ac_f51
+NAT_action_50:
+	jp ac_f33
+ac_a1:
+NAT_action_52:
+	cp 0x0D
+NAT_action_53:
+	jp nc,ac_f51
+ac_f33:
+NAT_action_55:
+	ld a,0x0A
+NAT_action_56:
+	call ac_at
+NAT_action_57:
+	ld a,(hl)
+NAT_action_58:
+	cp 3
+NAT_action_59:
+	jp c,ac_f59
+NAT_action_60:
+	ld hl,(z80_ix)
+NAT_action_61:
+	ld a,(hl)
+NAT_action_62:
+	or 0x20
+NAT_action_63:
+	and 0xF7
+NAT_action_64:
+	ld (hl),a
+NAT_action_65:
+	ld b,9
+NAT_action_66:
+	ld a,(0x9400)
+NAT_action_67:
+	and a
+NAT_action_68:
+	jp nz,ac_f5f
+NAT_action_69:
+	ld a,2
+NAT_action_70:
+	ld (0x93D3),a
+NAT_action_71:
+	jp ac_f5f
+ac_f51:
+NAT_action_73:
+	ld a,0x0A
+NAT_action_74:
+	call ac_at
+NAT_action_75:
+	ld a,(hl)
+NAT_action_76:
+	ld b,4
+NAT_action_77:
+	and a
+NAT_action_78:
+	jp nz,ac_f5f
+ac_f59:
+NAT_action_80:
+	ld b,2
+NAT_action_81:
+	ld hl,(z80_ix)
+NAT_action_82:
+	inc hl
+NAT_action_83:
+	ld a,(hl)
+NAT_action_84:
+	or 0x80
+NAT_action_85:
+	ld (hl),a
+ac_f5f:
+NAT_action_87:
+	ld hl,(z80_ix)
+NAT_action_88:
+	ld a,(hl)
+NAT_action_89:
+	or 1
+NAT_action_90:
+	ld (hl),a
+NAT_action_91:
+	ld de,8
+NAT_action_92:
+	add hl,de
+NAT_action_93:
+	ld (hl),b
+NAT_action_94:
+	ld de,0xFFF4
+NAT_action_95:
+	add hl,de
+NAT_action_96:
+	ld (hl),0
+NAT_action_97:
+	ld de,6
+NAT_action_98:
+	add hl,de
+NAT_action_99:
+	ld a,(hl)
+NAT_action_100:
+	inc hl
+NAT_action_101:
+	ld b,(hl)
+NAT_action_102:
+	inc hl
+NAT_action_103:
+	ld (hl),a
+NAT_action_104:
+	inc hl
+NAT_action_105:
+	ld (hl),b
+Z_8F76:
+NAT_action_107:
+	ld a,0xFC
+NAT_action_108:
+	call ac_at
+NAT_action_109:
+	inc (hl)
+NAT_action_110:
+	call Z_938E
+NAT_action_111:
+	ld hl,(z80_ix)
+NAT_action_112:
+	ld a,(hl)
+NAT_action_113:
+	and 2
+NAT_action_114:
+	jp nz,ac_land
+NAT_action_115:
+	call Z_93A3
+NAT_action_116:
+	call Z_93A3
+NAT_action_117:
+	ld hl,(z80_ix)
+NAT_action_118:
+	ld a,(hl)
+NAT_action_119:
+	and 0x20
+NAT_action_120:
+	jp z,ac_fe6
+NAT_action_121:
+	dec hl
+NAT_action_122:
+	ld a,(hl)
+NAT_action_123:
+	and 4
+NAT_action_124:
+	jp z,ac_faf
+NAT_action_125:
+	ld b,(hl)
+NAT_action_126:
+	inc hl
+NAT_action_127:
+	ld a,(hl)
+NAT_action_128:
+	and 0xBF
+NAT_action_129:
+	ld (hl),a
+NAT_action_130:
+	inc hl
+NAT_action_131:
+	ld a,(hl)
+NAT_action_132:
+	rrca
+NAT_action_133:
+	ld e,8
+NAT_action_134:
+	jp c,ac_fa3
+NAT_action_135:
+	ld e,0
+ac_fa3:
+NAT_action_137:
+	ld a,b
+NAT_action_138:
+	and 8
+NAT_action_139:
+	xor e
+NAT_action_140:
+	jp z,ac_faf
+NAT_action_141:
+	dec hl
+NAT_action_142:
+	ld a,(hl)
+NAT_action_143:
+	or 0x40
+NAT_action_144:
+	ld (hl),a
+ac_faf:
+NAT_action_146:
+	ld bc,0
+NAT_action_147:
+	ld hl,(z80_ix)
+NAT_action_148:
+	inc hl
+NAT_action_149:
+	inc hl
+NAT_action_150:
+	ld a,(hl)
+NAT_action_151:
+	cp 0x54
+NAT_action_152:
+	jp z,ac_fc3
+NAT_action_153:
+	ld c,2
+NAT_action_154:
+	jp c,ac_fbf
+NAT_action_155:
+	ld c,0xFE
+ac_fbf:
+NAT_action_157:
+	add a,c
+NAT_action_158:
+	ld (hl),a
+ac_fc3:
+NAT_action_160:
+	dec hl
+NAT_action_161:
+	ld a,(hl)
+NAT_action_162:
+	inc hl
+NAT_action_163:
+	inc hl
+NAT_action_164:
+	rrca
+NAT_action_165:
+	ld e,9
+NAT_action_166:
+	jp nc,ac_fcd
+NAT_action_167:
+	ld e,0x6B
+ac_fcd:
+NAT_action_169:
+	ld a,(hl)
+NAT_action_170:
+	cp e
+NAT_action_171:
+	jp z,ac_fdd
+NAT_action_172:
+	jp c,ac_fd5
+NAT_action_173:
+	dec a
+NAT_action_174:
+	ld b,0xFF
+NAT_action_175:
+	jp ac_fdd
+ac_fd5:
+NAT_action_177:
+	inc a
+NAT_action_178:
+	ld b,1
+ac_fdd:
+NAT_action_180:
+	ld (hl),a
+NAT_action_181:
+	inc hl
+NAT_action_182:
+	inc hl
+NAT_action_183:
+	ld (hl),a
+NAT_action_184:
+	call Z_938B
+ac_fe6:
+NAT_action_186:
+	ld hl,(z80_ix)
+NAT_action_187:
+	inc hl
+NAT_action_188:
+	inc hl
+NAT_action_189:
+	inc hl
+NAT_action_190:
+	inc hl
+NAT_action_191:
+	ld a,(hl)
+NAT_action_192:
+	sub 4
+NAT_action_193:
+	ld (hl),a
+NAT_action_194:
+	inc hl
+NAT_action_195:
+	inc hl
+NAT_action_196:
+	inc hl
+NAT_action_197:
+	inc hl
+NAT_action_198:
+	dec (hl)
+NAT_action_199:
+	jp nz,Z_9009
+NAT_action_200:
+	ld hl,(z80_ix)
+NAT_action_201:
+	ld a,(hl)
+NAT_action_202:
+	or 2
+NAT_action_203:
+	ld (hl),a
+NAT_action_204:
+	and 0x10
+NAT_action_205:
+	jp z,Z_9009
+NAT_action_206:
+	inc hl
+NAT_action_207:
+	ld a,(hl)
+NAT_action_208:
+	and 0x80
+NAT_action_209:
+	jp z,Z_9009
+NAT_action_210:
+	dec hl
+NAT_action_211:
+	dec hl
+NAT_action_212:
+	dec hl
+NAT_action_213:
+	ld a,(hl)
+NAT_action_214:
+	or 0x10
+NAT_action_215:
+	ld (hl),a
+NAT_action_216:
+	jp ac_rel
+Z_9009:
+NAT_action_218:
+	ld hl,(z80_ix)
+NAT_action_219:
+	ld a,(hl)
+	jp	NAT_action_220	; мост в следующий кусок
 	org	0x9321
-Z_963F:
-	jp z,Z_9642	; 963F 28 01
-Z_9641:
-	inc a	; 9641 3C
-Z_9642:
-	rst 0x08	; 9642 DD CB 00 66
-	db 0x00, 0x10
-Z_9646:
-	call nz,Z_96BC	; 9646 C4 BC 96
-Z_9649:
-	ld (BLIT_Y),hl	; 9649 22 00 33
-Z_964C:
-	call Z_9E6F	; 964C CD 6F 9E
-Z_964F:
-	jp Z_B01C	; 964F C3 1C B0
-Z_9652:
-	call il_ix_ldl	; 9652 DD 6E 02
-	db 0x02
-Z_9655:
-	call il_ix_ldh	; 9655 DD 66 03
-	db 0x03
-Z_9658:
-	ld a,l	; 9658 7D
-Z_9659:
-	sub 0x1C	; 9659 D6 1C
-Z_965B:
-	ld l,a	; 965B 6F
-Z_965C:
-	rst 0x08	; 965C DD CB 00 66
-	db 0x00, 0x10
-Z_9660:
-	rst 0x10	; 9660 DD 7E 07
-	db 0x07
-	jp	Z_9663	; мост в следующий кусок
+wk_c2:
+NAT_walk_293:
+	cp 0x38
+NAT_walk_294:
+	ret c
+wk_c3:
+NAT_walk_296:
+	ld e,5
+NAT_walk_297:
+	call Z_9919
+NAT_walk_298:
+	ld hl,(z80_ix)
+NAT_walk_299:
+	inc hl
+NAT_walk_300:
+	ld a,(hl)
+NAT_walk_301:
+	and 0xEF
+NAT_walk_302:
+	ld (hl),a
+NAT_walk_303:
+	ret
+wk_idle:
+NAT_walk_305:
+	ld hl,(z80_ix)
+NAT_walk_306:
+	inc hl
+NAT_walk_307:
+	ld a,(hl)
+NAT_walk_308:
+	and 0xDF
+NAT_walk_309:
+	ld (hl),a
+NAT_walk_310:
+	jp Z_9E82
+wk_neary:
+NAT_walk_312:
+	ld a,d
+NAT_walk_313:
+	sub h
+NAT_walk_314:
+	jp nc,wk_ny1
+NAT_walk_315:
+	cpl
+NAT_walk_316:
+	inc a
+	jp	wk_ny1	; мост в следующий кусок
 	org	0x9348
 D_9348:
 Z_9348:
@@ -6700,68 +7278,109 @@ D_9368:
 Z_9368:
 	db	0xC3, 0xED, 0x9F, 0xC3, 0xF3, 0x9E, 0xC3, 0x50, 0x9E, 0xC3, 0xA2, 0x9E, 0xC3, 0xD9	; 9368
 	org	0x9376
-Z_9663:
-	jp z,Z_9667	; 9663 28 02
-Z_9665:
-	add a,0x03	; 9665 C6 03
-Z_9667:
-	rst 0x08	; 9667 DD CB FF 56
-	db 0xFF, 0x04
-Z_966B:
-	jp nz,Z_9677	; 966B 20 0A
-Z_966D:
-	add a,0x18	; 966D C6 18
-Z_966F:
-	rst 0x08	; 966F DD CB FF 4E
-	db 0xFF, 0x02
-Z_9673:
-	jp z,Z_967D	; 9673 28 08
-Z_9675:
-	jp Z_967F	; 9675 18 08
-Z_9677:
-	rst 0x08	; 9677 DD CB FF 5E
-	db 0xFF, 0x08
-Z_967B:
-	jp z,Z_967F	; 967B 28 02
-Z_967D:
-	add a,0x0C	; 967D C6 0C
-Z_967F:
-	ld (BLIT_Y),hl	; 967F 22 00 33
-Z_9682:
-	ld (il_tmp),hl	; 9682 DD E5
-	ld hl,(z80_ix)
+wk_ny1:
+NAT_walk_318:
+	cp 6
+NAT_walk_319:
+	ret
+wk_nearx:
+NAT_walk_321:
+	ld a,l
+NAT_walk_322:
+	sub e
+NAT_walk_323:
+	jp nc,wk_nx1
+NAT_walk_324:
+	cpl
+NAT_walk_325:
+	inc a
+wk_nx1:
+NAT_walk_327:
+	cp 3
+NAT_walk_328:
+	ret
+wk_set5:
+NAT_walk_330:
 	push hl
-	ld hl,(il_tmp)
-Z_9684:
-	push af	; 9684 F5
-Z_9685:
-	call Z_9E6F	; 9685 CD 6F 9E
-Z_9688:
-	call Z_B01C	; 9688 CD 1C B0
-Z_968B:
-	pop de	; 968B D1
-Z_968C:
-	ld (il_tmp),hl	; 968C DD E1
+NAT_walk_331:
+	ld hl,(z80_ix)
+NAT_walk_332:
+	inc hl
+NAT_walk_333:
+	ld a,(hl)
+NAT_walk_334:
+	or 0x20
+NAT_walk_335:
+	ld (hl),a
+NAT_walk_336:
 	pop hl
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_968E:
-	ld hl,D_94A7	; 968E 21 A7 94
-Z_9691:
-	ld a,(hl)	; 9691 7E
-Z_9692:
-	inc hl	; 9692 23
-Z_9693:
-	and a	; 9693 A7
-Z_9694:
-	ret z	; 9694 C8
-Z_9695:
-	cp d	; 9695 BA
-Z_9696:
-	jp nz,Z_9691	; 9696 20 F9
-Z_9698:
-	ld a,(D_93EB)	; 9698 3A EB 93
-	jp	Z_969B	; мост в следующий кусок
+NAT_walk_337:
+	ret
+wk_rate:
+NAT_walk_339:
+	push hl
+NAT_walk_340:
+	push bc
+NAT_walk_341:
+	ld hl,(z80_ix)
+NAT_walk_342:
+	ld bc,0x0A
+NAT_walk_343:
+	add hl,bc
+NAT_walk_344:
+	ld a,(hl)
+NAT_walk_345:
+	and a
+NAT_walk_346:
+	jp nz,wk_r1
+NAT_walk_347:
+	ld bc,0xFFF1
+NAT_walk_348:
+	add hl,bc
+NAT_walk_349:
+	ld a,(hl)
+NAT_walk_350:
+	inc a
+NAT_walk_351:
+	and 1
+NAT_walk_352:
+	ld (hl),a
+NAT_walk_353:
+	pop bc
+NAT_walk_354:
+	pop hl
+NAT_walk_355:
+	ret
+wk_r1:
+NAT_walk_357:
+	ld bc,0xFFF6
+NAT_walk_358:
+	add hl,bc
+NAT_walk_359:
+	ld a,(hl)
+NAT_walk_360:
+	and 0x10
+NAT_walk_361:
+	jp z,wk_rx
+NAT_walk_362:
+	ld a,(0x93EB)
+NAT_walk_363:
+	and 0x40
+NAT_walk_364:
+	jp z,wk_rx
+NAT_walk_365:
+	ld bc,0xFFFA
+NAT_walk_366:
+	add hl,bc
+NAT_walk_367:
+	dec (hl)
+NAT_walk_368:
+	jp nz,wk_rx
+NAT_walk_369:
+	ld a,(0x93EB)
+NAT_walk_370:
+	and 0xBF
+	jp	NAT_walk_371	; мост в следующий кусок
 	org	0x93CA
 D_93CA:
 Z_93CA:
@@ -7015,1504 +7634,2046 @@ D_94A7:
 Z_94A7:
 	db	0x03, 0x06, 0x0F, 0x12, 0x1B, 0x1E, 0x27, 0x2A, 0x00	; 94A7
 	org	0x94B0
-Z_969B:
-	push af	; 969B CB F7
-	or 0x40
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_969D:
-	ld (D_93EB),a	; 969D 32 EB 93
-Z_96A0:
-	rst 0x00	; 96A0 DD 36 FA 03
-	db 0xFA, 0x03
-Z_96A4:
-	ld a,(D_93D8)	; 96A4 3A D8 93
-Z_96A7:
-	and a	; 96A7 A7
-Z_96A8:
-	ret nz	; 96A8 C0
-Z_96A9:
-	inc a	; 96A9 3C
-Z_96AA:
-	ld (D_AA83),a	; 96AA 32 83 AA
-Z_96AD:
-	ld hl,0x02	; 96AD 21 02 00
-Z_96B0:
-	ld (BLIT_Y),hl	; 96B0 22 00 33
-Z_96B3:
-	ld hl,0x8070	; 96B3 21 70 80
-Z_96B6:
-	ld (BLIT_SRC),hl	; 96B6 22 02 33
-Z_96B9:
-	jp Z_AA80	; 96B9 C3 80 AA
-Z_96BC:
-	rst 0x08	; 96BC DD CB 00 56
-	db 0x00, 0x04
-Z_96C0:
-	ret nz	; 96C0 C0
-Z_96C1:
-	ld c,a	; 96C1 4F
-Z_96C2:
-	rst 0x10	; 96C2 DD 7E 03
-	db 0x03
-Z_96C5:
-	call il_iy_sub	; 96C5 FD 96 03
-	db 0x03
-Z_96C8:
-	ld b,0x0A	; 96C8 06 0A
-Z_96CA:
-	ld e,0x00	; 96CA 1E 00
-Z_96CC:
-	jp nc,Z_96D3	; 96CC 30 05
-Z_96CE:
-	ld b,0x16	; 96CE 06 16
-Z_96D0:
-	inc e	; 96D0 1C
-Z_96D1:
-	cpl	; 96D1 ED 44
-	inc a
-Z_96D3:
-	cp 0x06	; 96D3 FE 06
-Z_96D5:
-	jp nc,Z_9703	; 96D5 30 2C
-Z_96D7:
-	rst 0x10	; 96D7 DD 7E 02
-	db 0x02
-Z_96DA:
-	call il_iy_sub	; 96DA FD 96 02
-	db 0x02
-Z_96DD:
-	jp nc,Z_96E1	; 96DD 30 02
-Z_96DF:
-	cpl	; 96DF ED 44
-	inc a
-Z_96E1:
-	cp 0x0A	; 96E1 FE 0A
-Z_96E3:
-	jp nc,Z_9703	; 96E3 30 1E
-Z_96E5:
-	rst 0x08	; 96E5 DD CB 01 46
-	db 0x01, 0x01
-Z_96E9:
-	jp z,Z_96EC	; 96E9 28 01
-Z_96EB:
-	inc b	; 96EB 04
-Z_96EC:
-	ld a,b	; 96EC 78
-Z_96ED:
-	cp c	; 96ED B9
-Z_96EE:
-	ret z	; 96EE C8
-Z_96EF:
-	rst 0x08	; 96EF DD CB FF 56
-	db 0xFF, 0x04
-Z_96F3:
-	jp z,Z_96F6	; 96F3 28 01
-Z_96F5:
-	ret	; 96F5 C9
-Z_96F6:
-	rst 0x08	; 96F6 DD CB FF 4E
-	db 0xFF, 0x02
-Z_96FA:
-	jp z,Z_9703	; 96FA 28 07
-Z_96FC:
-	rst 0x08	; 96FC DD CB 01 46
-	db 0x01, 0x01
-Z_9700:
-	ret z	; 9700 C8
-Z_9701:
-	dec l	; 9701 2D
-Z_9702:
-	ret	; 9702 C9
-Z_9703:
-	ld a,c	; 9703 79
-Z_9704:
-	ret	; 9704 C9
-Z_9705:
-	rst 0x08	; 9705 DD CB FF 56
-	db 0xFF, 0x04
-Z_9709:
-	jp nz,Z_974C	; 9709 20 41
-Z_970B:
-	rst 0x08	; 970B DD CB FF 4E
-	db 0xFF, 0x02
-Z_970F:
-	jp nz,Z_974C	; 970F 20 3B
-Z_9711:
-	ld (il_tmp),hl	; 9711 DD E5
-	ld hl,(z80_ix)
-	push hl
-	ld hl,(il_tmp)
-Z_9713:
-	call Z_9753	; 9713 CD 53 97
-Z_9716:
-	ld (il_tmp),hl	; 9716 DD E1
+NAT_walk_371:
+	ld (0x93EB),a
+NAT_walk_372:
+	xor a
+wk_rx:
+NAT_walk_374:
+	pop bc
+NAT_walk_375:
 	pop hl
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_9718:
-	call il_ix_ldl	; 9718 DD 6E 04
-	db 0x04
-Z_971B:
-	call il_ix_ldh	; 971B DD 66 05
-	db 0x05
-Z_971E:
-	ld a,l	; 971E 7D
-Z_971F:
-	sub 0x25	; 971F D6 25
-Z_9721:
-	ld l,a	; 9721 6F
-Z_9722:
-	ld a,0x0A	; 9722 3E 0A
-Z_9724:
-	rst 0x08	; 9724 DD CB FF 56
-	db 0xFF, 0x04
-Z_9728:
-	jp z,Z_9732	; 9728 28 08
-Z_972A:
-	rst 0x08	; 972A DD CB FF 5E
-	db 0xFF, 0x08
-Z_972E:
-	jp z,Z_973C	; 972E 28 0C
-Z_9730:
-	jp Z_973A	; 9730 18 08
-Z_9732:
-	add a,0x18	; 9732 C6 18
-Z_9734:
-	rst 0x08	; 9734 DD CB FF 4E
-	db 0xFF, 0x02
-Z_9738:
-	jp nz,Z_973C	; 9738 20 02
-Z_973A:
-	add a,0x0C	; 973A C6 0C
-Z_973C:
-	rst 0x08	; 973C DD CB 01 46
-	db 0x01, 0x01
-Z_9740:
-	jp z,Z_9743	; 9740 28 01
-Z_9742:
-	inc a	; 9742 3C
-Z_9743:
-	ld (BLIT_Y),hl	; 9743 22 00 33
-Z_9746:
-	call Z_9E6F	; 9746 CD 6F 9E
-Z_9749:
-	jp Z_B01C	; 9749 C3 1C B0
-Z_974C:
-	ld (il_tmp),hl	; 974C DD E5
+NAT_walk_376:
+	ret
+wk_p7:
+NAT_walk_378:
+	dw 0
+wk_t:
+NAT_walk_380:
+	db 0
+Z_9E82:
+NAT_stamina_1:
+	ld a,(0x93D6)
+NAT_stamina_2:
+	and a
+NAT_stamina_3:
+	ret nz
+NAT_stamina_4:
+	ld a,(0x93D3)
+NAT_stamina_5:
+	dec a
+NAT_stamina_6:
+	ret z
+NAT_stamina_7:
 	ld hl,(z80_ix)
-	push hl
-	ld hl,(il_tmp)
-Z_974E:
-	call Z_9718	; 974E CD 18 97
-Z_9751:
-	ld (il_tmp),hl	; 9751 DD E1
-	pop hl
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_9753:
-	call il_ix_ldl	; 9753 DD 6E 04
-	db 0x04
-Z_9756:
-	call il_ix_ldh	; 9756 DD 66 05
-	db 0x05
-Z_9759:
-	ld a,l	; 9759 7D
-Z_975A:
-	sub 0x24	; 975A D6 24
-Z_975C:
-	ld l,a	; 975C 6F
-Z_975D:
-	rst 0x08	; 975D DD CB 00 66
-	db 0x00, 0x10
-Z_9761:
-	ld a,0x09	; 9761 3E 09
-Z_9763:
-	jp z,Z_9766	; 9763 28 01
-Z_9765:
-	dec a	; 9765 3D
-Z_9766:
-	rst 0x08	; 9766 DD CB FF 56
-	db 0xFF, 0x04
-Z_976A:
-	jp z,Z_9777	; 976A 28 0B
-Z_976C:
-	rst 0x08	; 976C DD CB FF 5E
-	db 0xFF, 0x08
-Z_9770:
-	jp z,Z_9781	; 9770 28 0F
-Z_9772:
-	add a,0x0C	; 9772 C6 0C
-Z_9774:
-	inc h	; 9774 24
-Z_9775:
-	jp Z_9781	; 9775 18 0A
-Z_9777:
-	add a,0x24	; 9777 C6 24
-Z_9779:
-	rst 0x08	; 9779 DD CB FF 4E
-	db 0xFF, 0x02
-Z_977D:
-	jp z,Z_9781	; 977D 28 02
-Z_977F:
-	sub 0x0C	; 977F D6 0C
-Z_9781:
-	ld (BLIT_Y),hl	; 9781 22 00 33
-Z_9784:
-	call Z_9E6F	; 9784 CD 6F 9E
-Z_9787:
-	jp Z_B01C	; 9787 C3 1C B0
-Z_978A:
-	call il_ix_ldl	; 978A DD 6E 04
-	db 0x04
-Z_978D:
-	call il_ix_ldh	; 978D DD 66 05
-	db 0x05
-Z_9790:
-	ld a,l	; 9790 7D
-Z_9791:
-	sub 0x24	; 9791 D6 24
-Z_9793:
-	ld l,a	; 9793 6F
-Z_9794:
-	rst 0x08	; 9794 DD CB 01 46
-	db 0x01, 0x01
-Z_9798:
-	jp z,Z_979C	; 9798 28 02
-Z_979A:
-	dec h	; 979A 25
-Z_979B:
-	dec h	; 979B 25
-Z_979C:
-	ld (BLIT_Y),hl	; 979C 22 00 33
-Z_979F:
-	rst 0x10	; 979F DD 7E 07
-	db 0x07
-Z_97A2:
-	add a,0x36	; 97A2 C6 36
-Z_97A4:
-	rst 0x08	; 97A4 DD CB FF 4E
-	db 0xFF, 0x02
-Z_97A8:
-	jp nz,Z_97AC	; 97A8 20 02
-Z_97AA:
-	inc a	; 97AA 3C
-Z_97AB:
-	inc a	; 97AB 3C
-Z_97AC:
-	rst 0x08	; 97AC DD CB 01 46
-	db 0x01, 0x01
-Z_97B0:
-	jp z,Z_97B4	; 97B0 28 02
-Z_97B2:
-	add a,0x04	; 97B2 C6 04
-Z_97B4:
-	call Z_9E6F	; 97B4 CD 6F 9E
-Z_97B7:
-	ld (il_tmp),hl	; 97B7 DD E5
-	ld hl,(z80_ix)
-	push hl
-	ld hl,(il_tmp)
-Z_97B9:
-	call Z_B01C	; 97B9 CD 1C B0
-Z_97BC:
-	ld (il_tmp),hl	; 97BC DD E1
-	pop hl
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_97BE:
-	rst 0x10	; 97BE DD 7E 07
-	db 0x07
-Z_97C1:
-	inc a	; 97C1 3C
-Z_97C2:
-	and 0x01	; 97C2 E6 01
-Z_97C4:
-	ret z	; 97C4 C8
-Z_97C5:
-	rst 0x20	; 97C5 DD 77 07
-	db 0x07
-Z_97C8:
-	jp Z_84D9	; 97C8 C3 D9 84
-Z_97CB:
-	cp 0x22	; 97CB FE 22
-Z_97CD:
-	jp nc,Z_9705	; 97CD D2 05 97
-Z_97D0:
-	call Z_97D6	; 97D0 CD D6 97
-Z_97D3:
-	jp Z_9705	; 97D3 C3 05 97
-Z_97D6:
-	xor a	; 97D6 AF
-Z_97D7:
-	rst 0x08	; 97D7 DD CB 01 46
-	db 0x01, 0x01
-Z_97DB:
-	jp z,Z_97DF	; 97DB 28 02
-Z_97DD:
-	push af	; 97DD CB FF
-	or 0x80
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_97DF:
-	ld (D_93EB),a	; 97DF 32 EB 93
-Z_97E2:
-	ld a,(D_9400)	; 97E2 3A 00 94
-Z_97E5:
-	and a	; 97E5 A7
-Z_97E6:
-	ld a,0x00	; 97E6 3E 00
-Z_97E8:
-	jp nz,Z_97EF	; 97E8 20 05
-Z_97EA:
-	call il_ix_inc	; 97EA DD 34 0C
-	db 0x0C
-Z_97ED:
-	ld a,0x02	; 97ED 3E 02
-Z_97EF:
-	ld (D_93D9),a	; 97EF 32 D9 93
-Z_97F2:
-	jp Z_84DC	; 97F2 C3 DC 84
-Z_97F5:
-	rst 0x10	; 97F5 DD 7E 04
-	db 0x04
-Z_97F8:
-	call il_ix_ldh	; 97F8 DD 66 05
-	db 0x05
-Z_97FB:
-	dec h	; 97FB 25
-Z_97FC:
-	sub 0x24	; 97FC D6 24
-Z_97FE:
-	ld l,a	; 97FE 6F
-Z_97FF:
-	ld (BLIT_Y),hl	; 97FF 22 00 33
-Z_9802:
-	ld c,0x02	; 9802 0E 02
-Z_9804:
-	rst 0x08	; 9804 DD CB 00 76
-	db 0x00, 0x40
-Z_9808:
-	jp nz,Z_980B	; 9808 20 01
-Z_980A:
-	dec c	; 980A 0D
-Z_980B:
-	rst 0x08	; 980B DD CB 00 4E
-	db 0x00, 0x02
-Z_980F:
-	jp nz,Z_9875	; 980F 20 64
-Z_9811:
-	dec c	; 9811 0D
-Z_9812:
-	ld a,(D_93EB)	; 9812 3A EB 93
-Z_9815:
-	ld (il_a),a	; 9815 CB 57
-	and 0x04
-	ld a,(il_a)
-Z_9817:
-	ld a,l	; 9817 7D
-Z_9818:
-	jp nz,Z_9829	; 9818 20 0F
-Z_981A:
-	rst 0x08	; 981A DD CB 00 76
-	db 0x00, 0x40
-Z_981E:
-	jp z,Z_9822	; 981E 28 02
-Z_9820:
-	jp Z_97CB	; 9820 18 A9
-Z_9822:
-	cp 0x22	; 9822 FE 22
-Z_9824:
-	jp nc,Z_9705	; 9824 D2 05 97
-Z_9827:
-	jp Z_986C	; 9827 18 43
-Z_9829:
-	rst 0x28	; 9829 DD CB 00 CE
-	db 0x00, 0x02
-Z_982D:
-	rst 0x28	; 982D DD CB 01 DE
-	db 0x01, 0x08
-Z_9831:
-	rst 0x30	; 9831 DD CB 00 A6
-	db 0x00, 0xEF
-Z_9835:
-	rst 0x30	; 9835 DD CB 00 9E
-	db 0x00, 0xF7
-Z_9839:
-	ld hl,0x084C	; 9839 21 4C 08
-Z_983C:
-	rst 0x08	; 983C DD CB 01 46
-	db 0x01, 0x01
-Z_9840:
-	jp z,Z_9844	; 9840 28 02
-Z_9842:
-	ld h,0x74	; 9842 26 74
-Z_9844:
-	ld (D_93F3),hl	; 9844 22 F3 93
-Z_9847:
-	ld l,0x21	; 9847 2E 21
-Z_9849:
-	ld (D_93F1),hl	; 9849 22 F1 93
-Z_984C:
-	inc c	; 984C 0C
-Z_984D:
-	push bc	; 984D C5
-Z_984E:
-	ld hl,(BLIT_Y)	; 984E 2A 00 33
-Z_9851:
-	push hl	; 9851 E5
-Z_9852:
-	xor a	; 9852 AF
-Z_9853:
-	ld (D_AA83),a	; 9853 32 83 AA
-Z_9856:
-	ld hl,0x02	; 9856 21 02 00
-Z_9859:
-	ld (BLIT_Y),hl	; 9859 22 00 33
-Z_985C:
-	ld hl,0x8039	; 985C 21 39 80
-Z_985F:
-	ld (BLIT_SRC),hl	; 985F 22 02 33
-Z_9862:
-	call Z_AA80	; 9862 CD 80 AA
-Z_9865:
-	pop hl	; 9865 E1
-Z_9866:
-	ld (BLIT_Y),hl	; 9866 22 00 33
-Z_9869:
-	pop bc	; 9869 C1
-Z_986A:
-	jp Z_9875	; 986A 18 09
-Z_986C:
-	rst 0x28	; 986C DD CB 01 DE
-	db 0x01, 0x08
-Z_9870:
-	cp 0x1D	; 9870 FE 1D
-Z_9872:
-	call c,Z_97D6	; 9872 DC D6 97
-Z_9875:
-	ld a,0x30	; 9875 3E 30
-Z_9877:
-	add a,c	; 9877 81
-Z_9878:
-	ld c,0x01	; 9878 0E 01
-Z_987A:
-	rst 0x08	; 987A DD CB FF 56
-	db 0xFF, 0x04
-Z_987E:
-	jp nz,Z_98A4	; 987E 20 24
-Z_9880:
-	ld hl,0x3301	; 9880 21 01 33
-Z_9883:
-	rst 0x08	; 9883 DD CB 01 46
-	db 0x01, 0x01
-Z_9887:
-	jp z,Z_9897	; 9887 28 0E
-Z_9889:
-	rst 0x08	; 9889 DD CB FF 4E
-	db 0xFF, 0x02
-Z_988D:
-	jp nz,Z_9892	; 988D 20 03
-Z_988F:
-	add a,0x02	; 988F C6 02
-Z_9891:
-	inc (hl)	; 9891 34
-Z_9892:
-	dec c	; 9892 0D
-Z_9893:
-	add a,0x08	; 9893 C6 08
-Z_9895:
-	jp Z_98A4	; 9895 18 0D
-Z_9897:
-	inc (hl)	; 9897 34
-Z_9898:
-	add a,0x06	; 9898 C6 06
-Z_989A:
-	rst 0x08	; 989A DD CB FF 4E
-	db 0xFF, 0x02
-Z_989E:
-	jp nz,Z_98A4	; 989E 20 04
-Z_98A0:
-	add a,0x02	; 98A0 C6 02
-Z_98A2:
-	jp Z_98AD	; 98A2 18 09
-Z_98A4:
-	rst 0x08	; 98A4 DD CB 01 46
-	db 0x01, 0x01
-Z_98A8:
-	jp z,Z_98AD	; 98A8 28 03
-Z_98AA:
-	add a,0x02	; 98AA C6 02
-Z_98AC:
-	add a,c	; 98AC 81
-Z_98AD:
-	call Z_9E6F	; 98AD CD 6F 9E
-Z_98B0:
-	jp Z_B01C	; 98B0 C3 1C B0
-Z_98B3:
-	call il_iy_lde	; 98B3 FD 5E 02
-	db 0x02
-Z_98B6:
-	call il_iy_ldd	; 98B6 FD 56 03
-	db 0x03
-Z_98B9:
-	ld bc,0x00	; 98B9 01 00 00
-Z_98BC:
-	rst 0x10	; 98BC DD 7E FF
-	db 0xFF
-Z_98BF:
-	ld (il_a),a	; 98BF CB 47
-	and 0x01
-	ld a,(il_a)
-Z_98C1:
-	jp z,Z_98CB	; 98C1 28 08
-Z_98C3:
-	ld c,0xFE	; 98C3 0E FE
-Z_98C5:
-	ld (il_a),a	; 98C5 CB 4F
-	and 0x02
-	ld a,(il_a)
-Z_98C7:
-	jp z,Z_98CB	; 98C7 28 02
-Z_98C9:
-	ld c,0x02	; 98C9 0E 02
-Z_98CB:
-	ld (il_a),a	; 98CB CB 57
-	and 0x04
-	ld a,(il_a)
-Z_98CD:
-	jp z,Z_98F7	; 98CD 28 28
-Z_98CF:
-	ld b,0xFF	; 98CF 06 FF
-Z_98D1:
-	ld (il_a),a	; 98D1 CB 5F
-	and 0x08
-	ld a,(il_a)
-Z_98D3:
-	jp z,Z_98F7	; 98D3 28 22
-Z_98D5:
-	ld b,0x01	; 98D5 06 01
-Z_98D7:
-	jp Z_98F7	; 98D7 18 1E
-Z_98D9:
-	call il_ix_ldl	; 98D9 DD 6E 02
-	db 0x02
-Z_98DC:
-	call il_ix_ldh	; 98DC DD 66 03
-	db 0x03
-Z_98DF:
-	call il_iy_lde	; 98DF FD 5E 02
-	db 0x02
-Z_98E2:
-	call il_iy_ldd	; 98E2 FD 56 03
-	db 0x03
-Z_98E5:
-	ld a,h	; 98E5 7C
-Z_98E6:
-	sub d	; 98E6 92
-Z_98E7:
-	jp nc,Z_98EB	; 98E7 30 02
-Z_98E9:
-	cpl	; 98E9 ED 44
-	inc a
-Z_98EB:
-	cp 0x06	; 98EB FE 06
-Z_98ED:
-	ret nc	; 98ED D0
-Z_98EE:
-	ld a,l	; 98EE 7D
-Z_98EF:
-	sub e	; 98EF 93
-Z_98F0:
-	jp nc,Z_98F4	; 98F0 30 02
-Z_98F2:
-	cpl	; 98F2 ED 44
-	inc a
-Z_98F4:
-	cp 0x03	; 98F4 FE 03
-Z_98F6:
-	ret nc	; 98F6 D0
-Z_98F7:
-	ld a,e	; 98F7 7B
-Z_98F8:
-	add a,c	; 98F8 81
-Z_98F9:
-	call il_iy_sta	; 98F9 FD 77 02
-	db 0x02
-Z_98FC:
-	ld a,d	; 98FC 7A
-Z_98FD:
-	add a,b	; 98FD 80
-Z_98FE:
-	call il_iy_sta	; 98FE FD 77 03
-	db 0x03
-Z_9901:
-	call il_iy_sta	; 9901 FD 77 05
-	db 0x05
-Z_9904:
-	ld e,0x02	; 9904 1E 02
-Z_9906:
-	call il_iy_bit	; 9906 FD CB 00 46
-	db 0x00, 0x01
-Z_990A:
-	jp nz,Z_9919	; 990A 20 0D
-Z_990C:
-	call il_iy_lda	; 990C FD 7E FE
-	db 0xFE
-Z_990F:
-	and 0x1F	; 990F E6 1F
-Z_9911:
-	jp nz,Z_9919	; 9911 20 06
-Z_9913:
-	call il_iy_lda	; 9913 FD 7E FF
-	db 0xFF
-Z_9916:
-	call il_iy_sta	; 9916 FD 77 FE
-	db 0xFE
-Z_9919:
-	ld a,(D_9400)	; 9919 3A 00 94
-Z_991C:
-	and a	; 991C A7
-Z_991D:
-	ret nz	; 991D C0
-Z_991E:
-	rst 0x08	; 991E DD CB 01 46
-	db 0x01, 0x01
-Z_9922:
-	jp z,Z_9926	; 9922 28 02
-Z_9924:
-	push af	; 9924 CB FB
-	ld a,e
-	or 0x80
-	ld e,a
-	pop af
-Z_9926:
-	ld a,e	; 9926 7B
-Z_9927:
-	ld (D_9400),a	; 9927 32 00 94
-Z_992A:
-	ld a,0x14	; 992A 3E 14
-Z_992C:
-	ld (D_9451),a	; 992C 32 51 94
-Z_992F:
-	ld a,e	; 992F 7B
-Z_9930:
-	push af	; 9930 CB BF
+NAT_stamina_8:
+	ld de,0x0A
+NAT_stamina_9:
+	add hl,de
+NAT_stamina_10:
+	ld a,(hl)
+NAT_stamina_11:
+	cp 0x16
+NAT_stamina_12:
+	ret nc
+NAT_stamina_13:
+	dec hl
+NAT_stamina_14:
+	ld b,1
+NAT_stamina_15:
+	ld c,(hl)
+NAT_stamina_16:
+	ld a,c
+NAT_stamina_17:
+	and 0x80
+NAT_stamina_18:
+	ld a,b
+NAT_stamina_19:
+	jp z,su1
+NAT_stamina_20:
+	ld a,c
+NAT_stamina_21:
 	and 0x7F
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_9932:
-	cp 0x02	; 9932 FE 02
-Z_9934:
-	ret nz	; 9934 C0
-Z_9935:
-	rst 0x10	; 9935 DD 7E 0B
-	db 0x0B
-Z_9938:
-	cp 0x05	; 9938 FE 05
-Z_993A:
-	ret z	; 993A C8
-Z_993B:
-	call il_ix_inc	; 993B DD 34 0B
-	db 0x0B
-Z_993E:
-	ld (il_tmp),hl	; 993E DD E5
+NAT_stamina_22:
+	ld c,a
+NAT_stamina_23:
+	ld a,b
+NAT_stamina_24:
+	sub c
+NAT_stamina_25:
+	jp nc,su0
+NAT_stamina_26:
+	xor a
+su0:
+NAT_stamina_28:
+	ld c,a
+NAT_stamina_29:
+	ld a,b
+su1:
+NAT_stamina_31:
+	inc c
+NAT_stamina_32:
+	cp c
+NAT_stamina_33:
+	jp nc,su2
+NAT_stamina_34:
+	ld c,0
+su2:
+NAT_stamina_36:
+	ld (hl),c
+NAT_stamina_37:
+	ret nc
+NAT_stamina_38:
+	inc hl
+NAT_stamina_39:
+	ld a,(hl)
+NAT_stamina_40:
+	ld c,a
+NAT_stamina_41:
+	inc a
+NAT_stamina_42:
+	ld (hl),a
+NAT_stamina_43:
+	ld e,0xEE
+NAT_stamina_44:
+	jp st_cell
+Z_9ED4:
+NAT_stamina_46:
+	ld a,(0x93D6)
+NAT_stamina_47:
+	and a
+NAT_stamina_48:
+	ret nz
+NAT_stamina_49:
+	ld a,(0x93D3)
+NAT_stamina_50:
+	dec a
+NAT_stamina_51:
+	ret z
+NAT_stamina_52:
 	ld hl,(z80_ix)
-	push hl
-	ld hl,(il_tmp)
-Z_9940:
-	ld (il_tmp),hl	; 9940 FD E5
-	ld hl,(z80_iy)
-	push hl
-	ld hl,(il_tmp)
-Z_9942:
-	call Z_9FC0	; 9942 CD C0 9F
-Z_9945:
-	ld (il_tmp),hl	; 9945 FD E1
-	pop hl
+NAT_stamina_53:
+	ld de,0x0A
+NAT_stamina_54:
+	add hl,de
+NAT_stamina_55:
+	ld a,(hl)
+NAT_stamina_56:
+	and a
+NAT_stamina_57:
+	ret z
+NAT_stamina_58:
+	dec hl
+NAT_stamina_59:
+	ld b,7
+NAT_stamina_60:
+	ld c,(hl)
+NAT_stamina_61:
+	ld a,c
+NAT_stamina_62:
+	and 0x80
+NAT_stamina_63:
+	ld a,b
+NAT_stamina_64:
+	jp nz,sd1
+NAT_stamina_65:
+	sub c
+NAT_stamina_66:
+	jp nc,sd0
+NAT_stamina_67:
+	xor a
+sd0:
+NAT_stamina_69:
+	ld c,a
+NAT_stamina_70:
+	ld a,b
+sd1:
+NAT_stamina_72:
+	ld e,a
+NAT_stamina_73:
+	ld a,c
+NAT_stamina_74:
+	and 0x7F
+NAT_stamina_75:
+	inc a
+NAT_stamina_76:
+	ld c,a
+NAT_stamina_77:
+	ld a,e
+NAT_stamina_78:
+	cp c
+NAT_stamina_79:
+	jp c,sd2
+NAT_stamina_80:
+	ld a,c
+NAT_stamina_81:
+	or 0x80
+NAT_stamina_82:
+	ld (hl),a
+NAT_stamina_83:
+	ret
+sd2:
+NAT_stamina_85:
+	ld (hl),0x80
+NAT_stamina_86:
+	inc hl
+NAT_stamina_87:
+	ld a,(hl)
+NAT_stamina_88:
+	dec a
+NAT_stamina_89:
+	ld (hl),a
+NAT_stamina_90:
+	inc a
+NAT_stamina_91:
+	ld c,a
+NAT_stamina_92:
+	ld e,0
+st_cell:
+NAT_stamina_94:
+	ld hl,(z80_ix)
+NAT_stamina_95:
+	inc hl
+NAT_stamina_96:
+	ld a,(hl)
+NAT_stamina_97:
+	ld hl,0x1001
+NAT_stamina_98:
+	rrca
+NAT_stamina_99:
+	jp c,st_c1
+NAT_stamina_100:
+	ld l,0x14
+st_c1:
+NAT_stamina_102:
+	ld a,c
+NAT_stamina_103:
+	or a
+NAT_stamina_104:
+	rra
+NAT_stamina_105:
+	add a,l
+NAT_stamina_106:
+	ld l,a
+NAT_stamina_107:
+	ld a,c
+NAT_stamina_108:
+	ld c,e
+NAT_stamina_109:
+	rrca
+NAT_stamina_110:
+	jp c,st_c2
+NAT_stamina_111:
+	ld c,0xE0
+NAT_stamina_112:
+	ld a,e
+NAT_stamina_113:
+	or a
+NAT_stamina_114:
+	jp z,st_c3
+NAT_stamina_115:
+	inc l
+st_c3:
+NAT_stamina_117:
+	dec l
+st_c2:
+NAT_stamina_119:
+	jp Z_9F48
+Z_9F25:
+NAT_stamina_121:
+	ld hl,0x1001
+NAT_stamina_122:
+	ld a,(0x9415)
+NAT_stamina_123:
+	ld c,0xEE
+NAT_stamina_124:
+	call Z_9F36
+NAT_stamina_125:
+	ld hl,0x1014
+NAT_stamina_126:
+	ld a,(0x942F)
+Z_9F36:
+NAT_stamina_128:
+	and a
+NAT_stamina_129:
+	ret z
+NAT_stamina_130:
+	ld b,a
+NAT_stamina_131:
+	ld a,b
+NAT_stamina_132:
+	or a
+NAT_stamina_133:
+	rra
+NAT_stamina_134:
+	ld e,a
+NAT_stamina_135:
+	ld a,b
+NAT_stamina_136:
+	ld b,e
+NAT_stamina_137:
+	inc b
+NAT_stamina_138:
+	dec b
+NAT_stamina_139:
+	jp z,st_b2
+st_b1:
+NAT_stamina_141:
+	call Z_9F48
+NAT_stamina_142:
+	inc l
+NAT_stamina_143:
+	dec b
+NAT_stamina_144:
+	jp nz,st_b1
+st_b2:
+NAT_stamina_146:
+	rrca
+NAT_stamina_147:
+	ret nc
+NAT_stamina_148:
+	ld c,0xE0
+NAT_stamina_149:
+	jp Z_9F48
+Z_9F60:
+NAT_stamina_151:
+	ld hl,Z_9F6E
+NAT_stamina_152:
+	ld (Z_3705+1),hl
+NAT_stamina_153:
+	ret
+Z_9F67:
+NAT_stamina_155:
+	ld hl,Z_9F6D
+NAT_stamina_156:
+	ld (Z_3705+1),hl
+Z_9F6D:
+NAT_stamina_158:
+	ret
+Z_9F6E:
+NAT_stamina_160:
+	call Z_3715
+NAT_stamina_161:
+	ld a,(0x93E6)
+NAT_stamina_162:
+	inc a
+NAT_stamina_163:
+	cp 0x32
+NAT_stamina_164:
+	jp c,st_k1
+NAT_stamina_165:
+	xor a
+st_k1:
+NAT_stamina_167:
+	ld (0x93E6),a
+NAT_stamina_168:
+	ret c
+NAT_stamina_169:
+	ld a,0x2F
+NAT_stamina_170:
+	ld hl,0x93E9
+NAT_stamina_171:
+	dec (hl)
+NAT_stamina_172:
+	cp (hl)
+NAT_stamina_173:
+	ret nz
+NAT_stamina_174:
+	ld (hl),0x39
+NAT_stamina_175:
+	dec hl
+NAT_stamina_176:
+	dec (hl)
+NAT_stamina_177:
+	cp (hl)
+NAT_stamina_178:
+	ret nz
+NAT_stamina_179:
+	ld (hl),0x35
+NAT_stamina_180:
+	dec hl
+NAT_stamina_181:
+	dec (hl)
+NAT_stamina_182:
+	cp (hl)
+NAT_stamina_183:
+	ret nz
+NAT_stamina_184:
+	ld a,1
+NAT_stamina_185:
+	ld (0x93E5),a
+NAT_stamina_186:
+	jp Z_9F67
+Z_958F:
+NAT_pdraw_1:
+	ld hl,0x9425
+NAT_pdraw_2:
+	ld (z80_ix),hl
+NAT_pdraw_3:
+	ld hl,0x940B
+NAT_pdraw_4:
 	ld (z80_iy),hl
-	ld hl,(il_tmp)
-Z_9947:
-	ld (il_tmp),hl	; 9947 DD E1
-	pop hl
+NAT_pdraw_5:
+	jp Z_95A1
+Z_9599:
+NAT_pdraw_7:
+	ld hl,0x940B
+NAT_pdraw_8:
 	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_9949:
-	ret	; 9949 C9
-Z_994A:
-	rst 0x08	; 994A DD CB 01 5E
-	db 0x01, 0x08
-Z_994E:
-	ret nz	; 994E C0
-Z_994F:
-	rst 0x08	; 994F DD CB 01 4E
-	db 0x01, 0x02
-Z_9953:
-	ret nz	; 9953 C0
-Z_9954:
-	rst 0x08	; 9954 DD CB 01 56
-	db 0x01, 0x04
-Z_9958:
-	ret nz	; 9958 C0
-Z_9959:
-	rst 0x10	; 9959 DD 7E FE
-	db 0xFE
-Z_995C:
-	and 0x0F	; 995C E6 0F
-Z_995E:
-	ret z	; 995E C8
-Z_995F:
-	call il_ix_ldc	; 995F DD 4E FF
-	db 0xFF
-Z_9962:
-	ld (il_a),a	; 9962 CB 57
-	and 0x04
-	ld a,(il_a)
-Z_9964:
-	jp z,Z_998C	; 9964 28 26
-Z_9966:
-	ld (il_a),a	; 9966 CB 41
-	ld a,c
-	and 0x01
-	ld a,(il_a)
-Z_9968:
-	jp z,Z_9970	; 9968 28 06
-Z_996A:
-	ld (il_a),a	; 996A CB 5F
-	and 0x08
-	ld a,(il_a)
-Z_996C:
-	jp z,Z_99AE	; 996C 28 40
-Z_996E:
-	jp Z_999D	; 996E 18 2D
-Z_9970:
-	ld (il_a),a	; 9970 CB 5F
-	and 0x08
-	ld a,(il_a)
-Z_9972:
-	jp nz,Z_9980	; 9972 20 0C
-Z_9974:
-	ld (il_a),a	; 9974 CB 59
-	ld a,c
-	and 0x08
-	ld a,(il_a)
-Z_9976:
-	ret z	; 9976 C8
-Z_9977:
-	rst 0x00	; 9977 DD 36 FF 03
-	db 0xFF, 0x03
-Z_997B:
-	rst 0x30	; 997B DD CB 00 B6
-	db 0x00, 0xBF
-Z_997F:
-	ret	; 997F C9
-Z_9980:
-	ld (il_a),a	; 9980 CB 59
-	ld a,c
-	and 0x08
-	ld a,(il_a)
-Z_9982:
-	ret nz	; 9982 C0
-Z_9983:
-	rst 0x00	; 9983 DD 36 FF 01
-	db 0xFF, 0x01
-Z_9987:
-	rst 0x30	; 9987 DD CB 00 B6
-	db 0x00, 0xBF
-Z_998B:
-	ret	; 998B C9
-Z_998C:
-	ld (il_a),a	; 998C CB 51
-	ld a,c
-	and 0x04
-	ld a,(il_a)
-Z_998E:
-	jp z,Z_9996	; 998E 28 06
-Z_9990:
-	ld (il_a),a	; 9990 CB 4F
-	and 0x02
-	ld a,(il_a)
-Z_9992:
-	jp z,Z_9983	; 9992 28 EF
-Z_9994:
-	jp Z_9977	; 9994 18 E1
-Z_9996:
-	ld (il_a),a	; 9996 CB 4F
-	and 0x02
-	ld a,(il_a)
-Z_9998:
-	jp nz,Z_99AB	; 9998 20 11
-Z_999A:
-	ld (il_a),a	; 999A CB 49
-	ld a,c
-	and 0x02
-	ld a,(il_a)
-Z_999C:
-	ret z	; 999C C8
-Z_999D:
-	rst 0x00	; 999D DD 36 FF 0C
-	db 0xFF, 0x0C
-Z_99A1:
-	rst 0x08	; 99A1 DD CB 01 46
-	db 0x01, 0x01
-Z_99A5:
-	ret z	; 99A5 C8
-Z_99A6:
-	rst 0x30	; 99A6 DD CB 00 B6
-	db 0x00, 0xBF
-Z_99AA:
-	ret	; 99AA C9
-Z_99AB:
-	ld (il_a),a	; 99AB CB 49
-	ld a,c
-	and 0x02
-	ld a,(il_a)
-Z_99AD:
-	ret nz	; 99AD C0
-Z_99AE:
-	rst 0x00	; 99AE DD 36 FF 04
-	db 0xFF, 0x04
-Z_99B2:
-	rst 0x08	; 99B2 DD CB 01 46
-	db 0x01, 0x01
-Z_99B6:
-	ret nz	; 99B6 C0
-Z_99B7:
-	rst 0x30	; 99B7 DD CB 00 B6
-	db 0x00, 0xBF
-Z_99BB:
-	ret	; 99BB C9
-Z_99BC:
-	ld a,(D_93D6)	; 99BC 3A D6 93
-Z_99BF:
-	ld c,0x01	; 99BF 0E 01
-Z_99C1:
-	and a	; 99C1 A7
-Z_99C2:
-	jp nz,Z_99F2	; 99C2 20 2E
-Z_99C4:
-	ld c,0x03	; 99C4 0E 03
-Z_99C6:
-	rst 0x10	; 99C6 DD 7E 02
-	db 0x02
-Z_99C9:
-	cp 0x48	; 99C9 FE 48
-Z_99CB:
-	jp c,Z_99F2	; 99CB 38 25
-Z_99CD:
-	cp 0x66	; 99CD FE 66
-Z_99CF:
-	jp nc,Z_99F2	; 99CF 30 21
-Z_99D1:
-	rst 0x10	; 99D1 DD 7E 03
-	db 0x03
-Z_99D4:
-	rst 0x08	; 99D4 DD CB 01 46
-	db 0x01, 0x01
-Z_99D8:
-	jp z,Z_99FD	; 99D8 28 23
-Z_99DA:
-	cp 0x52	; 99DA FE 52
-Z_99DC:
-	jp c,Z_99F2	; 99DC 38 14
-Z_99DE:
-	cp 0x58	; 99DE FE 58
-Z_99E0:
-	jp nc,Z_99F0	; 99E0 30 0E
-Z_99E2:
-	rst 0x10	; 99E2 DD 7E 02
-	db 0x02
-Z_99E5:
-	cp 0x4C	; 99E5 FE 4C
-Z_99E7:
-	jp nc,Z_99F7	; 99E7 30 0E
-Z_99E9:
-	rst 0x10	; 99E9 DD 7E 03
-	db 0x03
-Z_99EC:
-	cp 0x56	; 99EC FE 56
-Z_99EE:
-	jp c,Z_99F2	; 99EE 38 02
-Z_99F0:
-	push af	; 99F0 CB 81
-	ld a,c
-	and 0xFE
-	ld c,a
-	pop af
-Z_99F2:
-	ld a,c	; 99F2 79
-Z_99F3:
-	ld (D_93D9),a	; 99F3 32 D9 93
-Z_99F6:
-	ret	; 99F6 C9
-Z_99F7:
-	cp 0x5E	; 99F7 FE 5E
-Z_99F9:
-	jp c,Z_99F0	; 99F9 38 F5
-Z_99FB:
-	jp Z_99F2	; 99FB 18 F5
-Z_99FD:
-	cp 0x24	; 99FD FE 24
-Z_99FF:
-	jp nc,Z_99F2	; 99FF 30 F1
-Z_9A01:
-	cp 0x1E	; 9A01 FE 1E
-Z_9A03:
-	jp c,Z_99F0	; 9A03 38 EB
-Z_9A05:
-	rst 0x10	; 9A05 DD 7E 02
-	db 0x02
-Z_9A08:
-	cp 0x4C	; 9A08 FE 4C
-Z_9A0A:
-	jp nc,Z_9A15	; 9A0A 30 09
-Z_9A0C:
-	rst 0x10	; 9A0C DD 7E 03
-	db 0x03
-Z_9A0F:
-	cp 0x22	; 9A0F FE 22
-Z_9A11:
-	jp c,Z_99F0	; 9A11 38 DD
-Z_9A13:
-	jp Z_99F2	; 9A13 18 DD
-Z_9A15:
-	cp 0x5E	; 9A15 FE 5E
-Z_9A17:
-	jp c,Z_99F0	; 9A17 38 D7
-Z_9A19:
-	jp Z_99F2	; 9A19 18 D7
-Z_9A1B:
-	ld (il_tmp),hl	; 9A1B DD 21 F5 93
-	ld hl,D_93F5
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_9A1F:
-	rst 0x08	; 9A1F DD CB 00 46
-	db 0x00, 0x01
-Z_9A23:
-	jp nz,Z_9A84	; 9A23 20 5F
-Z_9A25:
-	rst 0x00	; 9A25 DD 36 00 01
-	db 0x00, 0x01
-Z_9A29:
-	ld a,0x01	; 9A29 3E 01
-Z_9A2B:
-	ld (D_93F0),a	; 9A2B 32 F0 93
-Z_9A2E:
-	ld hl,D_9B69	; 9A2E 21 69 9B
-Z_9A31:
-	ld (D_93ED),hl	; 9A31 22 ED 93
-Z_9A34:
-	call il_ix_ldl	; 9A34 DD 6E FE
-	db 0xFE
-Z_9A37:
-	call il_ix_ldh	; 9A37 DD 66 FF
-	db 0xFF
-Z_9A3A:
-	ld a,(D_93F1)	; 9A3A 3A F1 93
-Z_9A3D:
-	rst 0x20	; 9A3D DD 77 01
-	db 0x01
-Z_9A40:
-	sub 0x1E	; 9A40 D6 1E
-Z_9A42:
-	jp nc,Z_9A4A	; 9A42 30 06
-Z_9A44:
-	cpl	; 9A44 ED 44
+NAT_pdraw_9:
+	ld hl,0x9425
+NAT_pdraw_10:
+	ld (z80_iy),hl
+Z_95A1:
+NAT_pdraw_12:
+	call pd_pose
+NAT_pdraw_13:
+	ld a,(pd_x0)
+NAT_pdraw_14:
+	and 0x20
+NAT_pdraw_15:
+	jp nz,pd_jump
+NAT_pdraw_16:
+	ld a,e
+NAT_pdraw_17:
+	and 0x20
+NAT_pdraw_18:
+	jp nz,pd_shot
+NAT_pdraw_19:
+	ld a,(pd_x0)
+NAT_pdraw_20:
+	and 0x80
+NAT_pdraw_21:
+	jp nz,pd_shot
+NAT_pdraw_22:
+	ld a,e
+NAT_pdraw_23:
+	and 0x40
+NAT_pdraw_24:
+	jp nz,pd_ball
+NAT_pdraw_25:
+	ld a,(pd_x0)
+NAT_pdraw_26:
+	rrca
+NAT_pdraw_27:
+	jp c,pd_ball
+NAT_pdraw_28:
+	ld hl,(z80_ix)
+NAT_pdraw_29:
+	ld de,0x9442
+NAT_pdraw_30:
+	ld a,1
+NAT_pdraw_31:
+	ld (pd_e),a
+NAT_pdraw_32:
+	ld a,(pd_m2)
+NAT_pdraw_33:
+	and 0x1F
+NAT_pdraw_34:
+	jp nz,pd_w1
+NAT_pdraw_35:
+	ld a,(pd_x0)
+NAT_pdraw_36:
+	and 0x10
+NAT_pdraw_37:
+	ld a,0
+NAT_pdraw_38:
+	jp z,pd_w3
+NAT_pdraw_39:
+	ld a,(hl)
+NAT_pdraw_40:
+	or 4
+NAT_pdraw_41:
+	ld (hl),a
+NAT_pdraw_42:
+	ld de,0x9446
+NAT_pdraw_43:
+	xor a
+NAT_pdraw_44:
+	ld (pd_e),a
+NAT_pdraw_45:
+	jp pd_w2
+pd_w1:
+NAT_pdraw_47:
+	ld a,(pd_x0)
+NAT_pdraw_48:
+	and 4
+NAT_pdraw_49:
+	jp z,pd_w2
+NAT_pdraw_50:
+	ld a,(hl)
+NAT_pdraw_51:
+	and 0xFB
+NAT_pdraw_52:
+	ld (hl),a
+NAT_pdraw_53:
+	call pd_ix6
+NAT_pdraw_54:
+	ld a,(hl)
+NAT_pdraw_55:
+	dec a
+NAT_pdraw_56:
+	or 1
+NAT_pdraw_57:
+	jp pd_w4
+pd_w2:
+NAT_pdraw_59:
+	call pd_ix6
+NAT_pdraw_60:
+	ld a,(hl)
+NAT_pdraw_61:
+	jp pd_w4
+pd_w3:
+NAT_pdraw_63:
+	call pd_ix6
+pd_w4:
+NAT_pdraw_65:
 	inc a
-Z_9A46:
-	rst 0x28	; 9A46 DD CB 00 FE
-	db 0x00, 0x80
-Z_9A4A:
-	rst 0x20	; 9A4A DD 77 02
-	db 0x02
-Z_9A4D:
-	ld de,0x0554	; 9A4D 11 54 05
-Z_9A50:
-	rst 0x08	; 9A50 DD CB F6 7E
-	db 0xF6, 0x80
-Z_9A54:
-	jp z,Z_9A58	; 9A54 28 02
-Z_9A56:
-	ld d,0x39	; 9A56 16 39
-Z_9A58:
-	ld a,d	; 9A58 7A
-Z_9A59:
-	ld (il_a),a	; 9A59 CB 3C
+NAT_pdraw_66:
+	and 3
+NAT_pdraw_67:
+	ld (hl),a
+NAT_pdraw_68:
+	inc hl
+NAT_pdraw_69:
+	ex de,hl
+NAT_pdraw_70:
+	add a,l
+NAT_pdraw_71:
+	ld l,a
+NAT_pdraw_72:
 	ld a,h
-	or a
-	rra
+NAT_pdraw_73:
+	adc a,0
+NAT_pdraw_74:
 	ld h,a
-	ld a,(il_a)
-Z_9A5B:
-	sub h	; 9A5B 94
-Z_9A5C:
-	ld d,0x02	; 9A5C 16 02
-Z_9A5E:
-	jp nc,Z_9A64	; 9A5E 30 04
-Z_9A60:
-	cpl	; 9A60 ED 44
-	inc a
-Z_9A62:
-	ld d,0xFE	; 9A62 16 FE
-Z_9A64:
-	ld b,a	; 9A64 47
-Z_9A65:
-	ld a,e	; 9A65 7B
-Z_9A66:
-	sub l	; 9A66 95
-Z_9A67:
-	ld e,0x02	; 9A67 1E 02
-Z_9A69:
-	jp nc,Z_9A6F	; 9A69 30 04
-Z_9A6B:
-	cpl	; 9A6B ED 44
-	inc a
-Z_9A6D:
-	ld e,0xFE	; 9A6D 1E FE
-Z_9A6F:
-	ld c,a	; 9A6F 4F
-Z_9A70:
-	ld (il_a),a	; 9A70 CB 39
-	ld a,c
+NAT_pdraw_75:
+	ld a,(hl)
+NAT_pdraw_76:
+	ld (de),a
+NAT_pdraw_77:
+	ld hl,0x944A
+NAT_pdraw_78:
+	add a,l
+NAT_pdraw_79:
+	ld l,a
+NAT_pdraw_80:
+	ld a,h
+NAT_pdraw_81:
+	adc a,0
+NAT_pdraw_82:
+	ld h,a
+NAT_pdraw_83:
+	ld b,(hl)
+NAT_pdraw_84:
+	ld hl,(z80_ix)
+NAT_pdraw_85:
+	inc hl
+NAT_pdraw_86:
+	inc hl
+NAT_pdraw_87:
+	ld a,(hl)
+NAT_pdraw_88:
+	inc hl
+NAT_pdraw_89:
+	ld h,(hl)
+NAT_pdraw_90:
+	ld l,a
+NAT_pdraw_91:
+	ld a,(pd_e)
+NAT_pdraw_92:
 	or a
-	rra
+NAT_pdraw_93:
+	ld a,b
+NAT_pdraw_94:
+	jp nz,pd_w5
+NAT_pdraw_95:
+	ld a,0xDB
+pd_w5:
+NAT_pdraw_97:
+	add a,l
+NAT_pdraw_98:
+	ld l,a
+NAT_pdraw_99:
+	push hl
+NAT_pdraw_100:
+	call pd_body
+NAT_pdraw_101:
+	call pd_pose
+NAT_pdraw_102:
+	pop hl
+NAT_pdraw_103:
+	ld a,b
+NAT_pdraw_104:
+	and 4
+NAT_pdraw_105:
+	jp z,pd_w6
+NAT_pdraw_106:
+	ld a,0x0A
+NAT_pdraw_107:
+	call pd_b3c
+NAT_pdraw_108:
+	jp pd_w7
+pd_w6:
+NAT_pdraw_110:
+	ld a,0x22
+NAT_pdraw_111:
+	call pd_nb1c
+pd_w7:
+NAT_pdraw_113:
+	call pd_side
+NAT_pdraw_114:
+	ld b,a
+NAT_pdraw_115:
+	ld a,(pd_x0)
+NAT_pdraw_116:
+	and 0x10
+NAT_pdraw_117:
+	ld a,b
+NAT_pdraw_118:
+	call nz,pd_cpose
+NAT_pdraw_119:
+	jp pd_blit
+pd_body:
+NAT_pdraw_121:
+	call pd_pose
+NAT_pdraw_122:
+	ld hl,(z80_ix)
+NAT_pdraw_123:
+	inc hl
+NAT_pdraw_124:
+	inc hl
+NAT_pdraw_125:
+	ld a,(hl)
+NAT_pdraw_126:
+	sub 0x1C
+NAT_pdraw_127:
+	inc hl
+NAT_pdraw_128:
+	ld h,(hl)
+NAT_pdraw_129:
+	ld l,a
+NAT_pdraw_130:
+	ld (0x3300),hl
+NAT_pdraw_131:
+	ld hl,(z80_ix)
+NAT_pdraw_132:
+	ld de,7
+NAT_pdraw_133:
+	add hl,de
+NAT_pdraw_134:
+	ld a,(hl)
+NAT_pdraw_135:
+	ld d,a
+NAT_pdraw_136:
+	ld a,(pd_x0)
+NAT_pdraw_137:
+	and 0x10
+NAT_pdraw_138:
+	ld a,d
+NAT_pdraw_139:
+	jp z,pd_b1
+NAT_pdraw_140:
+	add a,3
+pd_b1:
+NAT_pdraw_142:
+	ld d,a
+NAT_pdraw_143:
+	ld a,b
+NAT_pdraw_144:
+	and 4
+NAT_pdraw_145:
+	ld a,d
+NAT_pdraw_146:
+	jp z,pd_b2
+NAT_pdraw_147:
+	call pd_b3c
+NAT_pdraw_148:
+	jp pd_b4
+pd_b2:
+NAT_pdraw_150:
+	add a,0x18
+NAT_pdraw_151:
+	call pd_nb1c
+pd_b4:
+NAT_pdraw_153:
+	ld (pd_fr),a
+NAT_pdraw_154:
+	call Z_9E6F
+NAT_pdraw_155:
+	call Z_B01C
+NAT_pdraw_156:
+	ld a,(pd_fr)
+NAT_pdraw_157:
+	ld d,a
+NAT_pdraw_158:
+	ld hl,0x94A7
+pd_b5:
+NAT_pdraw_160:
+	ld a,(hl)
+NAT_pdraw_161:
+	inc hl
+NAT_pdraw_162:
+	and a
+NAT_pdraw_163:
+	ret z
+NAT_pdraw_164:
+	cp d
+NAT_pdraw_165:
+	jp nz,pd_b5
+NAT_pdraw_166:
+	ld a,(0x93EB)
+NAT_pdraw_167:
+	or 0x40
+NAT_pdraw_168:
+	ld (0x93EB),a
+NAT_pdraw_169:
+	ld hl,(z80_ix)
+NAT_pdraw_170:
+	ld de,0xFFFA
+NAT_pdraw_171:
+	add hl,de
+NAT_pdraw_172:
+	ld (hl),3
+NAT_pdraw_173:
+	ld a,(0x93D8)
+NAT_pdraw_174:
+	and a
+NAT_pdraw_175:
+	ret nz
+NAT_pdraw_176:
+	inc a
+NAT_pdraw_177:
+	ld (0xAA83),a
+NAT_pdraw_178:
+	ld hl,2
+NAT_pdraw_179:
+	ld (0x3300),hl
+NAT_pdraw_180:
+	ld hl,0x8070
+NAT_pdraw_181:
+	ld (0x3302),hl
+NAT_pdraw_182:
+	jp Z_AA80
+pd_cpose:
+NAT_pdraw_184:
 	ld c,a
-	ld a,(il_a)
-Z_9A72:
-	ld a,b	; 9A72 78
-Z_9A73:
-	cp c	; 9A73 B9
-Z_9A74:
-	jp nc,Z_9A77	; 9A74 30 01
-Z_9A76:
-	ld a,c	; 9A76 79
-Z_9A77:
-	ld (D_93EF),a	; 9A77 32 EF 93
-Z_9A7A:
-	or a	; 9A7A CB 3F
-	rra
-	or a
-Z_9A7C:
-	ld (D_93EC),a	; 9A7C 32 EC 93
-Z_9A7F:
-	call Z_9AF6	; 9A7F CD F6 9A
-Z_9A82:
-	jp Z_9AAF	; 9A82 18 2B
-Z_9A84:
-	rst 0x08	; 9A84 DD CB 00 56
-	db 0x00, 0x04
-Z_9A88:
-	jp z,Z_9AAC	; 9A88 28 22
-Z_9A8A:
-	ld a,(D_93EB)	; 9A8A 3A EB 93
-Z_9A8D:
-	ld (il_a),a	; 9A8D CB 7F
+NAT_pdraw_185:
+	ld a,(pd_x0)
+NAT_pdraw_186:
+	and 4
+NAT_pdraw_187:
+	ld a,c
+NAT_pdraw_188:
+	ret nz
+NAT_pdraw_189:
+	push hl
+NAT_pdraw_190:
+	ld hl,(z80_ix)
+NAT_pdraw_191:
+	inc hl
+NAT_pdraw_192:
+	inc hl
+NAT_pdraw_193:
+	ld e,(hl)
+NAT_pdraw_194:
+	inc hl
+NAT_pdraw_195:
+	ld d,(hl)
+NAT_pdraw_196:
+	ld hl,(z80_iy)
+NAT_pdraw_197:
+	inc hl
+NAT_pdraw_198:
+	inc hl
+NAT_pdraw_199:
+	inc hl
+NAT_pdraw_200:
+	ld a,d
+NAT_pdraw_201:
+	sub (hl)
+NAT_pdraw_202:
+	ld b,0x0A
+NAT_pdraw_203:
+	jp nc,pd_c1
+NAT_pdraw_204:
+	ld b,0x16
+NAT_pdraw_205:
+	cpl
+NAT_pdraw_206:
+	inc a
+pd_c1:
+NAT_pdraw_208:
+	cp 6
+NAT_pdraw_209:
+	jp nc,pd_c9
+NAT_pdraw_210:
+	dec hl
+NAT_pdraw_211:
+	ld a,e
+NAT_pdraw_212:
+	sub (hl)
+NAT_pdraw_213:
+	jp nc,pd_c2
+NAT_pdraw_214:
+	cpl
+NAT_pdraw_215:
+	inc a
+pd_c2:
+NAT_pdraw_217:
+	cp 0x0A
+NAT_pdraw_218:
+	jp nc,pd_c9
+NAT_pdraw_219:
+	pop hl
+NAT_pdraw_220:
+	ld a,(pd_x1)
+NAT_pdraw_221:
+	rrca
+NAT_pdraw_222:
+	jp nc,pd_c3
+NAT_pdraw_223:
+	inc b
+pd_c3:
+NAT_pdraw_225:
+	ld a,b
+NAT_pdraw_226:
+	cp c
+NAT_pdraw_227:
+	ret z
+NAT_pdraw_228:
+	ld a,(pd_px)
+NAT_pdraw_229:
+	and 4
+NAT_pdraw_230:
+	ld a,b
+NAT_pdraw_231:
+	ret nz
+NAT_pdraw_232:
+	ld a,(pd_px)
+NAT_pdraw_233:
+	and 2
+NAT_pdraw_234:
+	ld a,c
+NAT_pdraw_235:
+	ret z
+NAT_pdraw_236:
+	ld a,(pd_x1)
+NAT_pdraw_237:
+	rrca
+NAT_pdraw_238:
+	ld a,b
+NAT_pdraw_239:
+	ret nc
+NAT_pdraw_240:
+	dec l
+NAT_pdraw_241:
+	ret
+pd_c9:
+NAT_pdraw_243:
+	pop hl
+NAT_pdraw_244:
+	ld a,c
+NAT_pdraw_245:
+	ret
+pd_ball:
+NAT_pdraw_247:
+	ld a,b
+NAT_pdraw_248:
+	and 6
+NAT_pdraw_249:
+	jp z,pd_bl1
+NAT_pdraw_250:
+	call pd_hand
+NAT_pdraw_251:
+	jp pd_arm
+pd_bl1:
+NAT_pdraw_253:
+	call pd_arm
+pd_hand:
+NAT_pdraw_255:
+	call pd_pose
+NAT_pdraw_256:
+	ld hl,(z80_ix)
+NAT_pdraw_257:
+	inc hl
+NAT_pdraw_258:
+	inc hl
+NAT_pdraw_259:
+	inc hl
+NAT_pdraw_260:
+	inc hl
+NAT_pdraw_261:
+	ld a,(hl)
+NAT_pdraw_262:
+	sub 0x25
+NAT_pdraw_263:
+	inc hl
+NAT_pdraw_264:
+	ld h,(hl)
+NAT_pdraw_265:
+	ld l,a
+NAT_pdraw_266:
+	ld a,b
+NAT_pdraw_267:
+	and 4
+NAT_pdraw_268:
+	ld a,0x0A
+NAT_pdraw_269:
+	jp z,pd_h1
+NAT_pdraw_270:
+	call pd_b3c
+NAT_pdraw_271:
+	jp pd_h2
+pd_h1:
+NAT_pdraw_273:
+	add a,0x18
+NAT_pdraw_274:
+	call pd_nb1c
+pd_h2:
+NAT_pdraw_276:
+	call pd_side
+NAT_pdraw_277:
+	jp pd_blit
+pd_arm:
+NAT_pdraw_279:
+	call pd_pose
+NAT_pdraw_280:
+	ld hl,(z80_ix)
+NAT_pdraw_281:
+	inc hl
+NAT_pdraw_282:
+	inc hl
+NAT_pdraw_283:
+	inc hl
+NAT_pdraw_284:
+	inc hl
+NAT_pdraw_285:
+	ld a,(hl)
+NAT_pdraw_286:
+	sub 0x24
+NAT_pdraw_287:
+	inc hl
+NAT_pdraw_288:
+	ld h,(hl)
+NAT_pdraw_289:
+	ld l,a
+NAT_pdraw_290:
+	ld a,(pd_x0)
+NAT_pdraw_291:
+	and 0x10
+NAT_pdraw_292:
+	ld a,9
+NAT_pdraw_293:
+	jp z,pd_a1
+NAT_pdraw_294:
+	dec a
+pd_a1:
+NAT_pdraw_296:
+	ld d,a
+NAT_pdraw_297:
+	ld a,b
+NAT_pdraw_298:
+	and 4
+NAT_pdraw_299:
+	ld a,d
+NAT_pdraw_300:
+	jp z,pd_a2
+NAT_pdraw_301:
+	ld a,b
+NAT_pdraw_302:
+	and 8
+NAT_pdraw_303:
+	ld a,d
+NAT_pdraw_304:
+	jp z,pd_blit
+NAT_pdraw_305:
+	add a,0x0C
+NAT_pdraw_306:
+	inc h
+NAT_pdraw_307:
+	jp pd_blit
+pd_a2:
+NAT_pdraw_309:
+	add a,0x24
+NAT_pdraw_310:
+	ld d,a
+NAT_pdraw_311:
+	ld a,b
+NAT_pdraw_312:
+	and 2
+NAT_pdraw_313:
+	ld a,d
+NAT_pdraw_314:
+	jp z,pd_blit
+NAT_pdraw_315:
+	sub 0x0C
+NAT_pdraw_316:
+	jp pd_blit
+pd_shot:
+NAT_pdraw_318:
+	ld hl,(z80_ix)
+NAT_pdraw_319:
+	inc hl
+NAT_pdraw_320:
+	inc hl
+NAT_pdraw_321:
+	inc hl
+NAT_pdraw_322:
+	inc hl
+NAT_pdraw_323:
+	ld a,(hl)
+NAT_pdraw_324:
+	sub 0x24
+NAT_pdraw_325:
+	inc hl
+NAT_pdraw_326:
+	ld h,(hl)
+NAT_pdraw_327:
+	ld l,a
+NAT_pdraw_328:
+	ld a,(pd_x1)
+NAT_pdraw_329:
+	rrca
+NAT_pdraw_330:
+	jp nc,pd_s1
+NAT_pdraw_331:
+	dec h
+NAT_pdraw_332:
+	dec h
+pd_s1:
+NAT_pdraw_334:
+	ld (0x3300),hl
+NAT_pdraw_335:
+	ld hl,(z80_ix)
+NAT_pdraw_336:
+	ld de,7
+NAT_pdraw_337:
+	add hl,de
+NAT_pdraw_338:
+	ld a,(hl)
+NAT_pdraw_339:
+	add a,0x36
+NAT_pdraw_340:
+	ld d,a
+NAT_pdraw_341:
+	ld a,b
+NAT_pdraw_342:
+	and 2
+NAT_pdraw_343:
+	ld a,d
+NAT_pdraw_344:
+	jp nz,pd_s2
+NAT_pdraw_345:
+	add a,2
+pd_s2:
+NAT_pdraw_347:
+	ld d,a
+NAT_pdraw_348:
+	ld a,(pd_x1)
+NAT_pdraw_349:
+	rrca
+NAT_pdraw_350:
+	ld a,d
+NAT_pdraw_351:
+	jp nc,pd_s3
+NAT_pdraw_352:
+	add a,4
+pd_s3:
+NAT_pdraw_354:
+	call Z_9E6F
+NAT_pdraw_355:
+	call Z_B01C
+NAT_pdraw_356:
+	ld hl,(z80_ix)
+NAT_pdraw_357:
+	ld de,7
+NAT_pdraw_358:
+	add hl,de
+NAT_pdraw_359:
+	ld a,(hl)
+NAT_pdraw_360:
+	inc a
+NAT_pdraw_361:
+	and 1
+NAT_pdraw_362:
+	ret z
+NAT_pdraw_363:
+	ld (hl),a
+NAT_pdraw_364:
+	jp Z_90EF
+pd_loose:
+NAT_pdraw_366:
+	ld a,(pd_x1)
+NAT_pdraw_367:
+	rrca
+NAT_pdraw_368:
+	ld a,0
+NAT_pdraw_369:
+	jp nc,pd_l1
+NAT_pdraw_370:
+	ld a,0x80
+pd_l1:
+NAT_pdraw_372:
+	ld (0x93EB),a
+NAT_pdraw_373:
+	ld a,(0x9400)
+NAT_pdraw_374:
+	and a
+NAT_pdraw_375:
+	ld a,0
+NAT_pdraw_376:
+	jp nz,pd_l2
+NAT_pdraw_377:
+	ld hl,(z80_ix)
+NAT_pdraw_378:
+	ld de,0x0C
+NAT_pdraw_379:
+	add hl,de
+NAT_pdraw_380:
+	inc (hl)
+NAT_pdraw_381:
+	ld a,2
+pd_l2:
+NAT_pdraw_383:
+	ld (0x93D9),a
+NAT_pdraw_384:
+	jp Z_8C16
+pd_jump:
+NAT_pdraw_386:
+	ld hl,(z80_ix)
+NAT_pdraw_387:
+	inc hl
+NAT_pdraw_388:
+	inc hl
+NAT_pdraw_389:
+	inc hl
+NAT_pdraw_390:
+	inc hl
+NAT_pdraw_391:
+	ld a,(hl)
+NAT_pdraw_392:
+	sub 0x24
+NAT_pdraw_393:
+	inc hl
+NAT_pdraw_394:
+	ld h,(hl)
+NAT_pdraw_395:
+	dec h
+NAT_pdraw_396:
+	ld l,a
+NAT_pdraw_397:
+	ld (0x3300),hl
+NAT_pdraw_398:
+	ld c,2
+NAT_pdraw_399:
+	ld a,(pd_x0)
+NAT_pdraw_400:
+	and 0x40
+NAT_pdraw_401:
+	jp nz,pd_j1
+NAT_pdraw_402:
+	dec c
+pd_j1:
+NAT_pdraw_404:
+	ld a,(pd_x0)
+NAT_pdraw_405:
+	and 2
+NAT_pdraw_406:
+	jp nz,pd_j5
+NAT_pdraw_407:
+	dec c
+NAT_pdraw_408:
+	ld a,(0x93EB)
+NAT_pdraw_409:
+	and 4
+NAT_pdraw_410:
+	jp nz,pd_dunk
+NAT_pdraw_411:
+	ld a,(pd_x0)
+NAT_pdraw_412:
+	and 0x40
+NAT_pdraw_413:
+	ld a,l
+NAT_pdraw_414:
+	jp z,pd_j2
+NAT_pdraw_415:
+	cp 0x22
+NAT_pdraw_416:
+	jp nc,pd_ball
+NAT_pdraw_417:
+	call pd_loose
+NAT_pdraw_418:
+	call pd_pose
+NAT_pdraw_419:
+	jp pd_ball
+pd_j2:
+NAT_pdraw_421:
+	cp 0x22
+NAT_pdraw_422:
+	jp nc,pd_ball
+NAT_pdraw_423:
+	ld d,a
+NAT_pdraw_424:
+	ld hl,(z80_ix)
+NAT_pdraw_425:
+	inc hl
+NAT_pdraw_426:
+	ld a,(hl)
+NAT_pdraw_427:
+	or 8
+NAT_pdraw_428:
+	ld (hl),a
+NAT_pdraw_429:
+	ld a,d
+NAT_pdraw_430:
+	cp 0x1D
+NAT_pdraw_431:
+	jp nc,pd_j5
+NAT_pdraw_432:
+	call pd_loose
+NAT_pdraw_433:
+	call pd_pose
+NAT_pdraw_434:
+	jp pd_j5
+pd_dunk:
+NAT_pdraw_436:
+	ld hl,(z80_ix)
+NAT_pdraw_437:
+	ld a,(hl)
+NAT_pdraw_438:
+	or 2
+NAT_pdraw_439:
+	and 0xE7
+NAT_pdraw_440:
+	ld (hl),a
+NAT_pdraw_441:
+	inc hl
+NAT_pdraw_442:
+	ld a,(hl)
+NAT_pdraw_443:
+	or 8
+NAT_pdraw_444:
+	ld (hl),a
+NAT_pdraw_445:
+	ld hl,0x084C
+NAT_pdraw_446:
+	ld a,(pd_x1)
+NAT_pdraw_447:
+	rrca
+NAT_pdraw_448:
+	jp nc,pd_d1
+NAT_pdraw_449:
+	ld h,0x74
+pd_d1:
+NAT_pdraw_451:
+	ld (0x93F3),hl
+NAT_pdraw_452:
+	ld l,0x21
+NAT_pdraw_453:
+	ld (0x93F1),hl
+NAT_pdraw_454:
+	inc c
+NAT_pdraw_455:
+	push bc
+NAT_pdraw_456:
+	ld hl,(0x3300)
+NAT_pdraw_457:
+	push hl
+NAT_pdraw_458:
+	xor a
+NAT_pdraw_459:
+	ld (0xAA83),a
+NAT_pdraw_460:
+	ld hl,2
+NAT_pdraw_461:
+	ld (0x3300),hl
+NAT_pdraw_462:
+	ld hl,0x8039
+NAT_pdraw_463:
+	ld (0x3302),hl
+NAT_pdraw_464:
+	call Z_AA80
+NAT_pdraw_465:
+	pop hl
+NAT_pdraw_466:
+	ld (0x3300),hl
+NAT_pdraw_467:
+	call pd_pose
+NAT_pdraw_468:
+	pop bc
+pd_j5:
+NAT_pdraw_470:
+	ld a,0x30
+NAT_pdraw_471:
+	add a,c
+NAT_pdraw_472:
+	ld c,1
+NAT_pdraw_473:
+	ld e,a
+NAT_pdraw_474:
+	ld a,b
+NAT_pdraw_475:
+	and 4
+NAT_pdraw_476:
+	ld a,e
+NAT_pdraw_477:
+	jp nz,pd_j8
+NAT_pdraw_478:
+	ld hl,0x3301
+NAT_pdraw_479:
+	ld a,(pd_x1)
+NAT_pdraw_480:
+	rrca
+NAT_pdraw_481:
+	jp nc,pd_j6
+NAT_pdraw_482:
+	ld a,b
+NAT_pdraw_483:
+	and 2
+NAT_pdraw_484:
+	ld a,e
+NAT_pdraw_485:
+	jp nz,pd_j7
+NAT_pdraw_486:
+	add a,2
+NAT_pdraw_487:
+	inc (hl)
+pd_j7:
+NAT_pdraw_489:
+	dec c
+NAT_pdraw_490:
+	add a,8
+NAT_pdraw_491:
+	jp pd_j8
+pd_j6:
+NAT_pdraw_493:
+	inc (hl)
+NAT_pdraw_494:
+	ld a,e
+NAT_pdraw_495:
+	add a,6
+NAT_pdraw_496:
+	ld e,a
+NAT_pdraw_497:
+	ld a,b
+NAT_pdraw_498:
+	and 2
+NAT_pdraw_499:
+	ld a,e
+NAT_pdraw_500:
+	jp nz,pd_j8
+NAT_pdraw_501:
+	add a,2
+NAT_pdraw_502:
+	jp pd_j9
+pd_j8:
+NAT_pdraw_504:
+	ld e,a
+NAT_pdraw_505:
+	ld a,(pd_x1)
+NAT_pdraw_506:
+	rrca
+NAT_pdraw_507:
+	ld a,e
+NAT_pdraw_508:
+	jp nc,pd_j9
+NAT_pdraw_509:
+	add a,2
+NAT_pdraw_510:
+	add a,c
+pd_j9:
+NAT_pdraw_512:
+	call Z_9E6F
+NAT_pdraw_513:
+	jp Z_B01C
+pd_pose:
+NAT_pdraw_515:
+	ld hl,(z80_ix)
+NAT_pdraw_516:
+	dec hl
+NAT_pdraw_517:
+	dec hl
+NAT_pdraw_518:
+	ld e,(hl)
+NAT_pdraw_519:
+	ld a,e
+NAT_pdraw_520:
+	ld (pd_m2),a
+NAT_pdraw_521:
+	inc hl
+NAT_pdraw_522:
+	ld b,(hl)
+NAT_pdraw_523:
+	ld a,b
+NAT_pdraw_524:
+	ld (pd_px),a
+NAT_pdraw_525:
+	inc hl
+NAT_pdraw_526:
+	ld a,(hl)
+NAT_pdraw_527:
+	ld (pd_x0),a
+NAT_pdraw_528:
+	inc hl
+NAT_pdraw_529:
+	ld a,(hl)
+NAT_pdraw_530:
+	ld (pd_x1),a
+NAT_pdraw_531:
+	ret
+pd_ix6:
+NAT_pdraw_533:
+	ld hl,(z80_ix)
+NAT_pdraw_534:
+	inc hl
+NAT_pdraw_535:
+	inc hl
+NAT_pdraw_536:
+	inc hl
+NAT_pdraw_537:
+	inc hl
+NAT_pdraw_538:
+	inc hl
+NAT_pdraw_539:
+	inc hl
+NAT_pdraw_540:
+	ret
+pd_b3c:
+NAT_pdraw_542:
+	ld d,a
+NAT_pdraw_543:
+	ld a,b
+NAT_pdraw_544:
+	and 8
+NAT_pdraw_545:
+	ld a,d
+NAT_pdraw_546:
+	ret z
+NAT_pdraw_547:
+	add a,0x0C
+NAT_pdraw_548:
+	ret
+pd_nb1c:
+NAT_pdraw_550:
+	ld d,a
+NAT_pdraw_551:
+	ld a,b
+NAT_pdraw_552:
+	and 2
+NAT_pdraw_553:
+	ld a,d
+NAT_pdraw_554:
+	ret nz
+NAT_pdraw_555:
+	add a,0x0C
+NAT_pdraw_556:
+	ret
+pd_side:
+NAT_pdraw_558:
+	ld d,a
+NAT_pdraw_559:
+	ld a,(pd_x1)
+NAT_pdraw_560:
+	rrca
+NAT_pdraw_561:
+	ld a,d
+NAT_pdraw_562:
+	ret nc
+NAT_pdraw_563:
+	inc a
+NAT_pdraw_564:
+	ret
+pd_blit:
+NAT_pdraw_566:
+	ld (0x3300),hl
+NAT_pdraw_567:
+	call Z_9E6F
+NAT_pdraw_568:
+	jp Z_B01C
+Z_9E6F:
+NAT_pdraw_570:
+	add a,a
+NAT_pdraw_571:
+	ld l,a
+NAT_pdraw_572:
+	ld h,0
+NAT_pdraw_573:
+	ld de,0x7760
+NAT_pdraw_574:
+	add hl,de
+NAT_pdraw_575:
+	ld e,(hl)
+NAT_pdraw_576:
+	inc hl
+NAT_pdraw_577:
+	ld d,(hl)
+NAT_pdraw_578:
+	ld hl,0x415A
+NAT_pdraw_579:
+	add hl,de
+NAT_pdraw_580:
+	ld (0x3302),hl
+NAT_pdraw_581:
+	ret
+pd_e:
+NAT_pdraw_583:
+	db 0
+pd_fr:
+NAT_pdraw_585:
+	db 0
+pd_px:
+NAT_pdraw_587:
+	db 0
+pd_x0:
+NAT_pdraw_589:
+	db 0
+pd_x1:
+NAT_pdraw_591:
+	db 0
+pd_m2:
+NAT_pdraw_593:
+	db 0
+Z_94B0:
+NAT_sched_1:
+	ld hl,0x3C1E
+NAT_sched_2:
+	ld a,0x53
+NAT_sched_3:
+	ld de,Z_84D3
+NAT_sched_4:
+	call sc_put
+NAT_sched_5:
+	ld a,(0x93EB)
+NAT_sched_6:
+	and 5
+NAT_sched_7:
+	jp nz,sc_1
+NAT_sched_8:
+	ld a,(0x93F3)
+NAT_sched_9:
+	ld de,Z_84D6
+NAT_sched_10:
+	call sc_put
+sc_1:
+NAT_sched_12:
+	ld a,(0x940D)
+NAT_sched_13:
+	ld de,Z_9599
+NAT_sched_14:
+	call sc_put
+NAT_sched_15:
+	ld a,(0x9427)
+NAT_sched_16:
+	ld de,Z_958F
+NAT_sched_17:
+	call sc_put
+NAT_sched_18:
+	ld (hl),0
+NAT_sched_19:
+	ld b,1
+sc_pass:
+NAT_sched_21:
+	ld hl,0x3C1E
+sc_cmp:
+NAT_sched_23:
+	ld a,(hl)
+NAT_sched_24:
+	and a
+NAT_sched_25:
+	jp z,sc_next
+NAT_sched_26:
+	ld d,a
+NAT_sched_27:
+	push hl
+NAT_sched_28:
+	inc hl
+NAT_sched_29:
+	inc hl
+NAT_sched_30:
+	inc hl
+NAT_sched_31:
+	ld c,(hl)
+NAT_sched_32:
+	pop hl
+NAT_sched_33:
+	cp c
+NAT_sched_34:
+	jp z,sc_skip
+NAT_sched_35:
+	jp c,sc_skip
+NAT_sched_36:
+	ld a,c
+NAT_sched_37:
+	and a
+NAT_sched_38:
+	jp z,sc_next
+NAT_sched_39:
+	ld (hl),c
+NAT_sched_40:
+	inc hl
+NAT_sched_41:
+	ld e,(hl)
+NAT_sched_42:
+	inc hl
+NAT_sched_43:
+	ld c,(hl)
+NAT_sched_44:
+	inc hl
+NAT_sched_45:
+	ld (hl),d
+NAT_sched_46:
+	inc hl
+NAT_sched_47:
+	ld a,(hl)
+NAT_sched_48:
+	ld (hl),e
+NAT_sched_49:
+	inc hl
+NAT_sched_50:
+	ld d,(hl)
+NAT_sched_51:
+	ld (hl),c
+NAT_sched_52:
+	dec hl
+NAT_sched_53:
+	dec hl
+NAT_sched_54:
+	dec hl
+NAT_sched_55:
+	ld (hl),d
+NAT_sched_56:
+	dec hl
+NAT_sched_57:
+	ld (hl),a
+NAT_sched_58:
+	inc hl
+NAT_sched_59:
+	inc hl
+NAT_sched_60:
+	inc b
+NAT_sched_61:
+	jp sc_cmp
+sc_skip:
+NAT_sched_63:
+	inc hl
+NAT_sched_64:
+	inc hl
+NAT_sched_65:
+	inc hl
+NAT_sched_66:
+	jp sc_cmp
+sc_next:
+NAT_sched_68:
+	dec b
+NAT_sched_69:
+	jp nz,sc_pass
+NAT_sched_70:
+	ld hl,0x3C1E
+sc_call:
+NAT_sched_72:
+	ld a,(hl)
+NAT_sched_73:
+	and a
+NAT_sched_74:
+	ret z
+NAT_sched_75:
+	inc hl
+NAT_sched_76:
+	ld e,(hl)
+NAT_sched_77:
+	inc hl
+NAT_sched_78:
+	ld d,(hl)
+NAT_sched_79:
+	inc hl
+NAT_sched_80:
+	push hl
+NAT_sched_81:
+	ex de,hl
+NAT_sched_82:
+	call sc_jp
+NAT_sched_83:
+	pop hl
+NAT_sched_84:
+	jp sc_call
+sc_jp:
+NAT_sched_86:
+	jp (hl)
+sc_put:
+NAT_sched_88:
+	ld (hl),a
+NAT_sched_89:
+	inc hl
+NAT_sched_90:
+	ld (hl),e
+NAT_sched_91:
+	inc hl
+NAT_sched_92:
+	ld (hl),d
+NAT_sched_93:
+	inc hl
+NAT_sched_94:
+	ret
+Z_9543:
+NAT_sched_96:
+	call Z_AC4A
+NAT_sched_97:
+	ld hl,0x9409
+NAT_sched_98:
+	ld a,(0xAC4D)
+NAT_sched_99:
+	call sc_stick
+NAT_sched_100:
+	ld a,(0x93EA)
+NAT_sched_101:
+	and a
+NAT_sched_102:
+	call nz,Z_84DF
+NAT_sched_103:
+	ld hl,0x9423
+NAT_sched_104:
+	ld a,(0xAC4E)
+NAT_sched_105:
+	call sc_stick
+NAT_sched_106:
+	ld a,(0x93D6)
+NAT_sched_107:
+	and a
+NAT_sched_108:
+	ret z
+NAT_sched_109:
+	ld hl,0x9409
+NAT_sched_110:
+	ld a,(hl)
+NAT_sched_111:
+	and 0xF0
+NAT_sched_112:
+	ld (hl),a
+NAT_sched_113:
+	ld hl,0x9423
+NAT_sched_114:
+	ld a,(hl)
+NAT_sched_115:
+	and 0xF0
+NAT_sched_116:
+	ld (hl),a
+NAT_sched_117:
+	ret
+sc_stick:
+NAT_sched_119:
+	ld c,a
+NAT_sched_120:
+	and 0x10
+NAT_sched_121:
+	ld a,c
+NAT_sched_122:
+	jp z,sc_s1
+NAT_sched_123:
+	or 0x80
+NAT_sched_124:
+	ld c,a
+NAT_sched_125:
+	ld a,(hl)
+NAT_sched_126:
 	and 0x80
-	ld a,(il_a)
-Z_9A8F:
-	ld a,0x01	; 9A8F 3E 01
-Z_9A91:
-	jp nz,Z_9A95	; 9A91 20 02
-Z_9A93:
-	cpl	; 9A93 ED 44
+NAT_sched_127:
+	ld a,c
+NAT_sched_128:
+	jp z,sc_s1
+NAT_sched_129:
+	and 0xEF
+sc_s1:
+NAT_sched_131:
+	ld (hl),a
+NAT_sched_132:
+	ret
+Z_98B3:
+NAT_move_1:
+	ld hl,(z80_iy)
+NAT_move_2:
+	inc hl
+NAT_move_3:
+	inc hl
+NAT_move_4:
+	ld e,(hl)
+NAT_move_5:
+	inc hl
+NAT_move_6:
+	ld d,(hl)
+NAT_move_7:
+	ld bc,0
+NAT_move_8:
+	ld hl,(z80_ix)
+NAT_move_9:
+	dec hl
+NAT_move_10:
+	ld l,(hl)
+NAT_move_11:
+	ld a,l
+NAT_move_12:
+	and 1
+NAT_move_13:
+	jp z,mv_p1
+NAT_move_14:
+	ld c,0xFE
+NAT_move_15:
+	ld a,l
+NAT_move_16:
+	and 2
+NAT_move_17:
+	jp z,mv_p1
+NAT_move_18:
+	ld c,2
+mv_p1:
+NAT_move_20:
+	ld a,l
+NAT_move_21:
+	and 4
+NAT_move_22:
+	jp z,Z_98F7
+NAT_move_23:
+	ld b,0xFF
+NAT_move_24:
+	ld a,l
+NAT_move_25:
+	and 8
+NAT_move_26:
+	jp z,Z_98F7
+NAT_move_27:
+	ld b,1
+NAT_move_28:
+	jp Z_98F7
+Z_98D9:
+NAT_move_30:
+	ld hl,(z80_iy)
+NAT_move_31:
+	inc hl
+NAT_move_32:
+	inc hl
+NAT_move_33:
+	ld e,(hl)
+NAT_move_34:
+	inc hl
+NAT_move_35:
+	ld d,(hl)
+NAT_move_36:
+	ld hl,(z80_ix)
+NAT_move_37:
+	inc hl
+NAT_move_38:
+	inc hl
+NAT_move_39:
+	ld a,(hl)
+NAT_move_40:
+	inc hl
+NAT_move_41:
+	ld h,(hl)
+NAT_move_42:
+	ld l,a
+NAT_move_43:
+	ld a,h
+NAT_move_44:
+	sub d
+NAT_move_45:
+	jp nc,mv_b1
+NAT_move_46:
+	cpl
+NAT_move_47:
 	inc a
-Z_9A95:
-	call il_ix_ldc	; 9A95 DD 4E FF
-	db 0xFF
-Z_9A98:
-	add a,c	; 9A98 81
-Z_9A99:
-	rst 0x20	; 9A99 DD 77 FF
-	db 0xFF
-Z_9A9C:
-	rst 0x20	; 9A9C DD 77 FD
-	db 0xFD
-Z_9A9F:
-	rst 0x10	; 9A9F DD 7E FC
-	db 0xFC
-Z_9AA2:
-	add a,0x04	; 9AA2 C6 04
-Z_9AA4:
-	rst 0x20	; 9AA4 DD 77 FC
-	db 0xFC
-Z_9AA7:
-	rst 0x28	; 9AA7 DD CB 00 CE
-	db 0x00, 0x02
-Z_9AAB:
-	ret	; 9AAB C9
-Z_9AAC:
-	call Z_9B4C	; 9AAC CD 4C 9B
-Z_9AAF:
-	ld hl,(D_93ED)	; 9AAF 2A ED 93
-Z_9AB2:
-	ld c,(hl)	; 9AB2 4E
-Z_9AB3:
-	ld a,(D_93EC)	; 9AB3 3A EC 93
-Z_9AB6:
-	and a	; 9AB6 A7
-Z_9AB7:
-	jp z,Z_9AC0	; 9AB7 28 07
-Z_9AB9:
-	dec a	; 9AB9 3D
-Z_9ABA:
-	ld (D_93EC),a	; 9ABA 32 EC 93
-Z_9ABD:
-	inc hl	; 9ABD 23
-Z_9ABE:
-	jp Z_9AC1	; 9ABE 18 01
-Z_9AC0:
-	dec hl	; 9AC0 2B
-Z_9AC1:
-	ld (D_93ED),hl	; 9AC1 22 ED 93
-Z_9AC4:
-	call il_ix_ldh	; 9AC4 DD 66 FF
-	db 0xFF
-Z_9AC7:
-	call il_ix_sth	; 9AC7 DD 74 FD
-	db 0xFD
-Z_9ACA:
-	push bc	; 9ACA C5
-Z_9ACB:
-	call il_ix_ldc	; 9ACB DD 4E FB
-	db 0xFB
-Z_9ACE:
-	call il_ix_inc	; 9ACE DD 34 FB
-	db 0xFB
-Z_9AD1:
-	call il_ix_ldl	; 9AD1 DD 6E 02
-	db 0x02
-Z_9AD4:
-	ld h,0x00	; 9AD4 26 00
-Z_9AD6:
-	ld b,h	; 9AD6 44
-Z_9AD7:
-	call Z_398C	; 9AD7 CD 8C 39
-Z_9ADA:
-	ld b,0x00	; 9ADA 06 00
-Z_9ADC:
-	call il_ix_ldc	; 9ADC DD 4E FA
-	db 0xFA
-Z_9ADF:
-	call Z_39A3	; 9ADF CD A3 39
-Z_9AE2:
-	rst 0x08	; 9AE2 DD CB 00 7E
-	db 0x00, 0x80
-Z_9AE6:
-	jp z,Z_9AEC	; 9AE6 28 04
-Z_9AE8:
-	ld a,l	; 9AE8 7D
-Z_9AE9:
-	cpl	; 9AE9 ED 44
+mv_b1:
+NAT_move_49:
+	cp 6
+NAT_move_50:
+	ret nc
+NAT_move_51:
+	ld a,l
+NAT_move_52:
+	sub e
+NAT_move_53:
+	jp nc,mv_b2
+NAT_move_54:
+	cpl
+NAT_move_55:
 	inc a
-Z_9AEB:
-	ld l,a	; 9AEB 6F
-Z_9AEC:
-	rst 0x10	; 9AEC DD 7E 01
-	db 0x01
-Z_9AEF:
-	sub l	; 9AEF 95
-Z_9AF0:
-	pop bc	; 9AF0 C1
-Z_9AF1:
-	sub c	; 9AF1 91
-Z_9AF2:
-	rst 0x20	; 9AF2 DD 77 FC
-	db 0xFC
-Z_9AF5:
-	ret	; 9AF5 C9
-Z_9AF6:
-	ld a,c	; 9AF6 79
-Z_9AF7:
-	cp b	; 9AF7 B8
-Z_9AF8:
-	jp nc,Z_9B00	; 9AF8 30 06
-Z_9AFA:
-	ld l,c	; 9AFA 69
-Z_9AFB:
-	push de	; 9AFB D5
-Z_9AFC:
-	xor a	; 9AFC AF
-Z_9AFD:
-	ld e,a	; 9AFD 5F
-Z_9AFE:
-	jp Z_9B08	; 9AFE 18 08
-Z_9B00:
-	or c	; 9B00 B1
-Z_9B01:
-	jp z,Z_9B47	; 9B01 28 44
-Z_9B03:
-	ld l,b	; 9B03 68
-Z_9B04:
-	ld b,c	; 9B04 41
-Z_9B05:
-	push de	; 9B05 D5
-Z_9B06:
-	ld d,0x00	; 9B06 16 00
-Z_9B08:
-	ld h,b	; 9B08 60
-Z_9B09:
-	ld a,b	; 9B09 78
-Z_9B0A:
-	rra	; 9B0A 1F
-Z_9B0B:
-	add a,l	; 9B0B 85
-Z_9B0C:
-	jp c,Z_9B11	; 9B0C 38 03
-Z_9B0E:
-	cp h	; 9B0E BC
-Z_9B0F:
-	jp c,Z_9B18	; 9B0F 38 07
-Z_9B11:
-	sub h	; 9B11 94
-Z_9B12:
-	ld c,a	; 9B12 4F
-Z_9B13:
-	call il_exx	; 9B13 D9
-Z_9B14:
-	pop bc	; 9B14 C1
-Z_9B15:
-	push bc	; 9B15 C5
-Z_9B16:
-	jp Z_9B1C	; 9B16 18 04
-Z_9B18:
-	ld c,a	; 9B18 4F
-Z_9B19:
-	push de	; 9B19 D5
-Z_9B1A:
-	call il_exx	; 9B1A D9
-Z_9B1B:
-	pop bc	; 9B1B C1
-Z_9B1C:
-	ld a,b	; 9B1C 78
-Z_9B1D:
-	call il_ix_add	; 9B1D DD 86 FF
-	db 0xFF
-Z_9B20:
-	rst 0x20	; 9B20 DD 77 FF
-	db 0xFF
-Z_9B23:
-	ld b,a	; 9B23 47
-Z_9B24:
-	ld a,c	; 9B24 79
-Z_9B25:
-	call il_ix_add	; 9B25 DD 86 FE
-	db 0xFE
-Z_9B28:
-	rst 0x20	; 9B28 DD 77 FE
-	db 0xFE
-Z_9B2B:
-	call il_exx	; 9B2B D9
-Z_9B2C:
-	dec b	; 9B2C 05
-Z_9B2D:
-	call il_ix_stl	; 9B2D DD 75 03
-	db 0x03
-Z_9B30:
-	call il_ix_sth	; 9B30 DD 74 04
-	db 0x04
-Z_9B33:
-	call il_ix_stc	; 9B33 DD 71 05
-	db 0x05
-Z_9B36:
-	call il_ix_stb	; 9B36 DD 70 06
-	db 0x06
-Z_9B39:
-	call il_ix_ste	; 9B39 DD 73 07
-	db 0x07
-Z_9B3C:
-	call il_ix_std	; 9B3C DD 72 08
-	db 0x08
-Z_9B3F:
-	pop hl	; 9B3F E1
-Z_9B40:
-	call il_ix_stl	; 9B40 DD 75 09
-	db 0x09
-Z_9B43:
-	call il_ix_sth	; 9B43 DD 74 0A
-	db 0x0A
-Z_9B46:
-	ret nz	; 9B46 C0
-Z_9B47:
-	rst 0x28	; 9B47 DD CB 00 D6
-	db 0x00, 0x04
-Z_9B4B:
-	ret	; 9B4B C9
-Z_9B4C:
-	call il_ix_lde	; 9B4C DD 5E 09
-	db 0x09
-Z_9B4F:
-	call il_ix_ldd	; 9B4F DD 56 0A
-	db 0x0A
-Z_9B52:
-	push de	; 9B52 D5
-Z_9B53:
-	call il_ix_ldl	; 9B53 DD 6E 03
-	db 0x03
-Z_9B56:
-	call il_ix_ldh	; 9B56 DD 66 04
-	db 0x04
-Z_9B59:
-	call il_ix_ldc	; 9B59 DD 4E 05
-	db 0x05
-Z_9B5C:
-	call il_ix_ldb	; 9B5C DD 46 06
-	db 0x06
-Z_9B5F:
-	call il_ix_lde	; 9B5F DD 5E 07
-	db 0x07
-Z_9B62:
-	call il_ix_ldd	; 9B62 DD 56 08
-	db 0x08
-Z_9B65:
-	ld a,c	; 9B65 79
-Z_9B66:
-	jp Z_9B0B	; 9B66 C3 0B 9B
-Z_9BF6:
-	ld (il_tmp),hl	; 9BF6 DD 21 F5 93
-	ld hl,D_93F5
+mv_b2:
+NAT_move_57:
+	cp 3
+NAT_move_58:
+	ret nc
+Z_98F7:
+NAT_move_60:
+	ld hl,(z80_iy)
+NAT_move_61:
+	inc hl
+NAT_move_62:
+	inc hl
+NAT_move_63:
+	ld a,e
+NAT_move_64:
+	add a,c
+NAT_move_65:
+	ld (hl),a
+NAT_move_66:
+	inc hl
+NAT_move_67:
+	ld a,d
+NAT_move_68:
+	add a,b
+NAT_move_69:
+	ld (hl),a
+NAT_move_70:
+	inc hl
+NAT_move_71:
+	inc hl
+NAT_move_72:
+	ld (hl),a
+NAT_move_73:
+	ld e,2
+NAT_move_74:
+	ld hl,(z80_iy)
+NAT_move_75:
+	ld a,(hl)
+NAT_move_76:
+	rrca
+NAT_move_77:
+	jp c,Z_9919
+NAT_move_78:
+	dec hl
+NAT_move_79:
+	dec hl
+NAT_move_80:
+	ld a,(hl)
+NAT_move_81:
+	and 0x1F
+NAT_move_82:
+	jp nz,Z_9919
+NAT_move_83:
+	inc hl
+NAT_move_84:
+	ld a,(hl)
+NAT_move_85:
+	dec hl
+NAT_move_86:
+	ld (hl),a
+Z_9919:
+NAT_move_88:
+	ld a,(0x9400)
+NAT_move_89:
+	and a
+NAT_move_90:
+	ret nz
+NAT_move_91:
+	ld hl,(z80_ix)
+NAT_move_92:
+	inc hl
+NAT_move_93:
+	ld a,(hl)
+NAT_move_94:
+	rrca
+NAT_move_95:
+	jp nc,mv_e1
+NAT_move_96:
+	ld a,e
+NAT_move_97:
+	or 0x80
+NAT_move_98:
+	ld e,a
+mv_e1:
+NAT_move_100:
+	ld a,e
+NAT_move_101:
+	ld (0x9400),a
+NAT_move_102:
+	ld a,0x14
+NAT_move_103:
+	ld (0x9451),a
+NAT_move_104:
+	ld a,e
+NAT_move_105:
+	and 0x7F
+NAT_move_106:
+	cp 2
+NAT_move_107:
+	ret nz
+NAT_move_108:
+	ld hl,(z80_ix)
+NAT_move_109:
+	ld de,0x0B
+NAT_move_110:
+	add hl,de
+NAT_move_111:
+	ld a,(hl)
+NAT_move_112:
+	cp 5
+NAT_move_113:
+	ret z
+NAT_move_114:
+	inc (hl)
+NAT_move_115:
+	ld hl,(z80_ix)
+NAT_move_116:
+	push hl
+NAT_move_117:
+	ld hl,(z80_iy)
+NAT_move_118:
+	push hl
+NAT_move_119:
+	call Z_9FC0
+NAT_move_120:
+	pop hl
+NAT_move_121:
+	ld (z80_iy),hl
+NAT_move_122:
+	pop hl
+NAT_move_123:
 	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_9BFA:
-	rst 0x08	; 9BFA DD CB 00 46
-	db 0x00, 0x01
-Z_9BFE:
-	jp nz,Z_9C36	; 9BFE C2 36 9C
-Z_9C01:
-	rst 0x00	; 9C01 DD 36 00 41
-	db 0x00, 0x41
-Z_9C05:
-	call Z_386E	; 9C05 CD 6E 38
-Z_9C08:
-	push af	; 9C08 F5
-Z_9C09:
-	call Z_386E	; 9C09 CD 6E 38
-Z_9C0C:
-	and 0x03	; 9C0C E6 03
-Z_9C0E:
-	ld hl,D_9B89	; 9C0E 21 89 9B
-Z_9C11:
-	jp z,Z_9C22	; 9C11 28 0F
-Z_9C13:
-	ld hl,D_9B9F	; 9C13 21 9F 9B
-Z_9C16:
-	dec a	; 9C16 3D
-Z_9C17:
-	jp z,Z_9C22	; 9C17 28 09
-Z_9C19:
-	ld hl,D_9BBB	; 9C19 21 BB 9B
-Z_9C1C:
-	dec a	; 9C1C 3D
-Z_9C1D:
-	jp z,Z_9C22	; 9C1D 28 03
-Z_9C1F:
-	ld hl,D_9BD7	; 9C1F 21 D7 9B
-Z_9C22:
-	ld (D_93ED),hl	; 9C22 22 ED 93
-Z_9C25:
-	pop af	; 9C25 F1
-Z_9C26:
-	and 0x03	; 9C26 E6 03
-Z_9C28:
-	jp z,Z_9C36	; 9C28 28 0C
-Z_9C2A:
-	rst 0x30	; 9C2A DD CB 00 B6
-	db 0x00, 0xBF
-Z_9C2E:
-	ld (il_a),a	; 9C2E CB 47
-	and 0x01
-	ld a,(il_a)
-Z_9C30:
-	jp z,Z_9C36	; 9C30 28 04
-Z_9C32:
-	rst 0x28	; 9C32 DD CB 00 FE
-	db 0x00, 0x80
-Z_9C36:
-	ld hl,(D_93ED)	; 9C36 2A ED 93
-Z_9C39:
-	ld a,(D_93D6)	; 9C39 3A D6 93
-Z_9C3C:
-	and a	; 9C3C A7
-Z_9C3D:
-	jp nz,Z_9C45	; 9C3D 20 06
-Z_9C3F:
-	rst 0x08	; 9C3F DD CB 00 76
-	db 0x00, 0x40
-Z_9C43:
-	jp nz,Z_9C54	; 9C43 20 0F
-Z_9C45:
-	ld a,(hl)	; 9C45 7E
-Z_9C46:
-	rst 0x08	; 9C46 DD CB 00 7E
-	db 0x00, 0x80
-Z_9C4A:
-	jp z,Z_9C4E	; 9C4A 28 02
-Z_9C4C:
-	cpl	; 9C4C ED 44
-	inc a
-Z_9C4E:
-	call il_ix_add	; 9C4E DD 86 FE
-	db 0xFE
-Z_9C51:
-	rst 0x20	; 9C51 DD 77 FE
-	db 0xFE
-Z_9C54:
-	inc hl	; 9C54 23
-Z_9C55:
-	ld a,(D_93EB)	; 9C55 3A EB 93
-Z_9C58:
-	ld (il_a),a	; 9C58 CB 7F
-	and 0x80
-	ld a,(il_a)
-Z_9C5A:
-	ld a,(hl)	; 9C5A 7E
-Z_9C5B:
-	jp z,Z_9C5F	; 9C5B 28 02
-Z_9C5D:
-	cpl	; 9C5D ED 44
-	inc a
-Z_9C5F:
-	call il_ix_add	; 9C5F DD 86 FF
-	db 0xFF
-Z_9C62:
-	rst 0x20	; 9C62 DD 77 FF
-	db 0xFF
-Z_9C65:
-	rst 0x20	; 9C65 DD 77 FD
-	db 0xFD
-Z_9C68:
-	inc hl	; 9C68 23
-Z_9C69:
-	ld a,(hl)	; 9C69 7E
-Z_9C6A:
-	call il_ix_add	; 9C6A DD 86 FC
-	db 0xFC
-Z_9C6D:
-	rst 0x20	; 9C6D DD 77 FC
-	db 0xFC
-Z_9C70:
-	inc hl	; 9C70 23
-Z_9C71:
-	ld (D_93ED),hl	; 9C71 22 ED 93
-Z_9C74:
-	ld a,(hl)	; 9C74 7E
-Z_9C75:
-	inc a	; 9C75 3C
-Z_9C76:
-	ret nz	; 9C76 C0
-Z_9C77:
-	rst 0x28	; 9C77 DD CB 00 CE
-	db 0x00, 0x02
-Z_9C7B:
-	ret	; 9C7B C9
-Z_9C7C:
-	rst 0x30	; 9C7C DD CB 01 AE
-	db 0x01, 0xDF
-Z_9C80:
-	jp Z_9E82	; 9C80 C3 82 9E
+NAT_move_124:
+	ret
+Z_994A:
+NAT_move_126:
+	ld hl,(z80_ix)
+NAT_move_127:
+	inc hl
+NAT_move_128:
+	ld a,(hl)
+NAT_move_129:
+	and 0x0E
+NAT_move_130:
+	ret nz
+NAT_move_131:
+	dec hl
+NAT_move_132:
+	dec hl
+NAT_move_133:
+	dec hl
+NAT_move_134:
+	ld a,(hl)
+NAT_move_135:
+	and 0x0F
+NAT_move_136:
+	ret z
+NAT_move_137:
+	ld d,a
+NAT_move_138:
+	inc hl
+NAT_move_139:
+	ld c,(hl)
+NAT_move_140:
+	ld a,d
+NAT_move_141:
+	and 4
+NAT_move_142:
+	jp z,mv_s8c
+NAT_move_143:
+	ld a,c
+NAT_move_144:
+	rrca
+NAT_move_145:
+	jp nc,mv_s70
+NAT_move_146:
+	ld a,d
+	jp	NAT_move_147	; мост в следующий кусок
 	org	0x9B69
 D_9B69:
 Z_9B69:
@@ -8554,949 +9715,836 @@ D_9BE7:
 Z_9BE7:
 	db	0x02, 0x04, 0x00, 0x01, 0x04, 0x00, 0x01, 0x04, 0x00, 0x01, 0x06, 0x00, 0x01, 0x06, 0xFF	; 9BE7
 	org	0x9BF6
-Z_9C83:
-	push af	; 9C83 DD CB F9 86
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
-	ld a,l
-	add a,249
-	ld l,a
-	ld a,h
-	adc a,255
-	ld h,a
+NAT_move_147:
+	and 8
+NAT_move_148:
+	jp z,mv_sae
+NAT_move_149:
+	jp mv_s9d
+mv_s70:
+NAT_move_151:
+	ld a,d
+NAT_move_152:
+	and 8
+NAT_move_153:
+	jp nz,mv_s80
+NAT_move_154:
+	ld a,c
+NAT_move_155:
+	and 8
+NAT_move_156:
+	ret z
+NAT_move_157:
+	jp mv_s77
+mv_s80:
+NAT_move_159:
+	ld a,c
+NAT_move_160:
+	and 8
+NAT_move_161:
+	ret nz
+NAT_move_162:
+	jp mv_s83
+mv_s8c:
+NAT_move_164:
+	ld a,c
+NAT_move_165:
+	and 4
+NAT_move_166:
+	jp z,mv_s96
+NAT_move_167:
+	ld a,d
+NAT_move_168:
+	and 2
+NAT_move_169:
+	jp z,mv_s83
+NAT_move_170:
+	jp mv_s77
+mv_s96:
+NAT_move_172:
+	ld a,d
+NAT_move_173:
+	and 2
+NAT_move_174:
+	jp nz,mv_sab
+NAT_move_175:
+	ld a,c
+NAT_move_176:
+	and 2
+NAT_move_177:
+	ret z
+NAT_move_178:
+	jp mv_s9d
+mv_sab:
+NAT_move_180:
+	ld a,c
+NAT_move_181:
+	and 2
+NAT_move_182:
+	ret nz
+NAT_move_183:
+	jp mv_sae
+mv_s77:
+NAT_move_185:
+	ld (hl),3
+NAT_move_186:
+	inc hl
+NAT_move_187:
+	jp mv_r6
+mv_s83:
+NAT_move_189:
+	ld (hl),1
+NAT_move_190:
+	inc hl
+NAT_move_191:
+	jp mv_r6
+mv_s9d:
+NAT_move_193:
+	ld (hl),0x0C
+NAT_move_194:
+	inc hl
+NAT_move_195:
+	inc hl
+NAT_move_196:
 	ld a,(hl)
-	and 0xFE
-	ld (hl),a
-	ld hl,(il_tmp2)
-	pop af
-Z_9C87:
-	ld (il_a),a	; 9C87 DD CB 00 46
-	ld (il_tmp2),hl
-	ld hl,(z80_ix)
+NAT_move_197:
+	dec hl
+NAT_move_198:
+	rrca
+NAT_move_199:
+	ret nc
+NAT_move_200:
+	jp mv_r6
+mv_sae:
+NAT_move_202:
+	ld (hl),4
+NAT_move_203:
+	inc hl
+NAT_move_204:
+	inc hl
+NAT_move_205:
 	ld a,(hl)
-	and 0x01
-	ld hl,(il_tmp2)
-	ld a,(il_a)
-Z_9C8B:
-	jp nz,Z_84E2	; 9C8B C2 E2 84
-Z_9C8E:
-	rst 0x10	; 9C8E DD 7E FE
-	db 0xFE
-Z_9C91:
-	and 0x1F	; 9C91 E6 1F
-Z_9C93:
-	jp z,Z_9C7C	; 9C93 28 E7
-Z_9C95:
-	call il_ix_ldb	; 9C95 DD 46 FF
-	db 0xFF
-Z_9C98:
-	cp 0x10	; 9C98 FE 10
-Z_9C9A:
-	jp z,Z_84E5	; 9C9A CA E5 84
-Z_9C9D:
-	rst 0x08	; 9C9D DD CB 00 66
-	db 0x00, 0x10
-Z_9CA1:
-	jp z,Z_9CB1	; 9CA1 28 0E
-Z_9CA3:
-	ld (il_a),a	; 9CA3 CB 67
-	and 0x10
-	ld a,(il_a)
-Z_9CA5:
-	jp z,Z_9CB9	; 9CA5 28 12
-Z_9CA7:
-	push af	; 9CA7 CB A7
-	and 0xEF
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_9CA9:
-	call il_ix_cp	; 9CA9 DD BE FF
-	db 0xFF
-Z_9CAC:
-	jp z,Z_84E5	; 9CAC CA E5 84
-Z_9CAF:
-	jp Z_9CB6	; 9CAF 18 05
-Z_9CB1:
-	ld (il_a),a	; 9CB1 CB 67
-	and 0x10
-	ld a,(il_a)
-Z_9CB3:
-	jp nz,Z_84E5	; 9CB3 C2 E5 84
-Z_9CB6:
-	rst 0x20	; 9CB6 DD 77 FF
-	db 0xFF
-Z_9CB9:
-	ld c,a	; 9CB9 4F
-Z_9CBA:
-	call il_ix_ldl	; 9CBA DD 6E 02
-	db 0x02
-Z_9CBD:
-	call il_ix_ldh	; 9CBD DD 66 03
-	db 0x03
-Z_9CC0:
-	call il_iy_lde	; 9CC0 FD 5E 02
-	db 0x02
-Z_9CC3:
-	call il_iy_ldd	; 9CC3 FD 56 03
-	db 0x03
-Z_9CC6:
-	rst 0x30	; 9CC6 DD CB 01 AE
-	db 0x01, 0xDF
-Z_9CCA:
-	ld (il_a),a	; 9CCA CB 41
-	ld a,c
-	and 0x01
-	ld a,(il_a)
-Z_9CCC:
-	jp z,Z_9D23	; 9CCC 28 55
-Z_9CCE:
-	ld a,l	; 9CCE 7D
-Z_9CCF:
-	ld (il_a),a	; 9CCF CB 49
-	ld a,c
-	and 0x02
-	ld a,(il_a)
-Z_9CD1:
-	jp nz,Z_9CFC	; 9CD1 20 29
-Z_9CD3:
-	cp 0x41	; 9CD3 FE 41
-Z_9CD5:
-	jp c,Z_9D23	; 9CD5 38 4C
-Z_9CD7:
-	ld a,d	; 9CD7 7A
-Z_9CD8:
-	sub h	; 9CD8 94
-Z_9CD9:
-	jp nc,Z_9CDD	; 9CD9 30 02
-Z_9CDB:
-	cpl	; 9CDB ED 44
-	inc a
-Z_9CDD:
-	cp 0x06	; 9CDD FE 06
-Z_9CDF:
-	jp nc,Z_9CF3	; 9CDF 30 12
-Z_9CE1:
-	ld a,l	; 9CE1 7D
-Z_9CE2:
-	inc a	; 9CE2 3C
-Z_9CE3:
-	cp e	; 9CE3 BB
-Z_9CE4:
-	jp c,Z_9CF3	; 9CE4 38 0D
-Z_9CE6:
-	sub 0x06	; 9CE6 D6 06
-Z_9CE8:
-	cp e	; 9CE8 BB
-Z_9CE9:
-	rst 0x28	; 9CE9 DD CB 01 EE
-	db 0x01, 0x20
-Z_9CED:
-	jp c,Z_9D23	; 9CED 38 34
-Z_9CEF:
-	rst 0x30	; 9CEF DD CB 01 AE
-	db 0x01, 0xDF
-Z_9CF3:
-	dec l	; 9CF3 2D
-Z_9CF4:
-	call Z_9E47	; 9CF4 CD 47 9E
-Z_9CF7:
-	jp nz,Z_9D23	; 9CF7 20 2A
-Z_9CF9:
-	dec l	; 9CF9 2D
-Z_9CFA:
-	jp Z_9D23	; 9CFA 18 27
-Z_9CFC:
-	cp 0x6E	; 9CFC FE 6E
-Z_9CFE:
-	jp nc,Z_9D23	; 9CFE 30 23
-Z_9D00:
-	ld a,d	; 9D00 7A
-Z_9D01:
-	sub h	; 9D01 94
-Z_9D02:
-	jp nc,Z_9D06	; 9D02 30 02
-Z_9D04:
-	cpl	; 9D04 ED 44
-	inc a
-Z_9D06:
-	cp 0x06	; 9D06 FE 06
-Z_9D08:
-	jp nc,Z_9D1C	; 9D08 30 12
-Z_9D0A:
-	ld a,e	; 9D0A 7B
-Z_9D0B:
-	inc a	; 9D0B 3C
-Z_9D0C:
-	cp l	; 9D0C BD
-Z_9D0D:
-	jp c,Z_9D1C	; 9D0D 38 0D
-Z_9D0F:
-	sub 0x06	; 9D0F D6 06
-Z_9D11:
-	cp l	; 9D11 BD
-Z_9D12:
-	rst 0x28	; 9D12 DD CB 01 EE
-	db 0x01, 0x20
-Z_9D16:
-	jp c,Z_9D23	; 9D16 38 0B
-Z_9D18:
-	rst 0x30	; 9D18 DD CB 01 AE
-	db 0x01, 0xDF
-Z_9D1C:
-	inc l	; 9D1C 2C
-Z_9D1D:
-	call Z_9E47	; 9D1D CD 47 9E
-Z_9D20:
-	jp nz,Z_9D23	; 9D20 20 01
-Z_9D22:
-	inc l	; 9D22 2C
-Z_9D23:
-	ld a,0x70	; 9D23 3E 70
-Z_9D25:
-	ld c,a	; 9D25 4F
-Z_9D26:
-	sub l	; 9D26 95
-Z_9D27:
-	or a	; 9D27 CB 3F
-	rra
-Z_9D29:
-	or a	; 9D29 CB 3F
-	rra
-Z_9D2B:
-	inc a	; 9D2B 3C
-Z_9D2C:
-	ld b,a	; 9D2C 47
-Z_9D2D:
-	cp h	; 9D2D BC
-Z_9D2E:
-	jp c,Z_9D3B	; 9D2E 38 0B
-Z_9D30:
-	ld a,h	; 9D30 7C
-Z_9D31:
-	inc a	; 9D31 3C
-Z_9D32:
-	cp b	; 9D32 B8
-Z_9D33:
-	jp nc,Z_9D4F	; 9D33 30 1A
-Z_9D35:
-	rst 0x00	; 9D35 DD 36 FE 0C
-	db 0xFE, 0x0C
-Z_9D39:
-	jp Z_9D4F	; 9D39 18 14
-Z_9D3B:
-	cpl	; 9D3B ED 44
-	inc a
-Z_9D3D:
-	add a,0x73	; 9D3D C6 73
-Z_9D3F:
-	ld c,a	; 9D3F 4F
-Z_9D40:
-	cp h	; 9D40 BC
-Z_9D41:
-	jp nc,Z_9D4F	; 9D41 30 0C
-Z_9D43:
-	ld a,h	; 9D43 7C
-Z_9D44:
-	dec a	; 9D44 3D
-Z_9D45:
-	dec a	; 9D45 3D
-Z_9D46:
-	cp c	; 9D46 B9
-Z_9D47:
-	jp c,Z_9D4F	; 9D47 38 06
-Z_9D49:
-	jp z,Z_9D4F	; 9D49 28 04
-Z_9D4B:
-	rst 0x00	; 9D4B DD 36 FE 04
-	db 0xFE, 0x04
-Z_9D4F:
-	rst 0x08	; 9D4F DD CB FE 56
-	db 0xFE, 0x04
-Z_9D53:
-	jp z,Z_9DB9	; 9D53 28 64
-Z_9D55:
-	rst 0x08	; 9D55 DD CB FE 5E
-	db 0xFE, 0x08
-Z_9D59:
-	jp nz,Z_9D8B	; 9D59 20 30
-Z_9D5B:
-	rst 0x28	; 9D5B DD CB F9 C6
-	db 0xF9, 0x01
-Z_9D5F:
-	ld a,b	; 9D5F 78
-Z_9D60:
-	cp h	; 9D60 BC
-Z_9D61:
-	jp nc,Z_9DB9	; 9D61 30 56
-Z_9D63:
-	rst 0x30	; 9D63 DD CB F9 86
-	db 0xF9, 0xFE
-Z_9D67:
-	ld a,l	; 9D67 7D
-Z_9D68:
-	sub e	; 9D68 93
-Z_9D69:
-	jp nc,Z_9D6D	; 9D69 30 02
-Z_9D6B:
-	cpl	; 9D6B ED 44
-	inc a
-Z_9D6D:
-	cp 0x03	; 9D6D FE 03
-Z_9D6F:
-	jp nc,Z_9D82	; 9D6F 30 11
-Z_9D71:
-	ld a,h	; 9D71 7C
-Z_9D72:
-	cp d	; 9D72 BA
-Z_9D73:
-	jp c,Z_9D82	; 9D73 38 0D
-Z_9D75:
-	sub 0x08	; 9D75 D6 08
-Z_9D77:
-	cp d	; 9D77 BA
-Z_9D78:
-	rst 0x28	; 9D78 DD CB 01 EE
-	db 0x01, 0x20
-Z_9D7C:
-	jp c,Z_9DB9	; 9D7C 38 3B
-Z_9D7E:
-	rst 0x30	; 9D7E DD CB 01 AE
-	db 0x01, 0xDF
-Z_9D82:
-	dec h	; 9D82 25
-Z_9D83:
-	call Z_9E47	; 9D83 CD 47 9E
-Z_9D86:
-	jp nz,Z_9DB9	; 9D86 20 31
-Z_9D88:
-	dec h	; 9D88 25
-Z_9D89:
-	jp Z_9DB9	; 9D89 18 2E
-Z_9D8B:
-	rst 0x28	; 9D8B DD CB F9 C6
-	db 0xF9, 0x01
-Z_9D8F:
-	ld a,c	; 9D8F 79
-Z_9D90:
-	cp h	; 9D90 BC
-Z_9D91:
-	jp c,Z_9DB9	; 9D91 38 26
-Z_9D93:
-	rst 0x30	; 9D93 DD CB F9 86
-	db 0xF9, 0xFE
-Z_9D97:
-	ld a,l	; 9D97 7D
-Z_9D98:
-	sub e	; 9D98 93
-Z_9D99:
-	jp nc,Z_9D9D	; 9D99 30 02
-Z_9D9B:
-	cpl	; 9D9B ED 44
-	inc a
-Z_9D9D:
-	cp 0x03	; 9D9D FE 03
-Z_9D9F:
-	jp nc,Z_9DB2	; 9D9F 30 11
-Z_9DA1:
-	ld a,d	; 9DA1 7A
-Z_9DA2:
-	cp h	; 9DA2 BC
-Z_9DA3:
-	jp c,Z_9DB2	; 9DA3 38 0D
-Z_9DA5:
-	sub 0x08	; 9DA5 D6 08
-Z_9DA7:
-	cp h	; 9DA7 BC
-Z_9DA8:
-	rst 0x28	; 9DA8 DD CB 01 EE
-	db 0x01, 0x20
-Z_9DAC:
-	jp c,Z_9DB9	; 9DAC 38 0B
-Z_9DAE:
-	rst 0x30	; 9DAE DD CB 01 AE
-	db 0x01, 0xDF
-Z_9DB2:
-	inc h	; 9DB2 24
-Z_9DB3:
-	call Z_9E47	; 9DB3 CD 47 9E
-Z_9DB6:
-	jp nz,Z_9DB9	; 9DB6 20 01
-Z_9DB8:
-	inc h	; 9DB8 24
-Z_9DB9:
-	call il_ix_stl	; 9DB9 DD 75 02
-	db 0x02
-Z_9DBC:
-	call il_ix_sth	; 9DBC DD 74 03
-	db 0x03
-Z_9DBF:
-	call Z_9ED4	; 9DBF CD D4 9E
-Z_9DC2:
-	call il_ix_ldl	; 9DC2 DD 6E 02
-	db 0x02
-Z_9DC5:
-	call il_ix_ldh	; 9DC5 DD 66 03
-	db 0x03
-Z_9DC8:
-	rst 0x08	; 9DC8 DD CB 00 66
-	db 0x00, 0x10
-Z_9DCC:
-	ret z	; 9DCC C8
-Z_9DCD:
-	call il_ix_ldc	; 9DCD DD 4E FF
-	db 0xFF
-Z_9DD0:
-	ld (il_a),a	; 9DD0 CB 51
-	ld a,c
-	and 0x04
-	ld a,(il_a)
-Z_9DD2:
-	jp z,Z_9DDE	; 9DD2 28 0A
-Z_9DD4:
-	ld (il_a),a	; 9DD4 CB 59
-	ld a,c
-	and 0x08
-	ld a,(il_a)
-Z_9DD6:
-	jp z,Z_9DED	; 9DD6 28 15
-Z_9DD8:
-	ld a,h	; 9DD8 7C
-Z_9DD9:
-	add a,0x09	; 9DD9 C6 09
-Z_9DDB:
-	ld h,a	; 9DDB 67
-Z_9DDC:
-	jp Z_9DED	; 9DDC 18 0F
-Z_9DDE:
-	ld (il_a),a	; 9DDE CB 49
-	ld a,c
-	and 0x02
-	ld a,(il_a)
-Z_9DE0:
-	ld c,0x02	; 9DE0 0E 02
-Z_9DE2:
-	jp nz,Z_9DEA	; 9DE2 20 06
-Z_9DE4:
-	ld c,0xFE	; 9DE4 0E FE
-Z_9DE6:
-	ld a,h	; 9DE6 7C
-Z_9DE7:
-	add a,0x09	; 9DE7 C6 09
-Z_9DE9:
-	ld h,a	; 9DE9 67
-Z_9DEA:
-	ld a,l	; 9DEA 7D
-Z_9DEB:
-	add a,c	; 9DEB 81
-Z_9DEC:
-	ld l,a	; 9DEC 6F
-Z_9DED:
-	ld (D_93F3),hl	; 9DED 22 F3 93
-Z_9DF0:
-	ld a,l	; 9DF0 7D
-Z_9DF1:
-	cp 0x41	; 9DF1 FE 41
-Z_9DF3:
-	jp c,Z_9DF9	; 9DF3 38 04
-Z_9DF5:
-	cp 0x6E	; 9DF5 FE 6E
-Z_9DF7:
-	jp c,Z_9E05	; 9DF7 38 0C
-Z_9DF9:
-	rst 0x08	; 9DF9 DD CB 00 66
-	db 0x00, 0x10
-Z_9DFD:
-	jp z,Z_9E05	; 9DFD 28 06
-Z_9DFF:
-	ld e,0x03	; 9DFF 1E 03
-Z_9E01:
-	call Z_9919	; 9E01 CD 19 99
-Z_9E04:
-	ret	; 9E04 C9
-Z_9E05:
-	rst 0x08	; 9E05 DD CB 00 66
-	db 0x00, 0x10
-Z_9E09:
-	jp nz,Z_9E10	; 9E09 20 05
-Z_9E0B:
-	rst 0x30	; 9E0B DD CB 01 A6
-	db 0x01, 0xEF
-Z_9E0F:
-	ret	; 9E0F C9
-Z_9E10:
-	rst 0x08	; 9E10 DD CB 01 66
-	db 0x01, 0x10
-Z_9E14:
-	rst 0x10	; 9E14 DD 7E 03
-	db 0x03
-Z_9E17:
-	jp nz,Z_9E2F	; 9E17 20 16
-Z_9E19:
-	rst 0x08	; 9E19 DD CB 01 46
-	db 0x01, 0x01
-Z_9E1D:
-	jp z,Z_9E27	; 9E1D 28 08
-Z_9E1F:
-	cp 0x3E	; 9E1F FE 3E
-Z_9E21:
-	ret c	; 9E21 D8
-Z_9E22:
-	rst 0x28	; 9E22 DD CB 01 E6
-	db 0x01, 0x10
-Z_9E26:
-	ret	; 9E26 C9
-Z_9E27:
-	cp 0x38	; 9E27 FE 38
-Z_9E29:
-	ret nc	; 9E29 D0
-Z_9E2A:
-	rst 0x28	; 9E2A DD CB 01 E6
-	db 0x01, 0x10
-Z_9E2E:
-	ret	; 9E2E C9
-Z_9E2F:
-	rst 0x08	; 9E2F DD CB 01 46
-	db 0x01, 0x01
-Z_9E33:
-	jp z,Z_9E3A	; 9E33 28 05
-Z_9E35:
-	cp 0x3E	; 9E35 FE 3E
-Z_9E37:
-	ret nc	; 9E37 D0
-Z_9E38:
-	jp Z_9E3D	; 9E38 18 03
-Z_9E3A:
-	cp 0x38	; 9E3A FE 38
-Z_9E3C:
-	ret c	; 9E3C D8
-Z_9E3D:
-	ld e,0x05	; 9E3D 1E 05
-Z_9E3F:
-	call Z_9919	; 9E3F CD 19 99
-Z_9E42:
-	rst 0x30	; 9E42 DD CB 01 A6
-	db 0x01, 0xEF
-Z_9E46:
-	ret	; 9E46 C9
-Z_9E47:
-	rst 0x10	; 9E47 DD 7E 0A
-	db 0x0A
-Z_9E4A:
-	and a	; 9E4A A7
-Z_9E4B:
-	jp nz,Z_9E57	; 9E4B 20 0A
-Z_9E4D:
-	rst 0x10	; 9E4D DD 7E FB
-	db 0xFB
-Z_9E50:
-	inc a	; 9E50 3C
-Z_9E51:
-	and 0x01	; 9E51 E6 01
-Z_9E53:
-	rst 0x20	; 9E53 DD 77 FB
-	db 0xFB
-Z_9E56:
-	ret	; 9E56 C9
-Z_9E57:
-	rst 0x08	; 9E57 DD CB 00 66
-	db 0x00, 0x10
-Z_9E5B:
-	ret z	; 9E5B C8
-Z_9E5C:
-	ld a,(D_93EB)	; 9E5C 3A EB 93
-Z_9E5F:
-	ld (il_a),a	; 9E5F CB 77
-	and 0x40
-	ld a,(il_a)
-Z_9E61:
-	ret z	; 9E61 C8
-Z_9E62:
-	call il_ix_dec	; 9E62 DD 35 FA
-	db 0xFA
-Z_9E65:
-	ret nz	; 9E65 C0
-Z_9E66:
-	ld a,(D_93EB)	; 9E66 3A EB 93
-Z_9E69:
-	push af	; 9E69 CB B7
+NAT_move_206:
+	dec hl
+NAT_move_207:
+	rrca
+NAT_move_208:
+	ret c
+mv_r6:
+NAT_move_210:
+	ld a,(hl)
+NAT_move_211:
 	and 0xBF
-	ld (il_a),a
-	pop af
-	ld a,(il_a)
-Z_9E6B:
-	ld (D_93EB),a	; 9E6B 32 EB 93
-Z_9E6E:
-	ret	; 9E6E C9
-Z_9E6F:
-	add a,a	; 9E6F 87
-Z_9E70:
-	ld l,a	; 9E70 6F
-Z_9E71:
-	ld h,0x00	; 9E71 26 00
-Z_9E73:
-	ld de,0x7760	; 9E73 11 60 77
-Z_9E76:
-	add hl,de	; 9E76 19
-Z_9E77:
-	ld e,(hl)	; 9E77 5E
-Z_9E78:
-	inc hl	; 9E78 23
-Z_9E79:
-	ld d,(hl)	; 9E79 56
-Z_9E7A:
-	ld hl,0x415A	; 9E7A 21 5A 41
-Z_9E7D:
-	add hl,de	; 9E7D 19
-Z_9E7E:
-	ld (BLIT_SRC),hl	; 9E7E 22 02 33
-Z_9E81:
-	ret	; 9E81 C9
-Z_9E82:
-	ld a,(D_93D6)	; 9E82 3A D6 93
-Z_9E85:
-	and a	; 9E85 A7
-Z_9E86:
-	ret nz	; 9E86 C0
-Z_9E87:
-	ld a,(D_93D3)	; 9E87 3A D3 93
-Z_9E8A:
-	dec a	; 9E8A 3D
-Z_9E8B:
-	ret z	; 9E8B C8
-Z_9E8C:
-	rst 0x10	; 9E8C DD 7E 0A
-	db 0x0A
-Z_9E8F:
-	cp 0x16	; 9E8F FE 16
-Z_9E91:
-	ret nc	; 9E91 D0
-Z_9E92:
-	ld a,0x01	; 9E92 3E 01
-Z_9E94:
-	ld b,a	; 9E94 47
-Z_9E95:
-	call il_ix_ldc	; 9E95 DD 4E 09
-	db 0x09
-Z_9E98:
-	ld (il_a),a	; 9E98 CB 79
-	ld a,c
-	and 0x80
-	ld a,(il_a)
-Z_9E9A:
-	jp z,Z_9EA5	; 9E9A 28 09
-Z_9E9C:
-	ld b,a	; 9E9C 47
-Z_9E9D:
-	push af	; 9E9D CB B9
-	ld a,c
-	and 0x7F
-	ld c,a
-	pop af
-Z_9E9F:
-	sub c	; 9E9F 91
-Z_9EA0:
-	jp nc,Z_9EA3	; 9EA0 30 01
-Z_9EA2:
-	xor a	; 9EA2 AF
-Z_9EA3:
-	ld c,a	; 9EA3 4F
-Z_9EA4:
-	ld a,b	; 9EA4 78
-Z_9EA5:
-	inc c	; 9EA5 0C
-Z_9EA6:
-	cp c	; 9EA6 B9
-Z_9EA7:
-	jp nc,Z_9EAB	; 9EA7 30 02
-Z_9EA9:
-	ld c,0x00	; 9EA9 0E 00
-Z_9EAB:
-	call il_ix_stc	; 9EAB DD 71 09
-	db 0x09
-Z_9EAE:
-	ret nc	; 9EAE D0
-Z_9EAF:
-	ld hl,0x1001	; 9EAF 21 01 10
-Z_9EB2:
-	rst 0x08	; 9EB2 DD CB 01 46
-	db 0x01, 0x01
-Z_9EB6:
-	jp nz,Z_9EBA	; 9EB6 20 02
-Z_9EB8:
-	ld l,0x14	; 9EB8 2E 14
-Z_9EBA:
-	rst 0x10	; 9EBA DD 7E 0A
-	db 0x0A
-Z_9EBD:
-	inc a	; 9EBD 3C
-Z_9EBE:
-	rst 0x20	; 9EBE DD 77 0A
-	db 0x0A
-Z_9EC1:
-	dec a	; 9EC1 3D
-Z_9EC2:
-	ld d,0x00	; 9EC2 16 00
-Z_9EC4:
-	ld e,a	; 9EC4 5F
-Z_9EC5:
-	ld (il_a),a	; 9EC5 CB 3B
-	ld a,e
-	or a
-	rra
-	ld e,a
-	ld a,(il_a)
-Z_9EC7:
-	add hl,de	; 9EC7 19
-Z_9EC8:
-	ld c,0xE0	; 9EC8 0E E0
-Z_9ECA:
-	ld (il_a),a	; 9ECA CB 47
-	and 0x01
-	ld a,(il_a)
-Z_9ECC:
-	jp z,Z_9F48	; 9ECC CA 48 9F
-Z_9ECF:
-	ld c,0xEE	; 9ECF 0E EE
-Z_9ED1:
-	jp Z_9F48	; 9ED1 C3 48 9F
-Z_9ED4:
-	ld a,(D_93D6)	; 9ED4 3A D6 93
-Z_9ED7:
-	and a	; 9ED7 A7
-Z_9ED8:
-	ret nz	; 9ED8 C0
-Z_9ED9:
-	ld a,(D_93D3)	; 9ED9 3A D3 93
-Z_9EDC:
-	dec a	; 9EDC 3D
-Z_9EDD:
-	ret z	; 9EDD C8
-Z_9EDE:
-	push af	; 9EDE DD 7E 0A
-	ld (il_tmp2),hl
+NAT_move_212:
+	ld (hl),a
+NAT_move_213:
+	ret
+Z_99BC:
+NAT_move_215:
+	ld a,(0x93D6)
+NAT_move_216:
+	ld c,1
+NAT_move_217:
+	and a
+NAT_move_218:
+	jp nz,mv_vf2
+NAT_move_219:
+	ld c,3
+NAT_move_220:
 	ld hl,(z80_ix)
-	ld a,l
-	add a,10
-	ld l,a
-	ld a,h
-	adc a,0
-	ld h,a
+NAT_move_221:
+	inc hl
+NAT_move_222:
+	ld b,(hl)
+NAT_move_223:
+	inc hl
+NAT_move_224:
 	ld a,(hl)
-	ld (il_a),a
-	ld hl,(il_tmp2)
-	pop af
-	ld a,(il_a)
-Z_9EE1:
-	and a	; 9EE1 A7
-Z_9EE2:
-	ret z	; 9EE2 C8
-Z_9EE3:
-	ld a,0x07	; 9EE3 3E 07
-Z_9EE5:
-	ld b,a	; 9EE5 47
-Z_9EE6:
-	call il_ix_ldc	; 9EE6 DD 4E 09
-	db 0x09
-Z_9EE9:
-	ld (il_a),a	; 9EE9 CB 79
-	ld a,c
-	and 0x80
-	ld a,(il_a)
-Z_9EEB:
-	jp nz,Z_9EF4	; 9EEB 20 07
-Z_9EED:
-	ld b,a	; 9EED 47
-Z_9EEE:
-	sub c	; 9EEE 91
-Z_9EEF:
-	jp nc,Z_9EF2	; 9EEF 30 01
-Z_9EF1:
-	xor a	; 9EF1 AF
-Z_9EF2:
-	ld c,a	; 9EF2 4F
-Z_9EF3:
-	ld a,b	; 9EF3 78
-Z_9EF4:
-	push af	; 9EF4 CB B9
-	ld a,c
-	and 0x7F
-	ld c,a
-	pop af
-Z_9EF6:
-	inc c	; 9EF6 0C
-Z_9EF7:
-	cp c	; 9EF7 B9
-Z_9EF8:
-	jp nc,Z_9EFC	; 9EF8 30 02
-Z_9EFA:
-	ld c,0x00	; 9EFA 0E 00
-Z_9EFC:
-	push af	; 9EFC CB F9
-	ld a,c
-	or 0x80
-	ld c,a
-	pop af
-Z_9EFE:
-	call il_ix_stc	; 9EFE DD 71 09
-	db 0x09
-Z_9F01:
-	ret nc	; 9F01 D0
-Z_9F02:
-	ld hl,0x1001	; 9F02 21 01 10
-Z_9F05:
-	rst 0x08	; 9F05 DD CB 01 46
-	db 0x01, 0x01
-Z_9F09:
-	jp nz,Z_9F0D	; 9F09 20 02
-Z_9F0B:
-	ld l,0x14	; 9F0B 2E 14
-Z_9F0D:
-	rst 0x10	; 9F0D DD 7E 0A
-	db 0x0A
-Z_9F10:
-	dec a	; 9F10 3D
-Z_9F11:
-	rst 0x20	; 9F11 DD 77 0A
-	db 0x0A
-Z_9F14:
-	inc a	; 9F14 3C
-Z_9F15:
-	ld d,0x00	; 9F15 16 00
-Z_9F17:
-	ld e,a	; 9F17 5F
-Z_9F18:
-	ld (il_a),a	; 9F18 CB 3B
-	ld a,e
-	or a
-	rra
-	ld e,a
-	ld a,(il_a)
-Z_9F1A:
-	add hl,de	; 9F1A 19
-Z_9F1B:
-	ld c,d	; 9F1B 4A
-Z_9F1C:
-	ld (il_a),a	; 9F1C CB 47
-	and 0x01
-	ld a,(il_a)
-Z_9F1E:
-	jp nz,Z_9F48	; 9F1E 20 28
-Z_9F20:
-	ld c,0xE0	; 9F20 0E E0
-Z_9F22:
-	dec l	; 9F22 2D
-Z_9F23:
-	jp Z_9F48	; 9F23 18 23
-Z_9F25:
-	ld hl,0x1001	; 9F25 21 01 10
-Z_9F28:
-	ld a,(D_9415)	; 9F28 3A 15 94
-Z_9F2B:
-	ld c,0xEE	; 9F2B 0E EE
-Z_9F2D:
-	call Z_9F36	; 9F2D CD 36 9F
-Z_9F30:
-	ld hl,0x1014	; 9F30 21 14 10
-Z_9F33:
-	ld a,(D_942F)	; 9F33 3A 2F 94
-Z_9F36:
-	and a	; 9F36 A7
-Z_9F37:
-	ret z	; 9F37 C8
-Z_9F38:
-	ld b,a	; 9F38 47
-Z_9F39:
-	ld (il_a),a	; 9F39 CB 38
+NAT_move_225:
+	inc hl
+NAT_move_226:
+	ld h,(hl)
+NAT_move_227:
+	ld l,a
+NAT_move_228:
+	cp 0x48
+NAT_move_229:
+	jp c,mv_vf2
+NAT_move_230:
+	cp 0x66
+NAT_move_231:
+	jp nc,mv_vf2
+NAT_move_232:
 	ld a,b
-	or a
-	rra
-	or a
+NAT_move_233:
+	rrca
+NAT_move_234:
+	ld a,h
+NAT_move_235:
+	jp nc,mv_vfd
+NAT_move_236:
+	cp 0x52
+NAT_move_237:
+	jp c,mv_vf2
+NAT_move_238:
+	cp 0x58
+NAT_move_239:
+	jp nc,mv_vf0
+NAT_move_240:
+	ld a,l
+NAT_move_241:
+	cp 0x4C
+NAT_move_242:
+	jp nc,mv_vf7
+NAT_move_243:
+	ld a,h
+NAT_move_244:
+	cp 0x56
+NAT_move_245:
+	jp c,mv_vf2
+NAT_move_246:
+	jp mv_vf0
+mv_vf7:
+NAT_move_248:
+	cp 0x5E
+NAT_move_249:
+	jp c,mv_vf0
+NAT_move_250:
+	jp mv_vf2
+mv_vfd:
+NAT_move_252:
+	cp 0x24
+NAT_move_253:
+	jp nc,mv_vf2
+NAT_move_254:
+	cp 0x1E
+NAT_move_255:
+	jp c,mv_vf0
+NAT_move_256:
+	ld a,l
+NAT_move_257:
+	cp 0x4C
+NAT_move_258:
+	jp nc,mv_vf7
+NAT_move_259:
+	ld a,h
+NAT_move_260:
+	cp 0x22
+NAT_move_261:
+	jp c,mv_vf0
+NAT_move_262:
+	jp mv_vf2
+mv_vf0:
+NAT_move_264:
+	ld a,c
+NAT_move_265:
+	and 0xFE
+NAT_move_266:
+	ld c,a
+mv_vf2:
+NAT_move_268:
+	ld a,c
+NAT_move_269:
+	ld (0x93D9),a
+NAT_move_270:
+	ret
+Z_9A1B:
+NAT_flight_1:
+	ld hl,0x93F5
+NAT_flight_2:
+	ld (z80_ix),hl
+NAT_flight_3:
+	ld a,(hl)
+NAT_flight_4:
+	rrca
+NAT_flight_5:
+	jp nc,fl_new
+NAT_flight_6:
+	ld a,(hl)
+NAT_flight_7:
+	and 4
+NAT_flight_8:
+	jp z,fl_res
+NAT_flight_9:
+	ld a,(0x93EB)
+NAT_flight_10:
+	and 0x80
+NAT_flight_11:
+	ld a,1
+NAT_flight_12:
+	jp nz,fl_d1
+NAT_flight_13:
+	ld a,0xFF
+fl_d1:
+NAT_flight_15:
+	ld hl,0x93F4
+NAT_flight_16:
+	add a,(hl)
+NAT_flight_17:
+	ld (hl),a
+NAT_flight_18:
+	ld (0x93F2),a
+NAT_flight_19:
+	ld a,(0x93F1)
+NAT_flight_20:
+	add a,4
+NAT_flight_21:
+	ld (0x93F1),a
+NAT_flight_22:
+	ld hl,0x93F5
+NAT_flight_23:
+	ld a,(hl)
+NAT_flight_24:
+	or 2
+NAT_flight_25:
+	ld (hl),a
+NAT_flight_26:
+	ret
+fl_res:
+NAT_flight_28:
+	ld a,(0x93FC)
+NAT_flight_29:
+	ld e,a
+NAT_flight_30:
+	ld a,(0x93FD)
+NAT_flight_31:
+	ld d,a
+NAT_flight_32:
+	ld hl,(0x93F8)
+NAT_flight_33:
+	ld a,(0x93FB)
+NAT_flight_34:
 	ld b,a
-	ld a,(il_a)
-Z_9F3B:
-	jp z,Z_9F43	; 9F3B 28 06
-Z_9F3D:
-	call Z_9F48	; 9F3D CD 48 9F
-Z_9F40:
-	inc l	; 9F40 2C
-Z_9F41:
-	dec b	; 9F41 10 FA
-	jp nz,Z_9F3D
-Z_9F43:
-	ld (il_a),a	; 9F43 CB 47
-	and 0x01
-	ld a,(il_a)
-Z_9F45:
-	ret z	; 9F45 C8
-Z_9F46:
-	ld c,0xE0	; 9F46 0E E0
+NAT_flight_35:
+	ld a,(0x93FA)
+NAT_flight_36:
+	ld c,a
+NAT_flight_37:
+	call fl_step
+NAT_flight_38:
+	jp fl_hgt
+fl_new:
+NAT_flight_40:
+	ld (hl),1
+NAT_flight_41:
+	ld a,1
+NAT_flight_42:
+	ld (0x93F0),a
+NAT_flight_43:
+	ld hl,D_9B69
+NAT_flight_44:
+	ld (0x93ED),hl
+NAT_flight_45:
+	ld hl,(0x93F3)
+NAT_flight_46:
+	ld a,(0x93F1)
+NAT_flight_47:
+	ld (0x93F6),a
+NAT_flight_48:
+	sub 0x1E
+NAT_flight_49:
+	jp nc,fl_n1
+NAT_flight_50:
+	cpl
+NAT_flight_51:
+	inc a
+NAT_flight_52:
+	ld b,a
+NAT_flight_53:
+	ld a,(0x93F5)
+NAT_flight_54:
+	or 0x80
+NAT_flight_55:
+	ld (0x93F5),a
+NAT_flight_56:
+	ld a,b
+fl_n1:
+NAT_flight_58:
+	ld (0x93F7),a
+NAT_flight_59:
+	ld de,0x0554
+NAT_flight_60:
+	ld a,(0x93EB)
+NAT_flight_61:
+	and 0x80
+NAT_flight_62:
+	jp z,fl_n2
+NAT_flight_63:
+	ld d,0x39
+fl_n2:
+NAT_flight_65:
+	ld a,h
+NAT_flight_66:
+	or a
+NAT_flight_67:
+	rra
+NAT_flight_68:
+	ld h,a
+NAT_flight_69:
+	ld a,d
+NAT_flight_70:
+	sub h
+NAT_flight_71:
+	ld d,2
+NAT_flight_72:
+	jp nc,fl_n3
+NAT_flight_73:
+	cpl
+NAT_flight_74:
+	inc a
+NAT_flight_75:
+	ld d,0xFE
+fl_n3:
+NAT_flight_77:
+	ld b,a
+NAT_flight_78:
+	ld a,e
+NAT_flight_79:
+	sub l
+NAT_flight_80:
+	ld e,2
+NAT_flight_81:
+	jp nc,fl_n4
+NAT_flight_82:
+	cpl
+NAT_flight_83:
+	inc a
+NAT_flight_84:
+	ld e,0xFE
+fl_n4:
+NAT_flight_86:
+	or a
+NAT_flight_87:
+	rra
+NAT_flight_88:
+	ld c,a
+NAT_flight_89:
+	ld a,b
+NAT_flight_90:
+	cp c
+NAT_flight_91:
+	jp nc,fl_n5
+NAT_flight_92:
+	ld a,c
+fl_n5:
+NAT_flight_94:
+	ld (0x93EF),a
+NAT_flight_95:
+	or a
+NAT_flight_96:
+	rra
+NAT_flight_97:
+	ld (0x93EC),a
+NAT_flight_98:
+	call fl_setup
+fl_hgt:
+NAT_flight_100:
+	ld hl,(0x93ED)
+NAT_flight_101:
+	ld c,(hl)
+NAT_flight_102:
+	ld a,(0x93EC)
+NAT_flight_103:
+	and a
+NAT_flight_104:
+	jp z,fl_h1
+NAT_flight_105:
+	dec a
+NAT_flight_106:
+	ld (0x93EC),a
+NAT_flight_107:
+	inc hl
+NAT_flight_108:
+	jp fl_h2
+fl_h1:
+NAT_flight_110:
+	dec hl
+fl_h2:
+NAT_flight_112:
+	ld (0x93ED),hl
+NAT_flight_113:
+	ld a,(0x93F4)
+NAT_flight_114:
+	ld (0x93F2),a
+NAT_flight_115:
+	push bc
+NAT_flight_116:
+	ld a,(0x93F0)
+NAT_flight_117:
+	ld c,a
+NAT_flight_118:
+	inc a
+NAT_flight_119:
+	ld (0x93F0),a
+NAT_flight_120:
+	ld a,(0x93F7)
+NAT_flight_121:
+	ld l,a
+NAT_flight_122:
+	ld h,0
+NAT_flight_123:
+	ld b,h
+NAT_flight_124:
+	call Z_398C
+NAT_flight_125:
+	ld b,0
+NAT_flight_126:
+	ld a,(0x93EF)
+NAT_flight_127:
+	ld c,a
+NAT_flight_128:
+	call Z_39A3
+NAT_flight_129:
+	ld a,(0x93F5)
+NAT_flight_130:
+	and 0x80
+NAT_flight_131:
+	jp z,fl_h3
+NAT_flight_132:
+	ld a,l
+NAT_flight_133:
+	cpl
+NAT_flight_134:
+	inc a
+NAT_flight_135:
+	ld l,a
+fl_h3:
+NAT_flight_137:
+	ld a,(0x93F6)
+NAT_flight_138:
+	sub l
+NAT_flight_139:
+	pop bc
+NAT_flight_140:
+	sub c
+NAT_flight_141:
+	ld (0x93F1),a
+NAT_flight_142:
+	ret
+fl_setup:
+NAT_flight_144:
+	ld a,c
+NAT_flight_145:
+	cp b
+NAT_flight_146:
+	jp nc,fl_s2
+NAT_flight_147:
+	ld l,c
+NAT_flight_148:
+	ld a,e
+NAT_flight_149:
+	ld (0x93FE),a
+NAT_flight_150:
+	ld a,d
+NAT_flight_151:
+	ld (0x93FF),a
+NAT_flight_152:
+	ld e,0
+NAT_flight_153:
+	jp fl_s3
+fl_s2:
+NAT_flight_155:
+	or c
+NAT_flight_156:
+	jp z,fl_end
+NAT_flight_157:
+	ld l,b
+NAT_flight_158:
+	ld b,c
+NAT_flight_159:
+	ld a,e
+NAT_flight_160:
+	ld (0x93FE),a
+NAT_flight_161:
+	ld a,d
+NAT_flight_162:
+	ld (0x93FF),a
+NAT_flight_163:
+	ld d,0
+fl_s3:
+NAT_flight_165:
+	ld h,b
+NAT_flight_166:
+	ld a,b
+NAT_flight_167:
+	or a
+NAT_flight_168:
+	rra
+fl_step:
+NAT_flight_170:
+	add a,l
+NAT_flight_171:
+	jp c,fl_dg
+NAT_flight_172:
+	cp h
+NAT_flight_173:
+	jp nc,fl_dg
+NAT_flight_174:
+	ld c,a
+NAT_flight_175:
+	ld a,d
+NAT_flight_176:
+	ld (fl_dy),a
+NAT_flight_177:
+	ld a,e
+NAT_flight_178:
+	ld (fl_dx),a
+NAT_flight_179:
+	jp fl_mv
+fl_dg:
+NAT_flight_181:
+	sub h
+NAT_flight_182:
+	ld c,a
+NAT_flight_183:
+	ld a,(0x93FF)
+NAT_flight_184:
+	ld (fl_dy),a
+NAT_flight_185:
+	ld a,(0x93FE)
+NAT_flight_186:
+	ld (fl_dx),a
+fl_mv:
+NAT_flight_188:
+	push hl
+NAT_flight_189:
+	ld hl,0x93F4
+NAT_flight_190:
+	ld a,(fl_dy)
+NAT_flight_191:
+	add a,(hl)
+NAT_flight_192:
+	ld (hl),a
+NAT_flight_193:
+	dec hl
+NAT_flight_194:
+	ld a,(fl_dx)
+NAT_flight_195:
+	add a,(hl)
+NAT_flight_196:
+	ld (hl),a
+NAT_flight_197:
+	pop hl
+NAT_flight_198:
+	dec b
+NAT_flight_199:
+	ld a,l
+NAT_flight_200:
+	ld (0x93F8),a
+NAT_flight_201:
+	ld a,h
+NAT_flight_202:
+	ld (0x93F9),a
+NAT_flight_203:
+	ld a,c
+NAT_flight_204:
+	ld (0x93FA),a
+NAT_flight_205:
+	ld a,b
+NAT_flight_206:
+	ld (0x93FB),a
+NAT_flight_207:
+	ld a,e
+NAT_flight_208:
+	ld (0x93FC),a
+NAT_flight_209:
+	ld a,d
+NAT_flight_210:
+	ld (0x93FD),a
+NAT_flight_211:
+	ld a,b
+NAT_flight_212:
+	or a
+NAT_flight_213:
+	ret nz
+fl_end:
+NAT_flight_215:
+	ld hl,0x93F5
+NAT_flight_216:
+	ld a,(hl)
+NAT_flight_217:
+	or 4
+NAT_flight_218:
+	ld (hl),a
+NAT_flight_219:
+	ret
+Z_9BF6:
+NAT_flight_221:
+	ld hl,0x93F5
+NAT_flight_222:
+	ld (z80_ix),hl
+NAT_flight_223:
+	ld a,(hl)
+NAT_flight_224:
+	rrca
+NAT_flight_225:
+	jp c,fl_r2
+NAT_flight_226:
+	ld (hl),0x41
+NAT_flight_227:
+	call Z_386E
+NAT_flight_228:
+	push af
+NAT_flight_229:
+	call Z_386E
+NAT_flight_230:
+	and 3
+NAT_flight_231:
+	ld hl,D_9B89
+NAT_flight_232:
+	jp z,fl_r1
+NAT_flight_233:
+	ld hl,D_9B9F
+NAT_flight_234:
+	dec a
+NAT_flight_235:
+	jp z,fl_r1
+NAT_flight_236:
+	ld hl,D_9BBB
+NAT_flight_237:
+	dec a
+NAT_flight_238:
+	jp z,fl_r1
+NAT_flight_239:
+	ld hl,D_9BD7
+fl_r1:
+NAT_flight_241:
+	ld (0x93ED),hl
+NAT_flight_242:
+	pop af
+NAT_flight_243:
+	and 3
+NAT_flight_244:
+	jp z,fl_r2
+NAT_flight_245:
+	ld hl,0x93F5
+NAT_flight_246:
+	ld b,a
+NAT_flight_247:
+	ld a,(hl)
+NAT_flight_248:
+	and 0xBF
+NAT_flight_249:
+	ld (hl),a
+NAT_flight_250:
+	ld a,b
+NAT_flight_251:
+	rrca
+NAT_flight_252:
+	jp nc,fl_r2
+NAT_flight_253:
+	ld a,(hl)
+NAT_flight_254:
+	or 0x80
+NAT_flight_255:
+	ld (hl),a
+fl_r2:
+NAT_flight_257:
+	ld hl,(0x93ED)
+NAT_flight_258:
+	ld a,(0x93D6)
+NAT_flight_259:
+	and a
+NAT_flight_260:
+	jp nz,fl_r3
+NAT_flight_261:
+	ld a,(0x93F5)
+NAT_flight_262:
+	and 0x40
+NAT_flight_263:
+	jp nz,fl_r4
+fl_r3:
+NAT_flight_265:
+	ld a,(0x93F5)
+NAT_flight_266:
+	and 0x80
+NAT_flight_267:
+	ld a,(hl)
+NAT_flight_268:
+	jp z,fl_r5
+NAT_flight_269:
+	cpl
+NAT_flight_270:
+	inc a
+fl_r5:
+NAT_flight_272:
+	push hl
+NAT_flight_273:
+	ld hl,0x93F3
+NAT_flight_274:
+	add a,(hl)
+NAT_flight_275:
+	ld (hl),a
+NAT_flight_276:
+	pop hl
+fl_r4:
+NAT_flight_278:
+	inc hl
+NAT_flight_279:
+	ld a,(0x93EB)
+NAT_flight_280:
+	and 0x80
+NAT_flight_281:
+	ld a,(hl)
+NAT_flight_282:
+	jp z,fl_r6
+NAT_flight_283:
+	cpl
+NAT_flight_284:
+	inc a
+fl_r6:
+NAT_flight_286:
+	push hl
+NAT_flight_287:
+	ld hl,0x93F4
+NAT_flight_288:
+	add a,(hl)
+NAT_flight_289:
+	ld (hl),a
+NAT_flight_290:
+	ld (0x93F2),a
+NAT_flight_291:
+	pop hl
+NAT_flight_292:
+	inc hl
+NAT_flight_293:
+	ld a,(hl)
+NAT_flight_294:
+	push hl
+NAT_flight_295:
+	ld hl,0x93F1
+NAT_flight_296:
+	add a,(hl)
+NAT_flight_297:
+	ld (hl),a
+NAT_flight_298:
+	pop hl
+NAT_flight_299:
+	inc hl
+NAT_flight_300:
+	ld (0x93ED),hl
+NAT_flight_301:
+	ld a,(hl)
+NAT_flight_302:
+	inc a
+NAT_flight_303:
+	ret nz
+NAT_flight_304:
+	ld a,(0x93F5)
+NAT_flight_305:
+	or 2
+NAT_flight_306:
+	ld (0x93F5),a
+NAT_flight_307:
+	ret
+fl_dy:
+NAT_flight_309:
+	db 0
+fl_dx:
+NAT_flight_311:
+	db 0
 Z_9F48:
 	jp 0x02CE	; 9F48 C3 CE 02
-Z_9F60:
-	ld hl,Z_9F6E	; 9F60 21 6E 9F
-Z_9F63:
-	ld (Z_3705+1),hl	; 9F63 22 06 37
-Z_9F66:
-	ret	; 9F66 C9
-Z_9F67:
-	ld hl,Z_9F6D	; 9F67 21 6D 9F
-Z_9F6A:
-	ld (Z_3705+1),hl	; 9F6A 22 06 37
-Z_9F6D:
-	ret	; 9F6D C9
-Z_9F6E:
-	call Z_3715	; 9F6E CD 15 37
-Z_9F71:
-	ld a,(D_93E6)	; 9F71 3A E6 93
-Z_9F74:
-	inc a	; 9F74 3C
-Z_9F75:
-	cp 0x32	; 9F75 FE 32
-Z_9F77:
-	jp c,Z_9F7A	; 9F77 38 01
-Z_9F79:
-	xor a	; 9F79 AF
-Z_9F7A:
-	ld (D_93E6),a	; 9F7A 32 E6 93
-Z_9F7D:
-	ret c	; 9F7D D8
-Z_9F7E:
-	ld a,0x2F	; 9F7E 3E 2F
-Z_9F80:
-	ld hl,D_93E9	; 9F80 21 E9 93
-Z_9F83:
-	dec (hl)	; 9F83 35
-Z_9F84:
-	cp (hl)	; 9F84 BE
-Z_9F85:
-	ret nz	; 9F85 C0
-Z_9F86:
-	ld (hl),0x39	; 9F86 36 39
-Z_9F88:
-	dec hl	; 9F88 2B
-Z_9F89:
-	dec (hl)	; 9F89 35
-Z_9F8A:
-	cp (hl)	; 9F8A BE
-Z_9F8B:
-	ret nz	; 9F8B C0
-Z_9F8C:
-	ld (hl),0x35	; 9F8C 36 35
-Z_9F8E:
-	dec hl	; 9F8E 2B
-Z_9F8F:
-	dec (hl)	; 9F8F 35
-Z_9F90:
-	cp (hl)	; 9F90 BE
-Z_9F91:
-	ret nz	; 9F91 C0
-Z_9F92:
-	ld a,0x01	; 9F92 3E 01
-Z_9F94:
-	ld (D_93E5),a	; 9F94 32 E5 93
-Z_9F97:
-	jp Z_9F67	; 9F97 C3 67 9F
 Z_9F9A:
 	ld a,(D_93E5)	; 9F9A 3A E5 93
 Z_9F9D:
@@ -9616,16 +10664,6 @@ Z_A019:
 	call Z_A01F	; A019 CD 1F A0
 Z_A01C:
 	ld hl,0x1414	; A01C 21 14 14
-	jp	Z_A01F	; мост в следующий кусок
-	org	0xA06F
-D_A06F:
-Z_A06F:
-	db	0x83, 0xF8, 0xF5, 0xC5, 0xD5, 0xE5, 0xCD, 0xEB, 0xD8, 0xE1, 0xD1, 0xC1, 0xF1, 0xC9, 0xD8, 0xE1	; A06F
-	org	0xA07F
-D_A07F:
-Z_A07F:
-	db	0xD1, 0xC1, 0xF1, 0xC9, 0xBE, 0xA0, 0x18, 0xF6, 0xE5, 0xD5, 0x6F, 0x26, 0x00	; A07F
-	org	0xA08C
 Z_A01F:
 	ld (TEXT_ROW),hl	; A01F 22 02 41
 Z_A022:
@@ -9650,16 +10688,6 @@ Z_A02F:
 	ld h,0x00	; A02F 26 00
 Z_A031:
 	ld b,0xFF	; A031 06 FF
-	jp	Z_A033	; мост в следующий кусок
-	org	0xA0A4
-D_A0A4:
-Z_A0A4:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A0A4
-	org	0xA0AD
-D_A0AD:
-Z_A0AD:
-	db	0xC3, 0x5F, 0xA7	; A0AD
-	org	0xA0B0
 Z_A033:
 	ld e,0x30	; A033 1E 30
 Z_A035:
@@ -9688,8 +10716,6 @@ Z_A049:
 	ld c,0xF6	; A049 0E F6
 Z_A04B:
 	call Z_A055	; A04B CD 55 A0
-	jp	Z_A04E	; мост в следующий кусок
-	org	0xA133
 Z_A04E:
 	ld a,l	; A04E 7D
 Z_A04F:
@@ -9735,12 +10761,6 @@ Z_A065:
 	push de	; A065 D5
 Z_A066:
 	push hl	; A066 E5
-	jp	Z_A067	; мост в следующий кусок
-	org	0xA15C
-D_A15C:
-Z_A15C:
-	db	0x00, 0x00, 0x00, 0x00	; A15C
-	org	0xA160
 Z_A067:
 	call Z_3B53	; A067 CD 53 3B
 Z_A06A:
@@ -9798,11 +10818,6 @@ Z_A0BC:
 	jp nz,Z_A0B4
 Z_A0BE:
 	ret	; A0BE C9
-	org	0xA1A4
-D_A1A4:
-Z_A1A4:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A1A4
-	org	0xA1AA
 Z_A0BF:
 	ld (il_tmp),hl	; A0BF DD 21 14 33
 	ld hl,D_3314
@@ -9924,22 +10939,18 @@ Z_A181:
 	ld hl,0x03
 	ld (z80_ix),hl
 	ld hl,(il_tmp)
+	jp	Z_A185	; мост в следующий кусок
+	org	0xA06F
+D_A06F:
+Z_A06F:
+	db	0x83, 0xF8, 0xF5, 0xC5, 0xD5, 0xE5, 0xCD, 0xEB, 0xD8, 0xE1, 0xD1, 0xC1, 0xF1, 0xC9, 0xD8, 0xE1	; A06F
+	org	0xA07F
+D_A07F:
+Z_A07F:
+	db	0xD1, 0xC1, 0xF1, 0xC9, 0xBE, 0xA0, 0x18, 0xF6, 0xE5, 0xD5, 0x6F, 0x26, 0x00	; A07F
+	org	0xA08C
 Z_A185:
 	ret	; A185 C9
-Z_A186:
-	ld a,(0x0FED)	; A186 3A ED 0F
-Z_A189:
-	dec a	; A189 3D
-Z_A18A:
-	ret z	; A18A C8
-Z_A18B:
-	ld hl,(0x4114)	; A18B 2A 14 41
-Z_A18E:
-	inc hl	; A18E 23
-Z_A18F:
-	ld (0x4114),hl	; A18F 22 14 41
-Z_A192:
-	ret	; A192 C9
 Z_A193:
 	push hl	; A193 E5
 Z_A194:
@@ -9960,22 +10971,34 @@ Z_A1A1:
 	jp Z_B1F2	; A1A1 C3 F2 B1
 Z_A1AA:
 	ld a,(D_93E5)	; A1AA 3A E5 93
+	jp	Z_A1AD	; мост в следующий кусок
+	org	0xA0A4
+D_A0A4:
+Z_A0A4:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A0A4
+	org	0xA0AD
+D_A0AD:
+Z_A0AD:
+	db	0xC3, 0x5F, 0xA7	; A0AD
+	org	0xA0B0
 Z_A1AD:
-	jp c,il_KC13	; A1AD CB 7F
+	jp c,il_KC5	; A1AD CB 7F
 	ld (il_a),a
 	and 0x80
 	ld a,(il_a)
-	jp il_KD14
-il_KC13:
+	jp il_KD6
+il_KC5:
 	ld (il_a),a
 	and 0x80
 	scf
 	ld a,(il_a)
-il_KD14:
+il_KD6:
 Z_A1AF:
 	jp z,Z_A1BD	; A1AF 28 0C
 Z_A1B1:
 	ld hl,0x0806	; A1B1 21 06 08
+	jp	Z_A1B4	; мост в следующий кусок
+	org	0xA133
 Z_A1B4:
 	ld de,D_A37B	; A1B4 11 7B A3
 Z_A1B7:
@@ -10012,6 +11035,12 @@ Z_A1D7:
 	nop	; A1D7 00
 Z_A1D8:
 	nop	; A1D8 00
+	jp	Z_A1D9	; мост в следующий кусок
+	org	0xA15C
+D_A15C:
+Z_A15C:
+	db	0x00, 0x00, 0x00, 0x00	; A15C
+	org	0xA160
 Z_A1D9:
 	nop	; A1D9 00
 Z_A1DA:
@@ -10059,6 +11088,12 @@ Z_A20B:
 	ld a,0x17	; A20B 3E 17
 Z_A20D:
 	call Z_A75F	; A20D CD 5F A7
+	jp	Z_A210	; мост в следующий кусок
+	org	0xA1A4
+D_A1A4:
+Z_A1A4:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A1A4
+	org	0xA1AA
 Z_A210:
 	ld (il_tmp),hl	; A210 DD 21 25 94
 	ld hl,D_9425
@@ -10174,64 +11209,6 @@ Z_A294:
 	call Z_A472	; A294 CD 72 A4
 Z_A297:
 	inc l	; A297 2C
-	jp	Z_A298	; мост в следующий кусок
-	org	0xA362
-D_A362:
-Z_A362:
-	db	0x46, 0x4F, 0x55, 0x4C, 0x45, 0x44, 0x20, 0x4F, 0x55, 0x54, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20	; A362
-	org	0xA372
-D_A372:
-Z_A372:
-	db	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xFF	; A372
-	org	0xA37B
-D_A37B:
-Z_A37B:
-	db	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20	; A37B
-	org	0xA38B
-D_A38B:
-Z_A38B:
-	db	0xFF, 0x20, 0x20, 0x47, 0x41, 0x4D, 0x45, 0x20, 0x20, 0x20, 0x4F, 0x56, 0x45, 0x52, 0x20, 0x20	; A38B
-	org	0xA39B
-D_A39B:
-Z_A39B:
-	db	0x20, 0xFF, 0x20, 0x20, 0x20, 0x20, 0x4F, 0x4E, 0x20, 0x46, 0x4F, 0x55, 0x4C, 0x53, 0x20, 0x20	; A39B
-	org	0xA3AB
-D_A3AB:
-Z_A3AB:
-	db	0x20, 0x20, 0xFF, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20	; A3AB
-	org	0xA3BB
-D_A3BB:
-Z_A3BB:
-	db	0x20, 0x20, 0x20, 0xFF	; A3BB
-	org	0xA3BF
-D_A3BF:
-Z_A3BF:
-	db	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xFF, 0x20, 0x20, 0x54, 0x49	; A3BF
-	org	0xA3CF
-D_A3CF:
-Z_A3CF:
-	db	0x4D, 0x45, 0x20, 0x21, 0x21, 0x20, 0x20, 0xFF, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20	; A3CF
-	org	0xA3DF
-D_A3DF:
-Z_A3DF:
-	db	0x20, 0x20, 0x20, 0xFF	; A3DF
-	org	0xA3E3
-D_A3E3:
-Z_A3E3:
-	db	0x20, 0x42, 0x41, 0x53, 0x4B, 0x45, 0x54, 0x53, 0x20, 0xFF, 0x20, 0x46, 0x4F, 0x55, 0x4C, 0x53	; A3E3
-	org	0xA3F3
-D_A3F3:
-Z_A3F3:
-	db	0x20, 0x20, 0x20, 0x20, 0x20, 0xFF, 0x20, 0x46, 0x52, 0x45, 0x45, 0x20, 0x54, 0x48, 0x52, 0x4F	; A3F3
-	org	0xA403
-D_A403:
-Z_A403:
-	db	0x57, 0x53, 0x20, 0xFF, 0x20, 0x42, 0x4F, 0x41, 0x52, 0x44, 0x53, 0x20, 0xFF, 0x20, 0x54, 0x48	; A403
-	org	0xA413
-D_A413:
-Z_A413:
-	db	0x52, 0x45, 0x45, 0x53, 0x20, 0xFF	; A413
-	org	0xA419
 Z_A298:
 	call Z_9397	; A298 CD 97 93
 Z_A29B:
@@ -10333,16 +11310,6 @@ Z_A30D:
 	db 0x12
 Z_A310:
 	call Z_93C1	; A310 CD C1 93
-	jp	Z_A313	; мост в следующий кусок
-	org	0xA494
-D_A494:
-Z_A494:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A494
-	org	0xA49F
-D_A49F:
-Z_A49F:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A49F
-	org	0xA4A8
 Z_A313:
 	ld a,0x2F	; A313 3E 2F
 Z_A315:
@@ -10384,12 +11351,6 @@ Z_A33A:
 	call Z_9376	; A33A CD 76 93
 Z_A33D:
 	pop af	; A33D F1
-	jp	Z_A33E	; мост в следующий кусок
-	org	0xA4DB
-D_A4DB:
-Z_A4DB:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC9	; A4DB
-	org	0xA4E7
 Z_A33E:
 	dec b	; A33E 10 F9
 	jp nz,Z_A339
@@ -10447,12 +11408,6 @@ Z_A422:
 	ld (D_9427),hl	; A422 22 27 94
 Z_A425:
 	ld a,0x10	; A425 3E 10
-	jp	Z_A427	; мост в следующий кусок
-	org	0xA535
-D_A535:
-Z_A535:
-	db	0x00, 0x00, 0x00, 0x00, 0x00	; A535
-	org	0xA53A
 Z_A427:
 	ld (D_940B),a	; A427 32 0B 94
 Z_A42A:
@@ -10501,6 +11456,64 @@ Z_A45D:
 	ld (D_940A),a	; A45D 32 0A 94
 Z_A460:
 	ld a,0x04	; A460 3E 04
+	jp	Z_A462	; мост в следующий кусок
+	org	0xA362
+D_A362:
+Z_A362:
+	db	0x46, 0x4F, 0x55, 0x4C, 0x45, 0x44, 0x20, 0x4F, 0x55, 0x54, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20	; A362
+	org	0xA372
+D_A372:
+Z_A372:
+	db	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xFF	; A372
+	org	0xA37B
+D_A37B:
+Z_A37B:
+	db	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20	; A37B
+	org	0xA38B
+D_A38B:
+Z_A38B:
+	db	0xFF, 0x20, 0x20, 0x47, 0x41, 0x4D, 0x45, 0x20, 0x20, 0x20, 0x4F, 0x56, 0x45, 0x52, 0x20, 0x20	; A38B
+	org	0xA39B
+D_A39B:
+Z_A39B:
+	db	0x20, 0xFF, 0x20, 0x20, 0x20, 0x20, 0x4F, 0x4E, 0x20, 0x46, 0x4F, 0x55, 0x4C, 0x53, 0x20, 0x20	; A39B
+	org	0xA3AB
+D_A3AB:
+Z_A3AB:
+	db	0x20, 0x20, 0xFF, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20	; A3AB
+	org	0xA3BB
+D_A3BB:
+Z_A3BB:
+	db	0x20, 0x20, 0x20, 0xFF	; A3BB
+	org	0xA3BF
+D_A3BF:
+Z_A3BF:
+	db	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xFF, 0x20, 0x20, 0x54, 0x49	; A3BF
+	org	0xA3CF
+D_A3CF:
+Z_A3CF:
+	db	0x4D, 0x45, 0x20, 0x21, 0x21, 0x20, 0x20, 0xFF, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20	; A3CF
+	org	0xA3DF
+D_A3DF:
+Z_A3DF:
+	db	0x20, 0x20, 0x20, 0xFF	; A3DF
+	org	0xA3E3
+D_A3E3:
+Z_A3E3:
+	db	0x20, 0x42, 0x41, 0x53, 0x4B, 0x45, 0x54, 0x53, 0x20, 0xFF, 0x20, 0x46, 0x4F, 0x55, 0x4C, 0x53	; A3E3
+	org	0xA3F3
+D_A3F3:
+Z_A3F3:
+	db	0x20, 0x20, 0x20, 0x20, 0x20, 0xFF, 0x20, 0x46, 0x52, 0x45, 0x45, 0x20, 0x54, 0x48, 0x52, 0x4F	; A3F3
+	org	0xA403
+D_A403:
+Z_A403:
+	db	0x57, 0x53, 0x20, 0xFF, 0x20, 0x42, 0x4F, 0x41, 0x52, 0x44, 0x53, 0x20, 0xFF, 0x20, 0x54, 0x48	; A403
+	org	0xA413
+D_A413:
+Z_A413:
+	db	0x52, 0x45, 0x45, 0x53, 0x20, 0xFF	; A413
+	org	0xA419
 Z_A462:
 	ld (D_9424),a	; A462 32 24 94
 Z_A465:
@@ -10586,7 +11599,7 @@ Z_A4FD:
 Z_A4FF:
 	jp Z_3A2C	; A4FF C3 2C 3A
 Z_A502:
-	call CROWD_TICK	; A502 CD BA 74
+	call CROWD_TICK	; A502 CD 1A 76
 Z_A505:
 	and 0x0F	; A505 E6 0F
 Z_A507:
@@ -10595,18 +11608,28 @@ Z_A509:
 	ret nz	; A509 C0
 Z_A50A:
 	ld a,(D_9451)	; A50A 3A 51 94
+	jp	Z_A50D	; мост в следующий кусок
+	org	0xA494
+D_A494:
+Z_A494:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A494
+	org	0xA49F
+D_A49F:
+Z_A49F:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A49F
+	org	0xA4A8
 Z_A50D:
-	jp c,il_KC15	; A50D CB 47
+	jp c,il_KC7	; A50D CB 47
 	ld (il_a),a
 	and 0x01
 	ld a,(il_a)
-	jp il_KD16
-il_KC15:
+	jp il_KD8
+il_KC7:
 	ld (il_a),a
 	and 0x01
 	scf
 	ld a,(il_a)
-il_KD16:
+il_KD8:
 Z_A50F:
 	ret nz	; A50F C0
 Z_A510:
@@ -10629,6 +11652,12 @@ Z_A51B:
 Z_A51E:
 	ld hl,0x0110	; A51E 21 10 01
 	jp 0xA521
+	jp	Z_A53A	; мост в следующий кусок
+	org	0xA4DB
+D_A4DB:
+Z_A4DB:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC9	; A4DB
+	org	0xA4E7
 Z_A53A:
 	ld a,0x01	; A53A 3E 01
 Z_A53C:
@@ -10673,6 +11702,12 @@ Z_A61E:
 	ld hl,0x58	; A61E 21 58 00
 Z_A621:
 	ld (D_3308),hl	; A621 22 08 33
+	jp	Z_A624	; мост в следующий кусок
+	org	0xA535
+D_A535:
+Z_A535:
+	db	0x00, 0x00, 0x00, 0x00, 0x00	; A535
+	org	0xA53A
 Z_A624:
 	ld l,0x14	; A624 2E 14
 Z_A626:
@@ -10885,12 +11920,6 @@ Z_A721:
 	ld hl,0x080E	; A721 21 0E 08
 Z_A724:
 	ld (TEXT_ROW),hl	; A724 22 02 41
-	jp	Z_A727	; мост в следующий кусок
-	org	0xA759
-D_A759:
-Z_A759:
-	db	0xCD, 0x47, 0xAC, 0xC3, 0x18, 0xA6	; A759
-	org	0xA75F
 Z_A727:
 	ld hl,0x09	; A727 21 09 00
 Z_A72A:
@@ -10948,63 +11977,6 @@ Z_A756:
 	jp nz,Z_A752	; A756 20 FA
 Z_A758:
 	ret	; A758 C9
-	org	0xA797
-D_A797:
-Z_A797:
-	db	0x31, 0x20, 0x50, 0x4C, 0x41, 0x59, 0x45, 0x52, 0x20, 0xFF, 0x32, 0x20, 0x50, 0x4C, 0x41, 0x59	; A797
-	org	0xA7A7
-D_A7A7:
-Z_A7A7:
-	db	0x45, 0x52, 0x53, 0x20, 0x20, 0xFF	; A7A7
-	org	0xA7AD
-D_A7AD:
-Z_A7AD:
-	db	0x33, 0x20, 0x4C, 0x45, 0x56, 0x45, 0x4C, 0x20, 0xFF, 0x34, 0x20, 0x43, 0x48, 0x41, 0x4E, 0x47	; A7AD
-	org	0xA7BD
-D_A7BD:
-Z_A7BD:
-	db	0x45, 0x20, 0x4E, 0x41, 0x4D, 0x45, 0x53, 0x20, 0x20, 0x20, 0xFF, 0x20, 0x20, 0x20, 0x20, 0x20	; A7BD
-	org	0xA7CD
-D_A7CD:
-Z_A7CD:
-	db	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xFF	; A7CD
-	org	0xA7DA
-D_A7DA:
-Z_A7DA:
-	db	0x52, 0x4F, 0x4F, 0x4B, 0x49, 0x45, 0x20, 0xFF	; A7DA
-	org	0xA7E2
-D_A7E2:
-Z_A7E2:
-	db	0x41, 0x4D, 0x41, 0x54, 0x45, 0x55, 0x52, 0xFF	; A7E2
-	org	0xA7EA
-D_A7EA:
-Z_A7EA:
-	db	0x4E, 0x42, 0x41, 0x20, 0x20, 0x20, 0x20, 0xFF	; A7EA
-	org	0xA7F2
-D_A7F2:
-Z_A7F2:
-	db	0x4D, 0x41, 0x52, 0x54, 0x49, 0x4E, 0x20, 0x46, 0x2E, 0x20, 0xFF	; A7F2
-	org	0xA7FD
-D_A7FD:
-Z_A7FD:
-	db	0x50, 0x4C, 0x41, 0x59, 0x45, 0x52, 0x20, 0x32, 0x20, 0x20, 0xFF	; A7FD
-	org	0xA808
-D_A808:
-Z_A808:
-	db	0x4C, 0x45, 0x46, 0x54, 0x20, 0x43, 0x4F, 0x55, 0x52, 0x54, 0x3A, 0x20, 0x20, 0x20, 0x20, 0x20	; A808
-	org	0xA818
-D_A818:
-Z_A818:
-	db	0x20, 0xFF	; A818
-	org	0xA81A
-D_A81A:
-Z_A81A:
-	db	0x52, 0x49, 0x47, 0x48, 0x54, 0x20, 0x43, 0x4F, 0x55, 0x52, 0x54, 0x3A, 0x20, 0x20, 0x20, 0x20	; A81A
-	org	0xA82A
-D_A82A:
-Z_A82A:
-	db	0x20, 0xFF	; A82A
-	org	0xA82C
 Z_A75F:
 	ld (D_3424),a	; A75F 32 24 34
 Z_A762:
@@ -11064,17 +12036,17 @@ Z_A83D:
 Z_A840:
 	ld a,(D_9400)	; A840 3A 00 94
 Z_A843:
-	jp c,il_KC17	; A843 CB 7F
+	jp c,il_KC9	; A843 CB 7F
 	ld (il_a),a
 	and 0x80
 	ld a,(il_a)
-	jp il_KD18
-il_KC17:
+	jp il_KD10
+il_KC9:
 	ld (il_a),a
 	and 0x80
 	scf
 	ld a,(il_a)
-il_KD18:
+il_KD10:
 Z_A845:
 	jp z,Z_A849	; A845 28 02
 Z_A847:
@@ -11092,7 +12064,7 @@ Z_A854:
 Z_A856:
 	call Z_A75F	; A856 CD 5F A7
 Z_A859:
-	call RING_REPLAY	; A859 CD 1C 75
+	call RING_REPLAY	; A859 CD 7C 76
 Z_A85C:
 	nop	; A85C 00
 Z_A85D:
@@ -11119,40 +12091,18 @@ Z_A872:
 	ld a,(D_9400)	; A872 3A 00 94
 Z_A875:
 	ld (D_3333),a	; A875 32 33 33
-	jp	Z_A878	; мост в следующий кусок
-	org	0xA8CB
-D_A8CB:
-Z_A8CB:
-	db	0x3C, 0xE6, 0x01, 0x32, 0xCA, 0xD0, 0xC8, 0x01, 0x03, 0x00, 0x3A, 0xCB, 0xD0, 0xCB, 0x7F, 0x28	; A8CB
-	org	0xA8DB
-D_A8DB:
-Z_A8DB:
-	db	0x02, 0x0E, 0x1C, 0x11, 0x4F, 0x1E, 0x21, 0x98, 0xC3, 0x09, 0x01, 0x20, 0x08, 0x1A, 0x2F, 0x77	; A8DB
-	org	0xA8EB
-D_A8EB:
-Z_A8EB:
-	db	0x13, 0x78, 0x06, 0x00, 0x09, 0x47, 0x10, 0xF5, 0xC9	; A8EB
-	org	0xA8F7
-D_A8F7:
-Z_A8F7:
-	db	0xC3, 0x11	; A8F7
-	org	0xA8F9
-D_A8F9:
-Z_A8F9:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A8F9
-	org	0xA909
 Z_A878:
-	jp c,il_KC19	; A878 CB 7F
+	jp c,il_KC11	; A878 CB 7F
 	ld (il_a),a
 	and 0x80
 	ld a,(il_a)
-	jp il_KD20
-il_KC19:
+	jp il_KD12
+il_KC11:
 	ld (il_a),a
 	and 0x80
 	scf
 	ld a,(il_a)
-il_KD20:
+il_KD12:
 Z_A87A:
 	ld hl,0x00	; A87A 21 00 00
 Z_A87D:
@@ -11164,9 +12114,9 @@ Z_A881:
 Z_A884:
 	call Z_A991	; A884 CD 91 A9
 Z_A887:
-	call REPLAY_STATE_BEGIN	; A887 CD 4C 14
+	call REPLAY_STATE_BEGIN	; A887 CD E7 13
 Z_A88A:
-	call REPLAY_SCENE	; A88A CD 4F 14
+	call REPLAY_SCENE	; A88A CD EA 13
 Z_A88D:
 	call Z_A8F4	; A88D CD F4 A8
 Z_A890:
@@ -11182,9 +12132,15 @@ Z_A899:
 Z_A89B:
 	call Z_A991	; A89B CD 91 A9
 Z_A89E:
-	call REPLAY_STATE_BEGIN	; A89E CD 4C 14
+	call REPLAY_STATE_BEGIN	; A89E CD E7 13
+	jp	Z_A8A1	; мост в следующий кусок
+	org	0xA759
+D_A759:
+Z_A759:
+	db	0xCD, 0x47, 0xAC, 0xC3, 0x18, 0xA6	; A759
+	org	0xA75F
 Z_A8A1:
-	call REPLAY_SCENE	; A8A1 CD 4F 14
+	call REPLAY_SCENE	; A8A1 CD EA 13
 Z_A8A4:
 	call Z_A8C8	; A8A4 CD C8 A8
 Z_A8A7:
@@ -11201,38 +12157,14 @@ Z_A8B4:
 	inc a	; A8B4 3C
 Z_A8B5:
 	ld hl,0x1B40	; A8B5 21 40 1B
-	jp	Z_A8B8	; мост в следующий кусок
-	org	0xA965
-D_A965:
-Z_A965:
-	db	0x00, 0x00, 0x00, 0x00	; A965
-	org	0xA969
 Z_A8B8:
 	ld de,D_93EB	; A8B8 11 EB 93
-	jp	Z_A8BB	; мост в следующий кусок
-	org	0xA971
-D_A971:
-Z_A971:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A971
-	org	0xA981
-D_A981:
-Z_A981:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A981
-	org	0xA994
-D_A994:
-Z_A994:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A994
-	org	0xA9A4
-D_A9A4:
-Z_A9A4:
-	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A9A4
-	org	0xA9AD
 Z_A8BB:
 	ld bc,0x4F	; A8BB 01 4F 00
 Z_A8BE:
 	call il_ldir	; A8BE ED B0
 Z_A8C0:
-	call 0x08DE	; A8C0 CD DE 08
+	call 0x08EB	; A8C0 CD EB 08
 Z_A8C3:
 	xor a	; A8C3 AF
 Z_A8C4:
@@ -11240,81 +12172,73 @@ Z_A8C4:
 Z_A8C7:
 	ret	; A8C7 C9
 Z_A8C8:
-	jp 0x0903	; A8C8 C3 03 09
+	jp 0x0910	; A8C8 C3 10 09
 Z_A8F4:
-	jp 0x0885	; A8F4 C3 85 08
+	jp 0x088F	; A8F4 C3 8F 08
 Z_A95E:
 	xor a	; A95E AF
-	jp	Z_A95F	; мост в следующий кусок
-	org	0xA9C7
-D_A9C7:
-Z_A9C7:
-	db	0x3A, 0x00, 0x94, 0xA7, 0xC0, 0xED, 0x5B, 0xD4, 0x93, 0x21, 0xEB, 0x93, 0x01, 0x4F, 0x00, 0xED	; A9C7
-	org	0xA9D7
-D_A9D7:
-Z_A9D7:
-	db	0xB0, 0x21, 0xE1, 0x1F, 0xED, 0x52, 0x30, 0x0B, 0x11, 0x8F, 0x1B, 0x21, 0xDE, 0x1B, 0x01, 0x52	; A9D7
-	org	0xA9E7
-D_A9E7:
-Z_A9E7:
-	db	0x04, 0xED, 0xB0, 0xED, 0x53, 0xD4, 0x70, 0x60, 0xFF, 0x80, 0x1F, 0x00, 0x0F, 0x80, 0xFF, 0xF0	; A9E7
-	org	0xA9F7
-D_A9F7:
-Z_A9F7:
-	db	0x7F, 0x28, 0x06, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0xE0, 0x00, 0xFF, 0x1F, 0xFF, 0x03	; A9F7
-	org	0xAA07
-D_AA07:
-Z_AA07:
-	db	0x90, 0x00, 0xFC, 0x0F, 0xFF, 0x04, 0x50, 0x00, 0xF8, 0x0F, 0xFF, 0x0B, 0x3E, 0x00, 0xF0, 0x01	; AA07
-	org	0xAA17
-D_AA17:
-Z_AA17:
-	db	0xFF, 0x0C, 0xBF, 0x00, 0xF3, 0x00, 0xFF, 0x01, 0x9F, 0x00, 0xFE, 0x00, 0xFF, 0x01, 0x93, 0x80	; AA17
-	org	0xAA27
-D_AA27:
-Z_AA27:
-	db	0xFE, 0x00, 0x7F, 0x01, 0x99, 0x00, 0xFE, 0x00, 0xFF, 0x01, 0x9A, 0x00, 0xFE, 0x01, 0xFF, 0x01	; AA27
-	org	0xAA37
-D_AA37:
-Z_AA37:
-	db	0x91, 0x00, 0xFE, 0x00, 0xFF, 0x01, 0x91, 0x00, 0xFE, 0x00, 0xFF, 0x01, 0x2E, 0x00, 0xFE, 0x01	; AA37
-	org	0xAA47
-D_AA47:
-Z_AA47:
-	db	0xFF, 0x01, 0x21, 0x00, 0xFE, 0x00, 0xFF, 0x02, 0x20, 0x80, 0xFC, 0x00, 0x7F, 0x02, 0x30, 0x80	; AA47
-	org	0xAA57
-D_AA57:
-Z_AA57:
-	db	0xFC, 0x00, 0x7F, 0x02, 0x3F, 0x00, 0xFC, 0x00, 0xFF, 0x01, 0xCA, 0x00, 0xFE, 0x01, 0xFF, 0x01	; AA57
-	org	0xAA67
-D_AA67:
-Z_AA67:
-	db	0x02, 0x00, 0xFE, 0x01, 0xFF, 0x01, 0x04, 0x00, 0xFE, 0x03, 0xFF, 0x00, 0x84, 0x00, 0xFF, 0x03	; AA67
-	org	0xAA77
-D_AA77:
-Z_AA77:
-	db	0xFF, 0x00, 0xFC, 0x18, 0x6F	; AA77
-	org	0xAA7E
-D_AA7E:
-Z_AA7E:
-	db	0x18, 0x57	; AA7E
-	org	0xAA82
-D_AA82:
-Z_AA82:
-	db	0x00	; AA82
-	org	0xAA83
-D_AA83:
-Z_AA83:
-	db	0x05	; AA83
-	org	0xAA84
-D_AA84:
-Z_AA84:
-	db	0x00	; AA84
-	org	0xAA85
 Z_A95F:
 	ld (D_93D3),a	; A95F 32 D3 93
+	jp	Z_A962	; мост в следующий кусок
+	org	0xA797
+D_A797:
+Z_A797:
+	db	0x31, 0x20, 0x50, 0x4C, 0x41, 0x59, 0x45, 0x52, 0x20, 0xFF, 0x32, 0x20, 0x50, 0x4C, 0x41, 0x59	; A797
+	org	0xA7A7
+D_A7A7:
+Z_A7A7:
+	db	0x45, 0x52, 0x53, 0x20, 0x20, 0xFF	; A7A7
+	org	0xA7AD
+D_A7AD:
+Z_A7AD:
+	db	0x33, 0x20, 0x4C, 0x45, 0x56, 0x45, 0x4C, 0x20, 0xFF, 0x34, 0x20, 0x43, 0x48, 0x41, 0x4E, 0x47	; A7AD
+	org	0xA7BD
+D_A7BD:
+Z_A7BD:
+	db	0x45, 0x20, 0x4E, 0x41, 0x4D, 0x45, 0x53, 0x20, 0x20, 0x20, 0xFF, 0x20, 0x20, 0x20, 0x20, 0x20	; A7BD
+	org	0xA7CD
+D_A7CD:
+Z_A7CD:
+	db	0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xFF	; A7CD
+	org	0xA7DA
+D_A7DA:
+Z_A7DA:
+	db	0x52, 0x4F, 0x4F, 0x4B, 0x49, 0x45, 0x20, 0xFF	; A7DA
+	org	0xA7E2
+D_A7E2:
+Z_A7E2:
+	db	0x41, 0x4D, 0x41, 0x54, 0x45, 0x55, 0x52, 0xFF	; A7E2
+	org	0xA7EA
+D_A7EA:
+Z_A7EA:
+	db	0x4E, 0x42, 0x41, 0x20, 0x20, 0x20, 0x20, 0xFF	; A7EA
+	org	0xA7F2
+D_A7F2:
+Z_A7F2:
+	db	0x4D, 0x41, 0x52, 0x54, 0x49, 0x4E, 0x20, 0x46, 0x2E, 0x20, 0xFF	; A7F2
+	org	0xA7FD
+D_A7FD:
+Z_A7FD:
+	db	0x50, 0x4C, 0x41, 0x59, 0x45, 0x52, 0x20, 0x32, 0x20, 0x20, 0xFF	; A7FD
+	org	0xA808
+D_A808:
+Z_A808:
+	db	0x4C, 0x45, 0x46, 0x54, 0x20, 0x43, 0x4F, 0x55, 0x52, 0x54, 0x3A, 0x20, 0x20, 0x20, 0x20, 0x20	; A808
+	org	0xA818
+D_A818:
+Z_A818:
+	db	0x20, 0xFF	; A818
+	org	0xA81A
+D_A81A:
+Z_A81A:
+	db	0x52, 0x49, 0x47, 0x48, 0x54, 0x20, 0x43, 0x4F, 0x55, 0x52, 0x54, 0x3A, 0x20, 0x20, 0x20, 0x20	; A81A
+	org	0xA82A
+D_A82A:
+Z_A82A:
+	db	0x20, 0xFF	; A82A
+	org	0xA82C
 Z_A962:
-	jp RING_RESET	; A962 C3 11 75
+	jp RING_RESET	; A962 C3 71 76
 Z_A969:
 	ld a,(D_9400)	; A969 3A 00 94
 Z_A96C:
@@ -11322,9 +12246,9 @@ Z_A96C:
 Z_A96D:
 	ret nz	; A96D C0
 Z_A96E:
-	jp RING_PUSH	; A96E C3 E8 74
+	jp RING_PUSH	; A96E C3 48 76
 Z_A991:
-	jp RING_PULL	; A991 C3 2D 75
+	jp RING_PULL	; A991 C3 8D 76
 Z_A9AD:
 	di	; A9AD F3
 Z_A9AE:
@@ -11447,16 +12371,32 @@ Z_AACB:
 	ld (D_AC05),hl	; AACB 22 05 AC
 Z_AACE:
 	ld hl,D_AC25	; AACE 21 25 AC
-	jp	Z_AAD1	; мост в следующий кусок
-	org	0xAB23
-D_AB23:
-Z_AB23:
-	db	0x0E, 0x00	; AB23
-	org	0xAB25
 Z_AAD1:
 	ex de,hl	; AAD1 EB
 Z_AAD2:
 	ld bc,0x1E	; AAD2 01 1E 00
+	jp	Z_AAD5	; мост в следующий кусок
+	org	0xA8CB
+D_A8CB:
+Z_A8CB:
+	db	0x3C, 0xE6, 0x01, 0x32, 0xCA, 0xD0, 0xC8, 0x01, 0x03, 0x00, 0x3A, 0xCB, 0xD0, 0xCB, 0x7F, 0x28	; A8CB
+	org	0xA8DB
+D_A8DB:
+Z_A8DB:
+	db	0x02, 0x0E, 0x1C, 0x11, 0x4F, 0x1E, 0x21, 0x98, 0xC3, 0x09, 0x01, 0x20, 0x08, 0x1A, 0x2F, 0x77	; A8DB
+	org	0xA8EB
+D_A8EB:
+Z_A8EB:
+	db	0x13, 0x78, 0x06, 0x00, 0x09, 0x47, 0x10, 0xF5, 0xC9	; A8EB
+	org	0xA8F7
+D_A8F7:
+Z_A8F7:
+	db	0xC3, 0x11	; A8F7
+	org	0xA8F9
+D_A8F9:
+Z_A8F9:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A8F9
+	org	0xA909
 Z_AAD5:
 	call il_ldir	; AAD5 ED B0
 Z_AAD7:
@@ -11537,10 +12477,34 @@ Z_AB25:
 	jp Z_ABFF	; AB25 C3 FF AB
 Z_AB28:
 	call 0x0726	; AB28 CD 26 07
+	jp	Z_AB2B	; мост в следующий кусок
+	org	0xA965
+D_A965:
+Z_A965:
+	db	0x00, 0x00, 0x00, 0x00	; A965
+	org	0xA969
 Z_AB2B:
 	jp nz,Z_AB83	; AB2B 20 56
 Z_AB2D:
 	xor a	; AB2D AF
+	jp	Z_AB2E	; мост в следующий кусок
+	org	0xA971
+D_A971:
+Z_A971:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A971
+	org	0xA981
+D_A981:
+Z_A981:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A981
+	org	0xA994
+D_A994:
+Z_A994:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A994
+	org	0xA9A4
+D_A9A4:
+Z_A9A4:
+	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; A9A4
+	org	0xA9AD
 Z_AB2E:
 	ld (Z_AB21),a	; AB2E 32 21 AB
 Z_AB31:
@@ -11561,6 +12525,72 @@ Z_AB88:
 	ld a,(D_AC22)	; AB88 3A 22 AC
 Z_AB8B:
 	or a	; AB8B B7
+	jp	Z_AB8C	; мост в следующий кусок
+	org	0xA9C7
+D_A9C7:
+Z_A9C7:
+	db	0x3A, 0x00, 0x94, 0xA7, 0xC0, 0xED, 0x5B, 0xD4, 0x93, 0x21, 0xEB, 0x93, 0x01, 0x4F, 0x00, 0xED	; A9C7
+	org	0xA9D7
+D_A9D7:
+Z_A9D7:
+	db	0xB0, 0x21, 0xE1, 0x1F, 0xED, 0x52, 0x30, 0x0B, 0x11, 0x8F, 0x1B, 0x21, 0xDE, 0x1B, 0x01, 0x52	; A9D7
+	org	0xA9E7
+D_A9E7:
+Z_A9E7:
+	db	0x04, 0xED, 0xB0, 0xED, 0x53, 0xD4, 0x70, 0x60, 0xFF, 0x80, 0x1F, 0x00, 0x0F, 0x80, 0xFF, 0xF0	; A9E7
+	org	0xA9F7
+D_A9F7:
+Z_A9F7:
+	db	0x7F, 0x28, 0x06, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0xE0, 0x00, 0xFF, 0x1F, 0xFF, 0x03	; A9F7
+	org	0xAA07
+D_AA07:
+Z_AA07:
+	db	0x90, 0x00, 0xFC, 0x0F, 0xFF, 0x04, 0x50, 0x00, 0xF8, 0x0F, 0xFF, 0x0B, 0x3E, 0x00, 0xF0, 0x01	; AA07
+	org	0xAA17
+D_AA17:
+Z_AA17:
+	db	0xFF, 0x0C, 0xBF, 0x00, 0xF3, 0x00, 0xFF, 0x01, 0x9F, 0x00, 0xFE, 0x00, 0xFF, 0x01, 0x93, 0x80	; AA17
+	org	0xAA27
+D_AA27:
+Z_AA27:
+	db	0xFE, 0x00, 0x7F, 0x01, 0x99, 0x00, 0xFE, 0x00, 0xFF, 0x01, 0x9A, 0x00, 0xFE, 0x01, 0xFF, 0x01	; AA27
+	org	0xAA37
+D_AA37:
+Z_AA37:
+	db	0x91, 0x00, 0xFE, 0x00, 0xFF, 0x01, 0x91, 0x00, 0xFE, 0x00, 0xFF, 0x01, 0x2E, 0x00, 0xFE, 0x01	; AA37
+	org	0xAA47
+D_AA47:
+Z_AA47:
+	db	0xFF, 0x01, 0x21, 0x00, 0xFE, 0x00, 0xFF, 0x02, 0x20, 0x80, 0xFC, 0x00, 0x7F, 0x02, 0x30, 0x80	; AA47
+	org	0xAA57
+D_AA57:
+Z_AA57:
+	db	0xFC, 0x00, 0x7F, 0x02, 0x3F, 0x00, 0xFC, 0x00, 0xFF, 0x01, 0xCA, 0x00, 0xFE, 0x01, 0xFF, 0x01	; AA57
+	org	0xAA67
+D_AA67:
+Z_AA67:
+	db	0x02, 0x00, 0xFE, 0x01, 0xFF, 0x01, 0x04, 0x00, 0xFE, 0x03, 0xFF, 0x00, 0x84, 0x00, 0xFF, 0x03	; AA67
+	org	0xAA77
+D_AA77:
+Z_AA77:
+	db	0xFF, 0x00, 0xFC, 0x18, 0x6F	; AA77
+	org	0xAA7E
+D_AA7E:
+Z_AA7E:
+	db	0x18, 0x57	; AA7E
+	org	0xAA82
+D_AA82:
+Z_AA82:
+	db	0x00	; AA82
+	org	0xAA83
+D_AA83:
+Z_AA83:
+	db	0x05	; AA83
+	org	0xAA84
+D_AA84:
+Z_AA84:
+	db	0x00	; AA84
+	org	0xAA85
 Z_AB8C:
 	jp z,Z_AB93	; AB8C 28 05
 Z_AB8E:
@@ -11650,7 +12680,130 @@ Z_ABD1:
 	rra
 	ld c,a
 	ld a,(il_a)
-	jp	Z_ABD3	; мост в следующий кусок
+Z_ABD3:
+	ld (il_a),a	; ABD3 CB 39
+	ld a,c
+	or a
+	rra
+	ld c,a
+	ld a,(il_a)
+Z_ABD5:
+	ld (il_a),a	; ABD5 CB 39
+	ld a,c
+	or a
+	rra
+	ld c,a
+	ld a,(il_a)
+Z_ABD7:
+	ld a,0x09	; ABD7 3E 09
+Z_ABD9:
+	jp Z_ABFF	; ABD9 18 24
+Z_ABFF:
+	ld e,c	; ABFF 59
+Z_AC00:
+	call 0x93	; AC00 CD 93 00
+Z_AC03:
+	di	; AC03 F3
+Z_AC04:
+	ret	; AC04 C9
+Z_AC44:
+	jp Z_AE19	; AC44 C3 19 AE
+Z_AC4A:
+	jp Z_AF05	; AC4A C3 05 AF
+Z_AE19:
+	ld a,0x01	; AE19 3E 01
+Z_AE1B:
+	ld (D_AE15),a	; AE1B 32 15 AE
+Z_AE1E:
+	ld (D_AE17),a	; AE1E 32 17 AE
+Z_AE21:
+	xor a	; AE21 AF
+Z_AE22:
+	ld (D_AE16),a	; AE22 32 16 AE
+Z_AE25:
+	ld (D_AE18),a	; AE25 32 18 AE
+Z_AE28:
+	call Z_AE34	; AE28 CD 34 AE
+	jp	Z_AE2B	; мост в следующий кусок
+	org	0xAB23
+D_AB23:
+Z_AB23:
+	db	0x0E, 0x00	; AB23
+	org	0xAB25
+Z_AE2B:
+	ld (il_tmp),hl	; AE2B DD 21 5D AE
+	ld hl,D_AE5D
+	ld (z80_ix),hl
+	ld hl,(il_tmp)
+Z_AE2F:
+	ld hl,D_AE57	; AE2F 21 57 AE
+Z_AE32:
+	jp Z_AE40	; AE32 18 0C
+Z_AE34:
+	ld (il_tmp),hl	; AE34 DD 21 6D AE
+	ld hl,D_AE6D
+	ld (z80_ix),hl
+	ld hl,(il_tmp)
+Z_AE38:
+	ld hl,D_AE67	; AE38 21 67 AE
+Z_AE3B:
+	jp Z_AE40	; AE3B 18 03
+Z_AE40:
+	ld bc,0x05	; AE40 01 05 00
+Z_AE43:
+	call il_ix_lde	; AE43 DD 5E 00
+	db 0x00
+Z_AE46:
+	ld (il_tmp),hl	; AE46 DD 23
+	ld hl,(z80_ix)
+	inc hl
+	ld (z80_ix),hl
+	ld hl,(il_tmp)
+Z_AE48:
+	call il_ix_ldd	; AE48 DD 56 00
+	db 0x00
+Z_AE4B:
+	ld (il_tmp),hl	; AE4B DD 23
+	ld hl,(z80_ix)
+	inc hl
+	ld (z80_ix),hl
+	ld hl,(il_tmp)
+Z_AE4D:
+	call il_ldi	; AE4D ED A0
+Z_AE4F:
+	jp pe,Z_AE43	; AE4F EA 43 AE
+Z_AE52:
+	ld a,(hl)	; AE52 7E
+Z_AE53:
+	ld (D_AC4F),a	; AE53 32 4F AC
+Z_AE56:
+	ret	; AE56 C9
+Z_AEFA:
+	ld (TEXT_ROW),hl	; AEFA 22 02 41
+Z_AEFD:
+	ld a,(de)	; AEFD 1A
+Z_AEFE:
+	inc de	; AEFE 13
+Z_AEFF:
+	cp 0xFF	; AEFF FE FF
+Z_AF01:
+	ret z	; AF01 C8
+Z_AF02:
+	rst 0x18	; AF02 DF
+Z_AF03:
+	jp Z_AEFD	; AF03 18 F8
+Z_AF05:
+	call Z_37CC	; AF05 CD CC 37
+Z_AF08:
+	call Z_3811	; AF08 CD 11 38
+Z_AF0B:
+	jp NATIVE_PADS	; AF0B C3 85 6D
+Z_B01C:
+	jp 0x01E9	; B01C C3 E9 01
+Z_B1F2:
+	jp 0x01E6	; B1F2 C3 E6 01
+Z_B1FE:
+	jp 0x01EF	; B1FE C3 EF 01
 	org	0xAC05
 D_AC05:
 Z_AC05:
@@ -11831,53 +12984,10 @@ Z_AE17:
 D_AE18:
 Z_AE18:
 	db	0x00	; AE18
-	org	0xAE19
-Z_ABD3:
-	ld (il_a),a	; ABD3 CB 39
-	ld a,c
-	or a
-	rra
-	ld c,a
-	ld a,(il_a)
-Z_ABD5:
-	ld (il_a),a	; ABD5 CB 39
-	ld a,c
-	or a
-	rra
-	ld c,a
-	ld a,(il_a)
-Z_ABD7:
-	ld a,0x09	; ABD7 3E 09
-Z_ABD9:
-	jp Z_ABFF	; ABD9 18 24
-Z_ABFF:
-	ld e,c	; ABFF 59
-Z_AC00:
-	call 0x93	; AC00 CD 93 00
-Z_AC03:
-	di	; AC03 F3
-Z_AC04:
-	ret	; AC04 C9
 	org	0xAE3D
 D_AE3D:
 Z_AE3D:
 	db	0x21, 0x0F, 0xAE	; AE3D
-	org	0xAE40
-Z_AC44:
-	jp Z_AE19	; AC44 C3 19 AE
-Z_AC4A:
-	jp Z_AF05	; AC4A C3 05 AF
-Z_AE19:
-	ld a,0x01	; AE19 3E 01
-Z_AE1B:
-	ld (D_AE15),a	; AE1B 32 15 AE
-Z_AE1E:
-	ld (D_AE17),a	; AE1E 32 17 AE
-Z_AE21:
-	xor a	; AE21 AF
-Z_AE22:
-	ld (D_AE16),a	; AE22 32 16 AE
-	jp	Z_AE25	; мост в следующий кусок
 	org	0xAE57
 D_AE57:
 Z_AE57:
@@ -11962,12 +13072,6 @@ Z_AEE7:
 D_AEF7:
 Z_AEF7:
 	db	0xDF, 0x18, 0x03	; AEF7
-	org	0xAEFA
-Z_AE25:
-	ld (D_AE18),a	; AE25 32 18 AE
-Z_AE28:
-	call Z_AE34	; AE28 CD 34 AE
-	jp	Z_AE2B	; мост в следующий кусок
 	org	0xAF0E
 D_AF0E:
 Z_AF0E:
@@ -12036,50 +13140,6 @@ Z_AFAD:
 D_AFBD:
 Z_AFBD:
 	db	0x7F, 0x00, 0x82, 0x40, 0xFF, 0x00, 0x3F, 0x00, 0x82, 0x3C, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00	; AFBD
-	org	0xAFCD
-Z_AE2B:
-	ld (il_tmp),hl	; AE2B DD 21 5D AE
-	ld hl,D_AE5D
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_AE2F:
-	ld hl,D_AE57	; AE2F 21 57 AE
-Z_AE32:
-	jp Z_AE40	; AE32 18 0C
-Z_AE34:
-	ld (il_tmp),hl	; AE34 DD 21 6D AE
-	ld hl,D_AE6D
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_AE38:
-	ld hl,D_AE67	; AE38 21 67 AE
-Z_AE3B:
-	jp Z_AE40	; AE3B 18 03
-Z_AE40:
-	ld bc,0x05	; AE40 01 05 00
-Z_AE43:
-	call il_ix_lde	; AE43 DD 5E 00
-	db 0x00
-Z_AE46:
-	ld (il_tmp),hl	; AE46 DD 23
-	ld hl,(z80_ix)
-	inc hl
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_AE48:
-	call il_ix_ldd	; AE48 DD 56 00
-	db 0x00
-Z_AE4B:
-	ld (il_tmp),hl	; AE4B DD 23
-	ld hl,(z80_ix)
-	inc hl
-	ld (z80_ix),hl
-	ld hl,(il_tmp)
-Z_AE4D:
-	call il_ldi	; AE4D ED A0
-Z_AE4F:
-	jp pe,Z_AE43	; AE4F EA 43 AE
-	jp	Z_AE52	; мост в следующий кусок
 	org	0xB01F
 D_B01F:
 Z_B01F:
@@ -12184,24 +13244,6 @@ Z_B19F:
 D_B1AF:
 Z_B1AF:
 	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; B1AF
-	org	0xB1BF
-Z_AE52:
-	ld a,(hl)	; AE52 7E
-Z_AE53:
-	ld (D_AC4F),a	; AE53 32 4F AC
-Z_AE56:
-	ret	; AE56 C9
-Z_AEFA:
-	ld (TEXT_ROW),hl	; AEFA 22 02 41
-Z_AEFD:
-	ld a,(de)	; AEFD 1A
-Z_AEFE:
-	inc de	; AEFE 13
-Z_AEFF:
-	cp 0xFF	; AEFF FE FF
-Z_AF01:
-	ret z	; AF01 C8
-	jp	Z_AF02	; мост в следующий кусок
 	org	0xB1CF
 D_B1CF:
 Z_B1CF:
@@ -12218,23 +13260,6 @@ Z_B1EF:
 D_B1F5:
 Z_B1F5:
 	db	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	; B1F5
-	org	0xB1FE
-Z_AF02:
-	rst 0x18	; AF02 DF
-Z_AF03:
-	jp Z_AEFD	; AF03 18 F8
-Z_AF05:
-	call Z_37CC	; AF05 CD CC 37
-Z_AF08:
-	call Z_3811	; AF08 CD 11 38
-Z_AF0B:
-	jp NATIVE_PADS	; AF0B C3 D0 6C
-Z_B01C:
-	jp 0x01E9	; B01C C3 E9 01
-Z_B1F2:
-	jp 0x01E6	; B1F2 C3 E6 01
-Z_B1FE:
-	jp 0x01EF	; B1FE C3 EF 01
 	org	0xB251
 D_B251:
 Z_B251:

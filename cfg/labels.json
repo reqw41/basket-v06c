@@ -164,7 +164,7 @@
       "sig": "fe019f"
     },
     "STAGE_ALIGNED_ROW": {
-      "addr": "6D5C",
+      "addr": "6E11",
       "kind": "adapter_code",
       "note": "aligned_sprite_row.asm",
       "sig": "2a5a0f"
@@ -233,7 +233,7 @@
       "sig": "210018"
     },
     "STAMP_ROW_FIX": {
-      "addr": "0A5B",
+      "addr": "0B1C",
       "kind": "adapter_code",
       "note": "cpc_stamp.asm: stand cells after a tile row",
       "sig": "3a39b3"
@@ -250,13 +250,13 @@
       "sig": "c35803"
     },
     "COURT_TILE_ROW_POINTER": {
-      "addr": "6B8E",
+      "addr": "6C3C",
       "kind": "adapter_code",
       "note": "fixed cross-module entry",
       "sig": "7de6e0"
     },
     "NOISE_WAIT": {
-      "addr": "1469",
+      "addr": "1404",
       "kind": "adapter_code",
       "note": "fixed cross-module entry",
       "sig": "fb3a7c"
@@ -265,7 +265,7 @@
       "addr": "1710",
       "kind": "adapter_code",
       "note": "fixed cross-module entry",
-      "sig": "cdcd6e"
+      "sig": "cd4070"
     },
     "PAIR_BUFFER_OK": {
       "addr": "1721",
@@ -292,70 +292,52 @@
       "sig": "774f3a"
     },
     "PLAYER_COMPOSE_CLIPPED": {
-      "addr": "6D97",
+      "addr": "6E4C",
       "kind": "adapter_code",
       "note": "fixed cross-module entry",
       "sig": "e52af6"
     },
     "PLAYER_BACKGROUND_ROW": {
-      "addr": "6ECD",
+      "addr": "7040",
       "kind": "adapter_code",
       "note": "fixed cross-module entry",
       "sig": "3aef0f"
     },
     "COURT_HIGH_BYTE": {
-      "addr": "7B0F",
+      "addr": "7AEB",
       "kind": "adapter_code",
       "note": "fixed cross-module entry",
       "sig": "c5e53a"
     },
     "MENU_BUFFER_ROW": {
-      "addr": "7B32",
+      "addr": "7B0E",
       "kind": "adapter_code",
       "note": "fixed cross-module entry",
       "sig": "af1213"
     },
     "TILE_BAND_FILL": {
-      "addr": "0B1F",
+      "addr": "0BE0",
       "kind": "adapter_code",
       "note": "tile_band.asm (glue): COMPOSE_BOX tile band copier, IRQs on",
-      "sig": "2a690f"
+      "sig": "793218"
     },
     "TBF_WIDTH": {
-      "addr": "0B23",
+      "addr": "0BF8",
       "kind": "adapter_code",
       "note": "tile_band.asm: add a,n table bytes (2 x width), patched per box",
-      "sig": "c60032"
-    },
-    "TBF_ENTRY": {
-      "addr": "0B32",
-      "kind": "adapter_code",
-      "note": "tile_band.asm: jp tbf_first/tbf_second, patched per box",
-      "sig": "c3350b"
+      "sig": "3e0085"
     },
     "TBF_END": {
-      "addr": "0B5C",
+      "addr": "0BE4",
       "kind": "adapter_code",
       "note": "tile_band.asm: cp n end offset, patched per call",
-      "sig": "fe00c2"
-    },
-    "tbf_first": {
-      "addr": "0B35",
-      "kind": "adapter_code",
-      "note": "tile_band.asm: even-width entry",
-      "sig": "7ec600"
-    },
-    "tbf_second": {
-      "addr": "0B43",
-      "kind": "adapter_code",
-      "note": "tile_band.asm: odd-width entry",
-      "sig": "7ec600"
+      "sig": "3e0091"
     },
     "DIRTY_COURT_HIGH_BYTE": {
-      "addr": "7B3C",
+      "addr": "7B18",
       "kind": "adapter_code",
       "note": "win_7ae8.asm: restore-coordinate high byte, keeps player bytes",
-      "sig": "cdc36b"
+      "sig": "cd716c"
     },
     "MIR_REV": {
       "addr": "6700",
@@ -369,7 +351,7 @@
       "sig": "16e00e"
     },
     "PROTECT_SELF_OP": {
-      "addr": "6BDD",
+      "addr": "6C8B",
       "kind": "adapter_code",
       "note": "color_sprite: CP n whose operand is PROTECT_SELF (menu_color_bg writes +1)",
       "sig": "fe00ca"
@@ -428,33 +410,39 @@
       "sig": "f5c5d5"
     },
     "REPLAY_STATE_BEGIN": {
-      "addr": "144C",
+      "addr": "13E7",
       "kind": "adapter_code",
       "note": "menu_color_bg: replay state start (A887/A89E)",
       "sig": "c35503"
     },
     "REPLAY_SCENE": {
-      "addr": "144F",
+      "addr": "13EA",
       "kind": "adapter_code",
       "note": "menu_color_bg: replay scene stage (A88A/A8A1)",
       "sig": "c38593"
     },
     "REPLAY_TILE_ROW": {
-      "addr": "1452",
+      "addr": "13ED",
       "kind": "adapter_code",
       "note": "menu_color_bg: replay court row fill",
       "sig": "4f0608"
     },
     "REPLAY_X2_TABLE": {
-      "addr": "14E0",
+      "addr": "1530",
       "kind": "adapter_data",
       "note": "menu_color_bg: 16-aligned 4->8 bit doubling table"
     },
     "SND_NOISE_SCAN": {
-      "addr": "147F",
+      "addr": "1414",
       "kind": "adapter_code",
       "note": "menu_color_bg: AY noise scan per IRQ",
       "sig": "3af406"
+    },
+    "SND_NOISE_BURST": {
+      "addr": "1496",
+      "kind": "adapter_code",
+      "note": "menu_color_bg: noise bits on the noisy voice's counter per IRQ",
+      "sig": "3a7c0f"
     },
     "HUD_ICON": {
       "addr": "B455",
@@ -496,10 +484,16 @@
       "addr": "7AE8",
       "kind": "adapter_code",
       "note": "win_7ae8: CPC-style court high plane (unit org)",
+      "sig": "c3aa76"
+    },
+    "COURT_FILL": {
+      "addr": "76AA",
+      "kind": "adapter_code",
+      "note": "court_fill.asm (adapter_hi): court planes tile by tile, IRQs on",
       "sig": "210025"
     },
     "MEM_COPY": {
-      "addr": "6EDA",
+      "addr": "704D",
       "kind": "adapter_code",
       "note": "clipped_player_object: i8080 ldir (BC bytes HL->DE, none when 0)",
       "sig": "79e603"
@@ -516,43 +510,43 @@
       "note": "MSX D0AC: post-score wipe direction (A0BF LD IX,3314; bit 7 = from the left)"
     },
     "DP_ISR_COPY": {
-      "addr": "7312",
+      "addr": "7472",
       "kind": "adapter_code",
       "note": "damage_publish.asm: frame IRQ copies the ready batch of damage boxes (glue IRQ_HANDLER)",
       "sig": "3aea0f"
     },
     "MENU_CHROME_DONE": {
-      "addr": "14F0",
+      "addr": "1540",
       "kind": "adapter_code",
       "note": "fixed cross-module entry",
       "sig": "3e0132"
     },
     "PLAYER_BYTE_PROTECTED": {
-      "addr": "6BC3",
+      "addr": "6C71",
       "kind": "adapter_code",
       "note": "color_sprite.asm: restore protection (DIRTY_COURT_HIGH_BYTE)",
       "sig": "3a800f"
     },
     "RING_PUSH": {
-      "addr": "74E8",
+      "addr": "7648",
       "kind": "adapter_code",
       "note": "ring.asm: replay ring in a circle",
       "sig": "2ad493"
     },
     "RING_RESET": {
-      "addr": "7511",
+      "addr": "7671",
       "kind": "adapter_code",
       "note": "ring.asm: replay ring in a circle",
       "sig": "af3204"
     },
     "RING_REPLAY": {
-      "addr": "751C",
+      "addr": "767C",
       "kind": "adapter_code",
       "note": "ring.asm: replay ring in a circle",
       "sig": "3e0e32"
     },
     "RING_PULL": {
-      "addr": "752D",
+      "addr": "768D",
       "kind": "adapter_code",
       "note": "ring.asm: replay ring in a circle",
       "sig": "2ad493"
@@ -573,7 +567,7 @@
       "note": "1 = replay playback reached the end"
     },
     "STAGE_SLOTS": {
-      "addr": "71FB",
+      "addr": "7362",
       "kind": "adapter_code",
       "note": "damage_publish.asm: stage the recorded objects a damage box touches (replay: all)",
       "sig": "32670f"
@@ -595,7 +589,7 @@
       "note": "player 2 control byte (AF05; joy_p NATIVE_PADS)"
     },
     "NATIVE_PADS": {
-      "addr": "6CD0",
+      "addr": "6D85",
       "kind": "adapter_code",
       "note": "joy_p: control reader (AF0B jumps here)",
       "sig": "3a340f"
@@ -612,7 +606,7 @@
       "sig": "7de61f"
     },
     "CROWD_TICK": {
-      "addr": "74BA",
+      "addr": "761A",
       "kind": "adapter_code",
       "note": "damage_publish: jumping fans after a basket (A502 calls it)",
       "sig": "210018"
@@ -635,7 +629,7 @@
       "sig": "c3609f"
     },
     "DP_SYNC": {
-      "addr": "72FD",
+      "addr": "745D",
       "kind": "adapter_code",
       "note": "damage_publish: wait until the frame IRQ has copied the posted last batch (07.11 async publish)",
       "sig": "3aea0f"

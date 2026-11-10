@@ -13,21 +13,19 @@ CLEAR_OFFCOURT              equ     0x041B  ; adapter_code: softvdp: clear the o
 MENU_KEY                    equ     0x06BB  ; adapter_code: kbd.asm: menu key at A697 (SPACE / fire = "1")
 V_KJOY2                     equ     0x06F3  ; adapter_data: kbd.asm: joystick «П» A as polled (player 2 of two)
 V_MUTE                      equ     0x06F4  ; adapter_data: kbd.asm: 1 = sound off (УС)
-STAMP_ROW_FIX               equ     0x0A5B  ; adapter_code: cpc_stamp.asm: stand cells after a tile row
-TILE_BAND_FILL              equ     0x0B1F  ; adapter_code: tile_band.asm (glue): COMPOSE_BOX tile band copier, IRQs on
-TBF_WIDTH                   equ     0x0B23  ; adapter_code: tile_band.asm: add a,n table bytes (2 x width), patched per box
-TBF_ENTRY                   equ     0x0B32  ; adapter_code: tile_band.asm: jp tbf_first/tbf_second, patched per box
-tbf_first                   equ     0x0B35  ; adapter_code: tile_band.asm: even-width entry
-tbf_second                  equ     0x0B43  ; adapter_code: tile_band.asm: odd-width entry
-TBF_END                     equ     0x0B5C  ; adapter_code: tile_band.asm: cp n end offset, patched per call
+STAMP_ROW_FIX               equ     0x0B1C  ; adapter_code: cpc_stamp.asm: stand cells after a tile row
+TILE_BAND_FILL              equ     0x0BE0  ; adapter_code: tile_band.asm (glue): COMPOSE_BOX tile band copier, IRQs on
+TBF_END                     equ     0x0BE4  ; adapter_code: tile_band.asm: cp n end offset, patched per call
+TBF_WIDTH                   equ     0x0BF8  ; adapter_code: tile_band.asm: add a,n table bytes (2 x width), patched per box
 MENU_LZ_BODY                equ     0x1320  ; adapter_code: menu_lz: dual-plane LZ expander (unit org 1320)
-REPLAY_STATE_BEGIN          equ     0x144C  ; adapter_code: menu_color_bg: replay state start (A887/A89E)
-REPLAY_SCENE                equ     0x144F  ; adapter_code: menu_color_bg: replay scene stage (A88A/A8A1)
-REPLAY_TILE_ROW             equ     0x1452  ; adapter_code: menu_color_bg: replay court row fill
-NOISE_WAIT                  equ     0x1469  ; adapter_code: fixed cross-module entry
-SND_NOISE_SCAN              equ     0x147F  ; adapter_code: menu_color_bg: AY noise scan per IRQ
-REPLAY_X2_TABLE             equ     0x14E0  ; adapter_data: menu_color_bg: 16-aligned 4->8 bit doubling table
-MENU_CHROME_DONE            equ     0x14F0  ; adapter_code: fixed cross-module entry
+REPLAY_STATE_BEGIN          equ     0x13E7  ; adapter_code: menu_color_bg: replay state start (A887/A89E)
+REPLAY_SCENE                equ     0x13EA  ; adapter_code: menu_color_bg: replay scene stage (A88A/A8A1)
+REPLAY_TILE_ROW             equ     0x13ED  ; adapter_code: menu_color_bg: replay court row fill
+NOISE_WAIT                  equ     0x1404  ; adapter_code: fixed cross-module entry
+SND_NOISE_SCAN              equ     0x1414  ; adapter_code: menu_color_bg: AY noise scan per IRQ
+SND_NOISE_BURST             equ     0x1496  ; adapter_code: menu_color_bg: noise bits on the noisy voice's counter per IRQ
+REPLAY_X2_TABLE             equ     0x1530  ; adapter_data: menu_color_bg: 16-aligned 4->8 bit doubling table
+MENU_CHROME_DONE            equ     0x1540  ; adapter_code: fixed cross-module entry
 HUD_TEXT_REFRESH            equ     0x18CA  ; adapter_code: menu_player_helpers: reprint HUD text after HUD_DECOR
 PLAYER_BACKGROUND_HIGH      equ     0x18EB  ; adapter_code: menu_player_helpers: high background byte (menu/match)
 MENU_BOX_CLEAR              equ     0x18F6  ; adapter_code: menu_player_helpers.asm: blanks menu rows 08..0E (the dead VDP fill D247/34AF at A62E/A6F7)
@@ -61,26 +59,27 @@ ADAPTER_HI                  equ     0x6800  ; adapter_data: org of the color_spr
 COLOR_MENU_BEGIN            equ     0x6803  ; adapter_code: color_sprite: menu frame entry
 COLOR_FRAME_END             equ     0x6806  ; adapter_code: color_sprite: publish one logical frame (FRAME_END)
 COLOR_SPRITE                equ     0x6816  ; adapter_code: color_sprite: staged two-plane CPC sprite (NATIVE_SPRITE)
-COURT_TILE_ROW_POINTER      equ     0x6B8E  ; adapter_code: fixed cross-module entry
-PLAYER_BYTE_PROTECTED       equ     0x6BC3  ; adapter_code: color_sprite.asm: restore protection (DIRTY_COURT_HIGH_BYTE)
-PROTECT_SELF_OP             equ     0x6BDD  ; adapter_code: color_sprite: CP n whose operand is PROTECT_SELF (menu_color_bg writes +1)
-NATIVE_PADS                 equ     0x6CD0  ; adapter_code: joy_p: control reader (AF0B jumps here)
-STAGE_ALIGNED_ROW           equ     0x6D5C  ; adapter_code: aligned_sprite_row.asm
-PLAYER_COMPOSE_CLIPPED      equ     0x6D97  ; adapter_code: fixed cross-module entry
-PLAYER_BACKGROUND_ROW       equ     0x6ECD  ; adapter_code: fixed cross-module entry
-MEM_COPY                    equ     0x6EDA  ; adapter_code: clipped_player_object: i8080 ldir (BC bytes HL->DE, none when 0)
-STAGE_SLOTS                 equ     0x71FB  ; adapter_code: damage_publish.asm: stage the recorded objects a damage box touches (replay: all)
-DP_SYNC                     equ     0x72FD  ; adapter_code: damage_publish: wait until the frame IRQ has copied the posted last batch (07.11 async publish)
-DP_ISR_COPY                 equ     0x7312  ; adapter_code: damage_publish.asm: frame IRQ copies the ready batch of damage boxes (glue IRQ_HANDLER)
-CROWD_TICK                  equ     0x74BA  ; adapter_code: damage_publish: jumping fans after a basket (A502 calls it)
-RING_PUSH                   equ     0x74E8  ; adapter_code: ring.asm: replay ring in a circle
-RING_RESET                  equ     0x7511  ; adapter_code: ring.asm: replay ring in a circle
-RING_REPLAY                 equ     0x751C  ; adapter_code: ring.asm: replay ring in a circle
-RING_PULL                   equ     0x752D  ; adapter_code: ring.asm: replay ring in a circle
+COURT_TILE_ROW_POINTER      equ     0x6C3C  ; adapter_code: fixed cross-module entry
+PLAYER_BYTE_PROTECTED       equ     0x6C71  ; adapter_code: color_sprite.asm: restore protection (DIRTY_COURT_HIGH_BYTE)
+PROTECT_SELF_OP             equ     0x6C8B  ; adapter_code: color_sprite: CP n whose operand is PROTECT_SELF (menu_color_bg writes +1)
+NATIVE_PADS                 equ     0x6D85  ; adapter_code: joy_p: control reader (AF0B jumps here)
+STAGE_ALIGNED_ROW           equ     0x6E11  ; adapter_code: aligned_sprite_row.asm
+PLAYER_COMPOSE_CLIPPED      equ     0x6E4C  ; adapter_code: fixed cross-module entry
+PLAYER_BACKGROUND_ROW       equ     0x7040  ; adapter_code: fixed cross-module entry
+MEM_COPY                    equ     0x704D  ; adapter_code: clipped_player_object: i8080 ldir (BC bytes HL->DE, none when 0)
+STAGE_SLOTS                 equ     0x7362  ; adapter_code: damage_publish.asm: stage the recorded objects a damage box touches (replay: all)
+DP_SYNC                     equ     0x745D  ; adapter_code: damage_publish: wait until the frame IRQ has copied the posted last batch (07.11 async publish)
+DP_ISR_COPY                 equ     0x7472  ; adapter_code: damage_publish.asm: frame IRQ copies the ready batch of damage boxes (glue IRQ_HANDLER)
+CROWD_TICK                  equ     0x761A  ; adapter_code: damage_publish: jumping fans after a basket (A502 calls it)
+RING_PUSH                   equ     0x7648  ; adapter_code: ring.asm: replay ring in a circle
+RING_RESET                  equ     0x7671  ; adapter_code: ring.asm: replay ring in a circle
+RING_REPLAY                 equ     0x767C  ; adapter_code: ring.asm: replay ring in a circle
+RING_PULL                   equ     0x768D  ; adapter_code: ring.asm: replay ring in a circle
+COURT_FILL                  equ     0x76AA  ; adapter_code: court_fill.asm (adapter_hi): court planes tile by tile, IRQs on
 COURT_COLORIZE              equ     0x7AE8  ; adapter_code: win_7ae8: CPC-style court high plane (unit org)
-COURT_HIGH_BYTE             equ     0x7B0F  ; adapter_code: fixed cross-module entry
-MENU_BUFFER_ROW             equ     0x7B32  ; adapter_code: fixed cross-module entry
-DIRTY_COURT_HIGH_BYTE       equ     0x7B3C  ; adapter_code: win_7ae8.asm: restore-coordinate high byte, keeps player bytes
+COURT_HIGH_BYTE             equ     0x7AEB  ; adapter_code: fixed cross-module entry
+MENU_BUFFER_ROW             equ     0x7B0E  ; adapter_code: fixed cross-module entry
+DIRTY_COURT_HIGH_BYTE       equ     0x7B18  ; adapter_code: win_7ae8.asm: restore-coordinate high byte, keeps player bytes
 SONG_MENU                   equ     0x7EAF  ; sys_data: menu tune (pattern list), started at 84F8/8508
 MENU_BG_RELOAD              equ     0x8412  ; adapter_code: win_840e: packed full-menu renderer (unit org)
 HUD_DECOR                   equ     0x8432  ; adapter_code: win_840e: packed two-plane HUD renderer

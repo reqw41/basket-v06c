@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "title": "Target memory budget for four-color Vector port (stage 1)",
-  "rom_sha256_baseline": "af826e2bdaf4ba630d6611deefd416aab45e22d359fa7143335f3ebaf91dc800",
+  "rom_sha256_baseline": "68edeb5b76a8c2395cc73e02a9ead337977463d80890aadbee1a349c10477b93",
   "notes": [
     "Target regions are budgets for future layout, not the current transitional map.",
     "memory_layout of the working ROM remains NOT_CHECKED until a later stage relocates code.",

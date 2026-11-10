@@ -13,8 +13,10 @@
  * right, up, left, down; no fire), written to the keyboard matrix and to the
  * raw rows V_VROW that NATIVE_PADS reads in the same iteration. With the
  * deterministic RNG the game then walks the same states on any build, so two
- * builds compare cycle for cycle. `state` hashes the positions of both
- * players and the ball per iteration: equal hashes = the same scene.
+ * builds compare cycle for cycle (the seed 4114 is fixed at the match start:
+ * it counts the menu's interrupts, which differ between builds of different
+ * speed). `state` hashes the positions of both players and the ball per
+ * iteration: equal hashes = the same scene.
  *
  * Only live play is measured: SKIP iterations after each tip-off (ball in
  * play, players apart) until N iterations; a basket (93D3, replay 93D1 or the
@@ -34,7 +36,7 @@ const V06 = process.env.V06 || path.join(process.env.HOME, 'projects/vector06js'
 const I8080_IMAGE = process.env.CPU === 'i8080';
 const ROM = path.resolve(process.argv[2] || path.join(ROOT, I8080_IMAGE ? 'build/i8080/basket-i8080.rom' : 'build/v06/basket.rom'));
 const N = +(process.env.N || 150), SKIP = +(process.env.SKIP || 10);
-const MAP = I8080_IMAGE ? JSON.parse(fs.readFileSync(path.join(ROOT, 'build/i8080/labels.json'))).map : null;
+const MAP = I8080_IMAGE ? JSON.parse(fs.readFileSync(process.env.LABELS || path.join(ROOT, 'build/i8080/labels.json'))).map : null;   // LABELS: the map of another build
 const at = (z) => (I8080_IMAGE ? parseInt(MAP[z], 16) : parseInt(z, 16));
 const ITER = at('8554');
 const WIPE = at('A0BF');
@@ -71,6 +73,7 @@ const wr = (a, v) => memory.write(a & 0xffff, v & 0xff, false);
 
 // Player 1 plan, one entry per game iteration: Vector row 0 cursor masks.
 const RIGHT = 0x40, LEFT = 0x10, UP = 0x20, DOWN = 0x80;
+const SEED = parseInt(process.env.BENCH_SEED || '0055', 16);   // the match seed (SEED_SHOW=1: keep and print the build's own)
 const PLAN = [];
 for (const [m, n] of [[RIGHT, 14], [UP, 6], [LEFT, 14], [DOWN, 6], [RIGHT | UP, 8], [LEFT | DOWN, 8]]) for (let i = 0; i < n; i++) PLAN.push(m);
 const V_VROW = 0x0F38;
@@ -110,9 +113,16 @@ for (let frame = 0; frame < 60000 && !done; frame++) {
     if (phase === 'title' && frame >= 8 && frame < 40) keyboard.matrix[7] = 0x80;
     if (phase === 'menu') keyboard.matrix[2] = 0x02;   // 1 PLAYER
   }
-  v06c.oneFrame(); frames++;
+  v06c.oneInterrupt(false); frames++;   // one TV frame (oneFrame skips frames by wall clock)
   if (phase === 'title' && rd(0x940d) === 0x6e && rd(0x9427) === 0x6e && rd(0x940b) === 0x10) phase = 'menu';
-  else if (phase === 'menu' && rd(0x0fed) === 1) phase = 'play';
+  else if (phase === 'menu' && rd(0x0fed) === 1) {
+    // The seed counts the menu's interrupts (rng_patch): a faster build reaches
+    // the match a frame earlier and plays another match. A fixed seed here,
+    // before the match setup (869C) draws from it, gives every build the same scene.
+    phase = 'play';
+    if (process.env.SEED_SHOW) console.error('seed', rd(0x4114).toString(16), rd(0x4115).toString(16));
+    else { wr(0x4114, SEED & 0xff); wr(0x4115, SEED >> 8); }
+  }
 }
 const cpf = totalCyc / frames;                   // cycles of one hardware frame
 const hz = 3000000 / 59904;

@@ -1,0 +1,1 @@
+{"name":"2p_chase","seed":99,"clock":"030","frames":20000,"steps":[{"wait":"menu"},{"key":"2"},{"wait":"match"},{"bot":"chase","bot2":"chase","until":"menu"},{"idle":200}]}

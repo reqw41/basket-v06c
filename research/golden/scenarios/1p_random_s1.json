@@ -1,0 +1,1 @@
+{"name":"1p_random_s1","seed":101,"clock":"030","frames":20000,"steps":[{"wait":"menu"},{"key":"1"},{"wait":"match"},{"bot":"random","fire":0.2,"until":"menu"},{"idle":100}]}

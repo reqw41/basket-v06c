@@ -400,16 +400,9 @@ COMPOSE_BOX:
         ld      (B1_ROW),a
         ld      a,(DP_RECT+3)
         ld      (DP_ROWS),a
-        ld      a,(DP_RECT+2)           ; TILE_BAND_FILL: two columns a pass,
-        add     a,a                     ; table bytes; an odd width enters
-        ld      (TBF_WIDTH+1),a         ; at the second
-        rrca
-        rrca
-        ld      a,tbf_first & 255
-        jp      nc,cb_even
-        ld      a,tbf_second & 255      ; same page as tbf_first
-cb_even:
-        ld      (TBF_ENTRY+1),a
+        ld      a,(DP_RECT+2)           ; TILE_BAND_FILL: table bytes
+        add     a,a                     ; = buffer row bytes
+        ld      (TBF_WIDTH+1),a
         ld      hl,(DP_BASE)
         ex      de,hl                   ; DE = buffer row
         ld      a,(TITLE_SNAPPED)       ; menu: players on the blue panel
@@ -661,12 +654,9 @@ DP_FLUSH:
 ; list B498.., DP_BUF or the court on screen calls DP_SYNC first
 ; (MATCH_PUBLISH, REPLAY_ZOOM, COURT_TO_PLANES, WIPE_COLUMN, TITLE_RELOAD).
 ; The copy in the IRQ touches only DP_RECT, DP_BASE and 0F16, which only
-; that code uses. With the ball's AY noise the wait stays: the speaker
-; noise plays in it (NOISE_WAIT).
+; that code uses. The ball's noise no longer needs the wait (10.11): it
+; plays on the ВИ53 in the frame IRQ too (SND_NOISE_BURST).
 DP_FLUSH_LAST:
-        ld      a,(V_NOISE)
-        or      a
-        jp      nz,DP_FLUSH
         call    DP_POST
         ld      hl,(DP_START)           ; as after a waited flush (the IRQ
         ld      (DP_COST),hl            ; does not read it)
